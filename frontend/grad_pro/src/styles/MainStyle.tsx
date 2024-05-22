@@ -1,66 +1,80 @@
 import { StyleSheet } from 'react-native';
 
-
 const MainStyles = StyleSheet.create({
     container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+        flex: 1,
+    },
+    backgroundImage: {
+        flex: 1,
+        width: '100%',
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     contentContainer: {
-      justifyContent: 'center',
-      alignItems: 'center',
+        flex: 1,
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        paddingVertical: 20, // 위아래 여백 추가
     },
     imageContainer: {
-      alignItems: 'center',
-      marginBottom: 20,
+        alignItems: 'center',
+        marginTop: 40, // 위로 더 이동
     },
     image: {
-      width: 200,
-      height: 200,
+        width: 200,
+        height: 200,
     },
     speechBubble: {
-      padding: 10,
-      marginBottom: 10,
-      backgroundColor: '#fff',
-      borderRadius: 10,
-      borderWidth: 1,
-      borderColor: '#000',
-      width: '80%',
-      alignItems: 'center',
+        padding: 10,
+        marginBottom: 10,
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#000',
+        width: '80%',
+        alignItems: 'center',
+        marginBottom: 20,
     },
     speechBubbleText: {
-      color: '#000',
-      textAlign: 'center',
+        color: '#000',
+        textAlign: 'center',
+        fontFamily: 'Jua-Regular',
+        fontSize: 20, 
     },
     buttonContainer: {
-      width: '80%',
-      alignItems: 'center',
+        width: '80%',
+        alignItems: 'center',
+        marginBottom: 40, 
     },
     button: {
-      marginVertical: 5,
-      padding: 15,
-      borderRadius: 5,
-      alignItems: 'center',
-      width: '100%',
+        marginVertical: 5,
+        padding: 15,
+        borderRadius: 5,
+        alignItems: 'center',
+        width: '50%',
     },
     startButton: {
-      backgroundColor: '#FF7777',
+        backgroundColor: '#129F42',
     },
     savedSongsButton: {
-      backgroundColor: '#3E68FA',
+        backgroundColor: '#3E68FA',
     },
     buttonText: {
-      color: '#FFFFFF',
-      fontSize: 16,
+        color: '#FFFFFF',
+        fontSize: 20,
+        fontFamily: 'Jua-Regular',
     },
     songsList: {
-      marginTop: 20,
-      alignItems: 'center',
+        marginTop: 20,
+        alignItems: 'center',
     },
     songText: {
-      fontSize: 16,
-      color: '#000',
+        fontSize: 16,
+        color: '#000',
+        fontFamily: 'Jua-Regular', // 폰트 설정
     },
-  });
-  export default MainStyles;
+});
+
+export default MainStyles;
