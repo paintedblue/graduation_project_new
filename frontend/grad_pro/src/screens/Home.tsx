@@ -3,7 +3,6 @@ import { Text, View, Alert, Image, TouchableOpacity, ImageBackground } from "rea
 import styles from '../styles/MainStyle';
 
 const Home = ({ route, navigation }) => {
-
     useEffect(() => {
 
     }, []);
