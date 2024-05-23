@@ -4,7 +4,7 @@ import { createStackNavigator, StackNavigationOptions } from '@react-navigation/
 
 import Home from '../screens/Home';
 import AdminScreen from '../screens/AdminScreen';
-import LyricCreation from '../screens/LyricCreation';
+import ViewDataScreen from '../screens/ViewDataScreen'; 
 
 export declare module CommonType {
     /** 
@@ -48,9 +48,9 @@ const StackNavigation = () => {
                 <Stack.Screen name="adminScreen">
                     {(props) => <AdminScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="LyricCreation">
-                    {(props) => <LyricCreation {...props} />}
-                </Stack.Screen>    
+                <Stack.Screen name="viewDataScreen">
+                    {(props) => <ViewDataScreen {...props} />}
+                </Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer >
     )
