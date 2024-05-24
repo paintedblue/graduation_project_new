@@ -28,13 +28,7 @@ const StackNavigation = () => {
     const customStackNavigationOptions: StackNavigationOptions = {
         gestureEnabled: false,
         title: '',
-        headerStyle: {
-            backgroundColor: '#209bec',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
-        }
+        headerShown: false,
     }
 
     return (
