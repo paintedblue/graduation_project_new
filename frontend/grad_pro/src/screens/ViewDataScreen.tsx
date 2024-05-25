@@ -10,31 +10,36 @@ const ViewDataScreen = ({ route, navigation }) => {
   const fields = ["mainCharacter", "likeColor", "likeThing"];
   const [answers, setAnswers] = useState({ mainCharacter: '', likeColor: '', likeThing: '' });
   const views = ["주인공은", "좋아하는 색깔은", "좋아하는 것은"];
-  const simulatedAnswers = ["나","핑크","지윤"]; // 예시로 텍스트
+  const simulatedAnswers = ["나가 아니라 공룡","노란색이랑 빨간색","똥똥똥똥 쿠키쿠키쿠키쿠키"]; // 예시로 텍스트
 
   const handleRecordAnswer = async () => {
+    console.log("handleRecordAnswer called");
     try {
-      // 여기서 녹음된 텍스트를 설정합니다.
-      // 녹음 해서 텍스트로 ~
+        console.log("Sending request to server...");
+        const response = await fetch('http://192.168.62.68:3000/api/preferences', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, field: fields[index], value: simulatedAnswers[index] })
+        });
 
-      const response = await fetch('http://192.168.0.106:3000/api/preferences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId: userId, field: fields[index], value: simulatedAnswers[index] })
-      });
+        if (!response.ok) {
+            const errorText = await response.text();  // 서버에서 보낸 에러 메시지를 읽습니다.
+            console.error("Server response not OK:", errorText);
+            throw new Error(`Network response was not ok: ${errorText}`);
+        }
 
-      if (!response.ok) throw new Error('Network response was not ok.');
-
-      const data = await response.json();
-      setAnswer(data.value);
-      setAnswers(prev => ({ ...prev, [fields[index]]: data.value }));
-      setShowAnswer(true);
+        const data = await response.json();
+        console.log("Response data:", data);
+        setAnswer(data.value);
+        setAnswers(prev => ({ ...prev, [fields[index]]: data.value }));
+        setShowAnswer(true);
     } catch (error) {
-      Alert.alert("Error", error.message);
+        console.error("Error during fetch operation:", error.message);
+        Alert.alert("Error", error.message);
     }
-  };
+  };  
 
   const handleNext = async () => {
     if (index + 1 < questions.length) {
@@ -43,7 +48,7 @@ const ViewDataScreen = ({ route, navigation }) => {
       setAnswer('');
     } else {
       try {
-        const response = await fetch(`http://192.168.0.106:3000/api/preferences/${userId}`);
+        const response = await fetch(`http://192.168.62.68:3000/api/preferences/${userId}`);
         if (!response.ok) throw new Error('Network response was not ok.');
 
         const data = await response.json();
