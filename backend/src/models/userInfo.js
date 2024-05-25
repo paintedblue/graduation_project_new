@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userPreferencesSchema = new mongoose.Schema({
+const userInfoSchema = new mongoose.Schema({
   userId: {
     type: String,
     unique: true, // 이 필드가 고유해야 함을 명시
@@ -17,7 +17,11 @@ const userPreferencesSchema = new mongoose.Schema({
   likeThing: {
     type: String,
     required: false // 선택적 필드
+  },
+  habit: {
+    type: String,
+    require: false // 선택적 필드
   }
 });
 
-module.exports = mongoose.model('UserPreferences', userPreferencesSchema);
+module.exports = mongoose.model('userInfo', userInfoSchema);
