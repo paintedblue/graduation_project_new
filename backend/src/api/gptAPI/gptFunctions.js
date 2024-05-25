@@ -1,7 +1,38 @@
 const axios = require('axios');
 const mongoose = require('mongoose');
+require('dotenv').config({ path: '../../../.env' }); 
 
-// GPT 프롬프트를 생성하는 함수
+// 답변 문장에서 키워드 추출 GPT 프롬프트를 생성하는 함수
+const createExtractPrompt = (sentence) => {
+  return `Extract the main keyword that best represents a preference from the following sentence in Korean: "${sentence}"`;
+};
+
+// 키워드 추출 GPT API를 호출하는 함수
+const extractKeyword = async (sentence) => {
+  
+  const prompt = createExtractPrompt(sentence);
+  
+  try {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+      model: 'gpt-4', 
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 20
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    return response.data.choices[0].message.content;  // 응답에서 키워드 추출
+  } catch (error) {
+    console.error('Error calling GPT API:', error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+
+// 가사 생성 GPT 프롬프트를 생성하는 함수
 const createGPTPrompt = (userInfo) => {
   const { mainCharacter, likeColor, likeThing, habit } = userInfo;
 
@@ -35,7 +66,7 @@ const createGPTPrompt = (userInfo) => {
   `;
 };
 
-// GPT API를 호출하는 함수
+// 가사 생성 GPT API를 호출하는 함수
 const callGPTApi = async (prompt) => {
     // console.log(`Bearer ${process.env.OPENAI_API_KEY}`)
   try {
@@ -55,7 +86,11 @@ const callGPTApi = async (prompt) => {
   }
 };
 
+
+
 module.exports = {
+  createExtractPrompt,
+  extractKeyword,
   createGPTPrompt,
   callGPTApi
 };
