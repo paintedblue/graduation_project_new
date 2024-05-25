@@ -20,7 +20,7 @@ const userInfoSchema = new mongoose.Schema({
   },
   habit: {
     type: String,
-    require: false // 선택적 필드
+    required: false // 선택적 필드
   }
 });
 

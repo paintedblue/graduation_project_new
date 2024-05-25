@@ -12,25 +12,30 @@ const Home = ({ route, navigation }) => {
         navigation.navigate('adminScreen');
     }
 
+
+    const handleHabitScreenPress = () => {
+        navigation.navigate('JiyunTest');
+    }
+
+
     // const handleStartPress = () => {
     //     // navigation.navigate('LyricCreation');
     // };
     const handleStartPress = async () => {
         console.log("시작하기 버튼이 눌렸습니다."); // 로그 추가
-     
+    
         try {
             console.log('Fetch 시작'); // 디버깅 로그 추가
-            const response = await fetch('http://192.168.0.106:3000/api/preferences', {
+            const response = await fetch('http://192.168.45.73:3000/api/preferences', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
               },
-              body: JSON.stringify({ userId: 1 })
+              body: JSON.stringify({ userId: 1 }) // JSON body 추가
             });
-    
-            // const response = await fetch('http://192.168.0.106:3000/api/preferences');
-    
-            if (!response.ok) throw new Error('Network response was not ok.');
+            console.log(response)
+            if (!response.ok) throw new Error(response.statusText);
+            console.log(response)
     
             const data = await response.json();
             console.log('서버 응답:', data);
@@ -38,8 +43,10 @@ const Home = ({ route, navigation }) => {
             navigation.navigate('LyricCreation', { data: data });
         } catch (error) {
             Alert.alert("Error", error.message);
+            console.log(response)
         }
-      }; 
+    };
+    
     return (
         <View style={styles.container}>
             <ImageBackground
@@ -66,6 +73,9 @@ const Home = ({ route, navigation }) => {
                         </TouchableOpacity> */}
                         <TouchableOpacity style={[styles.button, styles.startButton]} onPress={handleStartPress}>
                             <Text style={styles.buttonText}>시작하기</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={[styles.button, styles.startButton]} onPress={handleHabitScreenPress}>
+                            <Text style={styles.buttonText}>습관 개선 입력창</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
