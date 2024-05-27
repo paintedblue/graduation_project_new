@@ -9,6 +9,7 @@ import AdminScreen from '../screens/AdminScreen';
 import ViewDataScreen from '../screens/ViewDataScreen'; 
 import SummaryScreen from '../screens/SummaryScreen';
 import JiyunTest from '../screens/JiyunTest';
+import HabitScreen from '../screens/HabitScreen';
 
 export declare module CommonType {
     /** 
@@ -52,9 +53,13 @@ const StackNavigation = () => {
                 <Stack.Screen name="summaryScreen">
                     {(props) => <SummaryScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="jiyunTest">
+                <Stack.Screen name="JiyunTest">
                     {(props) => <JiyunTest {...props} />}
                 </Stack.Screen>
+                <Stack.Screen name="HabitScreen">
+                    {(props) => <HabitScreen {...props} />}
+                </Stack.Screen>
+                
             </Stack.Navigator>
         </NavigationContainer >
     )

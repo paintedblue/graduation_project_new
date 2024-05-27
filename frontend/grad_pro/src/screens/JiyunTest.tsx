@@ -1,95 +1,157 @@
 import React, { useState } from 'react';
-import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, TextInput} from 'react-native';
+import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, TextInput, ImageBackground, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import styles from '../styles/habitStyle';
 
 const JiyunTest = ({ route, navigation }) => {
-    const { userId } = route.params;
-    const [habit, setHabit] = useState(''); // 습관 상태
-   
-    const handleSaveHabit = async () => {
-        console.log('버튼클릭');
-        try {
-            //const response = await fetch('http://192.168.0.106:3000/api/habbit', {
-            const response = await fetch('http://192.168.62.68:3000/api/habbit', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ userId: userId, habit: habit })
-            });
-            
-            console.log("Status Code:", response.status);
-            const responseData = await response.json();
-            console.log("Response Data:", responseData);
-            
-            if (!response.ok) {
-                throw new Error('Network response was not ok.');
-            }
-
-            Alert.alert("Success", "습관이 성공적으로 저장되었습니다!");
-            navigation.navigate('Home');
-        } catch (error) {
-            Alert.alert("Error", error.message);
-        }
-    };
+  // Route parameters에서 userId를 추출
+  const { userId } = route.params || {};
   
-    return (
-        <View style={styles.container}>
-            <Text style={styles.question}>습관 입력해주세요</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="습관 입력 부분"
-                value={habit}
-                onChangeText={setHabit}
-            />
-            
-
-            <TouchableOpacity style={styles.button} onPress={handleSaveHabit}>
-                <Text style={styles.buttonText}>저장하기</Text>
-            </TouchableOpacity>
-        </View>
-    );
-  };
-  
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    title: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      marginBottom: 20,
-    },
-    answer: {
-      fontSize: 18,
-      color: 'blue',
-      marginBottom: 20,
-    },
-    question: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      textAlign: 'center',
-      marginBottom: 20,
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      width: '100%',
-    },
-    button: {
-      backgroundColor: '#007BFF',
-      padding: 10,
-      borderRadius: 10,
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 18,
-    },
-    input: {
-        backgroundColor : 'yellow'
-    }
+  // 상태 변수 선언
+  const [habit, setHabit] = useState(''); // 습관 상태
+  const [habits, setHabits] = useState({
+    washHands: false,
+    brushTeeth: false,
+    tidyUp: false,
+    eatAtTable: false,
   });
-  
-  export default JiyunTest;
-  
+  const [customHabit, setCustomHabit] = useState('');
+  const [showInput, setShowInput] = useState(false);
+  const [customHabits, setCustomHabits] = useState([]);
+
+  // 기본 습관 선택 상태 토글 함수
+  const toggleHabit = (habit) => {
+    setHabits({
+      ...habits,
+      [habit]: !habits[habit],
+    });
+  };
+
+  // 사용자 정의 습관 추가 함수
+  const handleCustomHabitSubmit = () => {
+    if (customHabit.trim() !== '') {
+      setCustomHabits([...customHabits, { text: customHabit, checked: false }]);
+      setCustomHabit('');
+      setShowInput(false);
+      Keyboard.dismiss();
+    }
+  };
+
+  // 사용자 정의 습관 선택 상태 토글 함수
+  const toggleCustomHabit = (index) => {
+    const newCustomHabits = [...customHabits];
+    newCustomHabits[index].checked = !newCustomHabits[index].checked;
+    setCustomHabits(newCustomHabits);
+  };
+
+  // 습관 저장 함수
+  const handleSaveHabit = async () => {
+    console.log('버튼클릭');
+    try {
+      const response = await fetch('http://192.168.45.73:3000/api/habbit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: userId, habit: habit })
+      });
+      
+      console.log("Status Code:", response.status);
+      const responseData = await response.json();
+      console.log("Response Data:", responseData);
+      
+      if (!response.ok) {
+        throw new Error('Network response was not ok.');
+      }
+
+      Alert.alert("Success", "습관이 성공적으로 저장되었습니다!");
+      navigation.navigate('Home');
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
+  };
+
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <ImageBackground
+          source={require('../assets/imgs/forest_illustration.jpeg')}
+          style={styles.backgroundImage}
+          imageStyle={{ opacity: 0.3 }}
+        >
+          {showInput && (
+            <TouchableOpacity style={styles.backButton} onPress={() => setShowInput(false)}>
+              <Image source={require('../assets/imgs/backward.png')} style={styles.backIcon} />
+            </TouchableOpacity>
+          )}
+          <View style={[styles.contentContainer, showInput && styles.contentContainerCentered]}>
+            {!showInput && (
+              <>
+                <Text style={styles.title}>습관 개선 입력창</Text>
+                <Text style={styles.subtitle}>아이가 개선했으면 하는{'\n'}생활 습관이 있나요?</Text>
+              </>
+            )}
+            <View style={[styles.buttonContainer, showInput && styles.buttonContainerCentered]}>
+              {!showInput && (
+                <>
+                  <TouchableOpacity style={styles.button} onPress={() => toggleHabit('washHands')}>
+                    <CheckBox value={habits.washHands} onValueChange={() => toggleHabit('washHands')} />
+                    <Text style={styles.buttonText}>손 씻기</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={() => toggleHabit('brushTeeth')}>
+                    <CheckBox value={habits.brushTeeth} onValueChange={() => toggleHabit('brushTeeth')} />
+                    <Text style={styles.buttonText}>양치하기</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={() => toggleHabit('tidyUp')}>
+                    <CheckBox value={habits.tidyUp} onValueChange={() => toggleHabit('tidyUp')} />
+                    <Text style={styles.buttonText}>이불 정리하기</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.button} onPress={() => toggleHabit('eatAtTable')}>
+                    <CheckBox value={habits.eatAtTable} onValueChange={() => toggleHabit('eatAtTable')} />
+                    <Text style={styles.buttonText}>앉아서 밥 먹기</Text>
+                  </TouchableOpacity>
+                  {customHabits.map((habit, index) => (
+                    <TouchableOpacity key={index} style={styles.button} onPress={() => toggleCustomHabit(index)}>
+                      <CheckBox value={habit.checked} onValueChange={() => toggleCustomHabit(index)} />
+                      <Text style={styles.buttonText}>{habit.text}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </>
+              )}
+              {showInput ? (
+                <>
+                  <TextInput
+                    style={[styles.input, styles.button]}
+                    placeholder="습관을 입력하세요"
+                    placeholderTextColor="#999"
+                    value={customHabit}
+                    onChangeText={setCustomHabit}
+                    onSubmitEditing={handleCustomHabitSubmit}
+                    autoFocus={true}
+                    keyboardType="default"
+                    returnKeyType="done"
+                  />
+                  <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
+                    <Text style={styles.buttonText}>완료</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <TouchableOpacity style={styles.button} onPress={() => setShowInput(true)}>
+                  <Text style={styles.buttonText}>직접 입력</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+            {!showInput && (
+              <TouchableOpacity style={styles.completeButton} onPress={handleSaveHabit}>
+                <Text style={styles.buttonText}>선택 완료</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </ImageBackground>
+      </View>
+    </TouchableWithoutFeedback>
+  );
+};
+
+
+export default JiyunTest;
