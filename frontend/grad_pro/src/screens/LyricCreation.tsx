@@ -14,6 +14,7 @@ const LyricCreation = () => {
 
   useEffect(() => {
     VoiceUtil.setSpeechResultCallback((results: string[]) => {
+      //이 부분에서 results[0]을 서버에 전송
       setAnswer(results[0]);
       setIsRecording(false);
       setOnRecording(false);
@@ -33,6 +34,10 @@ const LyricCreation = () => {
       VoiceUtil.startListening();
       setOnRecording(true);
     }
+    else{
+      VoiceUtil.stopListening();
+      setOnRecording(false);
+    }
   }
   const reRecording = () => {
     setIsRecording(true);
@@ -41,7 +46,8 @@ const LyricCreation = () => {
     if(answerCount + 1 < speechTextList.length){
       setAnswerCount(answerCount + 1);
       setIsRecording(true);
-      answerList.push(answer);
+      //answerList.push(answer);
+      //이부분에서 서버에 결과 전송
     }else{
       Alert.alert("끝났어 뭘 바래")
     }
@@ -70,7 +76,7 @@ const LyricCreation = () => {
         <View style={styles.contentContainer}>
           <View style={styles.imageContainer}>
               <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
-              <Text style={styles.QuestionText}>{answer}</Text>
+              <Text style={styles.AnswerText}>{answer}</Text>
               <Text style={styles.QuestionText}>맞나요?</Text>
           </View>
           <View style={styles.buttonContainer}>
@@ -129,6 +135,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Jua-Regular',
     fontSize: 25,
+    lineHeight:50,
+  },
+  AnswerText: {
+    color: '#E4007F',
+    textAlign: 'center',
+    fontFamily: 'Jua-Regular',
+    fontSize: 28,
     lineHeight:50,
   },
   buttonContainer: {
