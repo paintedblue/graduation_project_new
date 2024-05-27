@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, TextInput, ImageBackground, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
+import styles from '../styles/habitStyle';
 
 const JiyunTest = ({ route, navigation }) => {
+  // Route parameters에서 userId를 추출
   const { userId } = route.params || {};
+  
+  // 상태 변수 선언
   const [habit, setHabit] = useState(''); // 습관 상태
   const [habits, setHabits] = useState({
     washHands: false,
@@ -15,6 +19,7 @@ const JiyunTest = ({ route, navigation }) => {
   const [showInput, setShowInput] = useState(false);
   const [customHabits, setCustomHabits] = useState([]);
 
+  // 기본 습관 선택 상태 토글 함수
   const toggleHabit = (habit) => {
     setHabits({
       ...habits,
@@ -22,6 +27,7 @@ const JiyunTest = ({ route, navigation }) => {
     });
   };
 
+  // 사용자 정의 습관 추가 함수
   const handleCustomHabitSubmit = () => {
     if (customHabit.trim() !== '') {
       setCustomHabits([...customHabits, { text: customHabit, checked: false }]);
@@ -31,16 +37,18 @@ const JiyunTest = ({ route, navigation }) => {
     }
   };
 
+  // 사용자 정의 습관 선택 상태 토글 함수
   const toggleCustomHabit = (index) => {
     const newCustomHabits = [...customHabits];
     newCustomHabits[index].checked = !newCustomHabits[index].checked;
     setCustomHabits(newCustomHabits);
   };
 
+  // 습관 저장 함수
   const handleSaveHabit = async () => {
     console.log('버튼클릭');
     try {
-      const response = await fetch('http://192.168.62.68:3000/api/habbit', {
+      const response = await fetch('http://192.168.45.73:3000/api/habbit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -145,86 +153,5 @@ const JiyunTest = ({ route, navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    flex: 1,
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  contentContainer: {
-    flex: 1,
-    width: '100%',
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  contentContainerCentered: {
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 35,
-    marginTop: 40, // 상단 여백 추가
-    fontFamily: 'Jua-Regular',
-  },
-  subtitle: {
-    fontSize: 25,
-    marginTop: 40, // 상단 여백 추가
-    marginBottom: 40,
-    fontFamily: 'Jua-Regular',
-    textAlign: 'center',
-  },
-  buttonContainer: {
-    flex: 1,
-    justifyContent: 'center', // 중간에 위치하도록 설정
-    width: '70%',
-  },
-  buttonContainerCentered: {
-    justifyContent: 'center',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-  },
-  buttonText: {
-    marginLeft: 10,
-    fontSize: 20,
-    fontFamily: 'Jua-Regular',
-  },
-  input: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 20,
-    width: '100%',
-  },
-  completeButton: {
-    backgroundColor: '#129F42',
-    padding: 15,
-    borderRadius: 5,
-    marginTop: 20,
-    alignSelf: 'stretch',
-    alignItems: 'center',
-  },
-  backButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
-    padding: 10,
-  },
-  backIcon: {
-    width: 30,
-    height: 30,
-  },
-});
 
 export default JiyunTest;
