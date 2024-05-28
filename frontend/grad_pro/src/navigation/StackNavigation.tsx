@@ -4,12 +4,12 @@ import { createStackNavigator, StackNavigationOptions } from '@react-navigation/
 
 import Home from '../screens/Home';
 import AdminScreen from '../screens/AdminScreen';
+import HabitScreen from '../screens/HabitScreen';
+import LyricCreation from '../screens/LyricCreation';
 
 //안지윤이 테스트로 만든 화면들
 import ViewDataScreen from '../screens/ViewDataScreen'; 
 import SummaryScreen from '../screens/SummaryScreen';
-import JiyunTest from '../screens/JiyunTest';
-import HabitScreen from '../screens/HabitScreen';
 
 export declare module CommonType {
     /** 
@@ -53,8 +53,8 @@ const StackNavigation = () => {
                 <Stack.Screen name="summaryScreen">
                     {(props) => <SummaryScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="JiyunTest">
-                    {(props) => <JiyunTest {...props} />}
+                <Stack.Screen name="LyricCreation">
+                    {(props) => <LyricCreation {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="HabitScreen">
                     {(props) => <HabitScreen {...props} />}

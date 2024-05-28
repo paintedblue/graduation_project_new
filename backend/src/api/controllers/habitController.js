@@ -1,9 +1,10 @@
 const userInfo = require('../../models/userInfo');
 
 exports.saveHabit = async (req, res) => {
+  const { userId, habit} = req.body;
+  console.log(userId);
+  console.log(habit);
   try {
-    const { userId, habit} = req.body;
-    
     let user = await userInfo.findOne({ userId: userId });
     if (!user) {
         user = new userInfo({ userId: userId });

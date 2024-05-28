@@ -18,10 +18,10 @@ const userInfoSchema = new mongoose.Schema({
     type: String,
     required: false // 선택적 필드
   },
-  habit: {
+  habit: [{  // 배열로 선언
     type: String,
-    required: false // 선택적 필드
-  }
+    required: false
+  }]
 });
 
 module.exports = mongoose.model('userInfo', userInfoSchema);

@@ -3,31 +3,68 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Alert, Image, TouchableOpacity, ImageBackground,StyleSheet  } from 'react-native';
 import VoiceUtil from '../utils/VoiceUtil';
 
-const LyricCreation = () => {
+const LyricCreation = ({ route, navigation }) => {
+  const { userId } = route.params;
   const [isRecording, setIsRecording] = useState(true);
+  const [isDoneRecording, setIsDoneRecording ] = useState(true);
   const [onRecording, setOnRecording] = useState(false);
   const [answerCount, setAnswerCount] = useState(0);
   const [answer, setAnswer] = useState('');
+  const fields = ["mainCharacter", "likeColor", "likeThing"];
 
   const speechTextList = ["지금부터 간단한 질문 몇가지를 할게요.\n내가 가장 좋아하는 동물을\n말해볼까요?", "좋아요!\n다음은 내가 가장 좋아하는 색깔을\n말해볼까요?", "잘했어요!\n다음은 내가 가장 좋아하는 것을\n말해볼까요?"]
   const confirmTextList = ["내가 좋아하는 동물은", "내가 좋아하는 색은", "내가 좋아하는 것은"]
 
   useEffect(() => {
     VoiceUtil.setSpeechResultCallback((results: string[]) => {
-      //이 부분에서 results[0]을 서버에 전송
       setAnswer(results[0]);
-      setIsRecording(false);
+      setIsDoneRecording(false);
       setOnRecording(false);
     });
 
-    VoiceUtil.setErrorCallback((e:any) => {
-      setOnRecording(true);
+    VoiceUtil.setErrorCallback((error: any) => {
+      console.log('Speech recognition error', error);
+      setOnRecording(false);
     });
 
-    return() => {
+    return () => {
       VoiceUtil.destroyRecognizer();
     };
   }, []);
+
+  useEffect(() => {
+    if (!isDoneRecording) {
+      sendPreferenceToServer();
+      setIsDoneRecording(true);
+    }
+  }, [answerCount, isDoneRecording]);  // 의존성 배열에 answer 추가
+
+  const sendPreferenceToServer = async () => {
+    console.log("Sending request to server...");
+    console.log("field: ", fields[answerCount]);
+    try {
+      const response = await fetch(`http://192.168.0.106:3000/api/preferences`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId, field: fields[answerCount], value: answer })
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Network response was not ok: ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Response data:", data);
+      setAnswer(data);
+      setIsRecording(false);
+    } catch (error) {
+      console.error("Error during fetch operation:", error.message);
+      Alert.alert("Error", error.message);
+    }
+  }
 
   const startSpeech = () => {
     if(!onRecording){
