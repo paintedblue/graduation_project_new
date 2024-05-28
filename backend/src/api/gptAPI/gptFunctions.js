@@ -2,9 +2,24 @@ const axios = require('axios');
 const mongoose = require('mongoose');
 require('dotenv').config({ path: '../../../.env' }); 
 
+const fields = ["mainCharacter", "likeColor", "likeThing"];
+
 // 답변 문장에서 키워드 추출 GPT 프롬프트를 생성하는 함수
-const createExtractPrompt = (sentence) => {
-  return `Extract the main keyword that best represents a preference from the following sentence in Korean: "${sentence}"`;
+const createExtractPrompt = (sentence, count) => {
+  return `
+  Task : 
+  {
+  다음 문장에서 키워드를 하나만 뽑아줘.
+  }
+  Info :
+  {
+  "문장" : "${sentence}"
+  "주제" : "${fields[count]}"
+  }
+  Output_formation : 
+  {
+  "Keyword" : 
+  }`;
 };
 
 // 키워드 추출 GPT API를 호출하는 함수
@@ -24,7 +39,7 @@ const extractKeyword = async (sentence) => {
       }
     });
     
-    return response.data.choices[0].message.content;  // 응답에서 키워드 추출
+    return response.data.choices[0].message.content;
   } catch (error) {
     console.error('Error calling GPT API:', error.response ? error.response.data : error.message);
     throw error;
@@ -34,7 +49,7 @@ const extractKeyword = async (sentence) => {
 
 // 가사 생성 GPT 프롬프트를 생성하는 함수
 const createGPTPrompt = (userInfo) => {
-  const { mainCharacter, likeColor, likeThing, habit } = userInfo;
+  const { userId, mainCharacter, likeColor, likeThing, habit } = userInfo;
 
   return `
   Task :
@@ -43,15 +58,15 @@ const createGPTPrompt = (userInfo) => {
   ],
   Task_Rule :
   [
-    "5~7세 수준의 쉬운 단어를 사용해.",
-    "가사는 네 소절 이내로 구성해줘.",
-    "습관을 고칠 수 있도록 좋아하는 것과 좋아하는 색과 연결하여 가사 내용을 만들어줘",
-    "습관이 없다면 그냥 좋아하는 것, 좋아하는 색으로 가사 내용을 만들어 줘.",
-    ”논리적으로 가사 내용이 진행되도록 작성해줘.",
-    "유아의 호기심과 상상력을 불러일으키고 흥미를 자극할 수 있도록 만들어 줘.",
-    "내용에 적절한 의성어나 의태어를 사용해 줘.",
-    "내용을 1인칭 시점으로, '나'가 들어가게 해줘."
-    ],
+  "5~7세 수준의 쉬운 단어를 사용해.",
+  "가사는 네 소절 이내로 구성해줘.",
+  "습관을 고칠 수 있도록 좋아하는 것과 좋아하는 색과 연결하여 가사 내용을 만들어줘",
+  "습관이 없다면 그냥 좋아하는 것, 좋아하는 색으로 가사 내용을 만들어 줘.",
+  ”논리적으로 가사 내용이 진행되도록 작성해줘.",
+  "유아의 호기심과 상상력을 불러일으키고 흥미를 자극할 수 있도록 만들어 줘.",
+  "내용에 적절한 의성어나 의태어를 사용해 줘.",
+  "내용을 1인칭 시점으로, '나'가 들어가게 해줘."
+  ],
   Person_info:
   [
   "주인공": "${mainCharacter}",

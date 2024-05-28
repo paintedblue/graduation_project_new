@@ -1,13 +1,13 @@
 const userInfo = require('../../models/userInfo');
-const { createExtractPrompt, extractKeyword, createGPTPrompt, callGPTApi } = require('../gptAPI/gptFunctions');
+const { createExtractPrompt, extractKeyword } = require('../gptAPI/gptFunctions');
 require('dotenv').config({ path: '../../../.env' }); // 환경 변수 사용을 위해 dotenv 모듈 사용
 
-const mongoose = require('mongoose');
-mongoose.connect("mongodb://localhost:27017/grad_pro").then(() => {
-  console.log("MongoDB connected successfully!");
-}).catch(err => {
-  console.error("MongoDB connection error:", err);
-});
+// const mongoose = require('mongoose');
+// mongoose.connect("mongodb://localhost:27017/grad_pro").then(() => {
+//   console.log("MongoDB connected successfully!");
+// }).catch(err => {
+//   console.error("MongoDB connection error:", err);
+// });
 
 
 // 사용자 선호 데이터를 저장하는 컨트롤러
@@ -17,7 +17,7 @@ exports.savePreferences = async (req, res) => {
   try {
     //const characterToSave = value.slice(0, 1);  // 문자열에서 첫 글자를 추출
 
-    const prompt = createExtractPrompt(value);
+    const prompt = createExtractPrompt(value, count);
     console.log("prompt : " + prompt);
     const gptResponse = await extractKeyword(prompt);
     console.log("gptResponse : " + gptResponse);

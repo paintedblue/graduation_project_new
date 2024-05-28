@@ -1,234 +1,161 @@
-    // import React, { useState } from 'react';
-    // import { View, Text, ImageBackground, TouchableOpacity, StyleSheet, TextInput, Keyboard, TouchableWithoutFeedback, Image, Alert } from 'react-native';
-    // import CheckBox from '@react-native-community/checkbox';
-    // import { useNavigation } from '@react-navigation/native';
+import React, { useState } from 'react';
+import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, TextInput, ImageBackground, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import CheckBox from '@react-native-community/checkbox';
+import styles from '../styles/habitStyle';
 
-    // const HabitScreen = ({ userId }) => {
-    //   const navigation = useNavigation();
-    //   const [habits, setHabits] = useState({
-    //     washHands: false,
-    //     brushTeeth: false,
-    //     tidyUp: false,
-    //     eatAtTable: false,
-    //   });
-    //   const [customHabit, setCustomHabit] = useState('');
-    //   const [showInput, setShowInput] = useState(false);
-    //   const [customHabits, setCustomHabits] = useState([]);
+const HabitScreen = ({ route, navigation }) => {
+  // Route parameters에서 userId를 추출
+    const { userId } = route.params;
+    
+  // 상태 변수 선언
+    const [habit, setHabit] = useState(''); // 습관 상태
+    const [habits, setHabits] = useState({
+        washHands: false,
+        brushTeeth: false,
+        tidyUp: false,
+        eatAtTable: false,
+    });
+    const [customHabit, setCustomHabit] = useState('');
+    const [showInput, setShowInput] = useState(false);
+    const [customHabits, setCustomHabits] = useState([]);
 
-    //   const toggleHabit = (habit) => {
-    //     setHabits({
-    //       ...habits,
-    //       [habit]: !habits[habit],
-    //     });
-    //   };
+    // 기본 습관 선택 상태 토글 함수
+    const toggleHabit = (habit) => {
+        setHabits({
+        ...habits,
+        [habit]: !habits[habit],
+        });
+    };
 
-    //   const handleCustomHabitSubmit = () => {
-    //     if (customHabit.trim() !== '') {
-    //       setCustomHabits([...customHabits, { text: customHabit, checked: false }]);
-    //       setCustomHabit('');
-    //       setShowInput(false);
-    //       Keyboard.dismiss();
-    //     }
-    //   };
+    // 사용자 정의 습관 추가 함수
+    const handleCustomHabitSubmit = () => {
+        if (customHabit.trim() !== '') {
+        setCustomHabits([...customHabits, { text: customHabit, checked: false }]);
+        setCustomHabit('');
+        setShowInput(false);
+        Keyboard.dismiss();
+        }
+    };
 
-    //   const toggleCustomHabit = (index) => {
-    //     const newCustomHabits = [...customHabits];
-    //     newCustomHabits[index].checked = !newCustomHabits[index].checked;
-    //     setCustomHabits(newCustomHabits);
-    //   };
+    // 사용자 정의 습관 선택 상태 토글 함수
+    const toggleCustomHabit = (index) => {
+        const newCustomHabits = [...customHabits];
+        newCustomHabits[index].checked = !newCustomHabits[index].checked;
+        setCustomHabits(newCustomHabits);
+    };
 
-    //   const handleComplete = async () => {
-    //     const selectedHabits = Object.keys(habits).filter((habit) => habits[habit]);
-    //     const selectedCustomHabits = customHabits.filter((habit) => habit.checked).map((habit) => habit.text);
-    //     const allSelectedHabits = [...selectedHabits, ...selectedCustomHabits];
+    // 습관 저장 함수
+    const handleSaveHabit = async () => {
+        const selectedHabits = Object.keys(habits).filter(key => habits[key]);
+        const selectedCustomHabits = customHabits.filter(habit => habit.checked).map(habit => habit.text);
+        const allSelectedHabits = selectedHabits.concat(selectedCustomHabits);
 
-    //     try {
-    //       const response = await fetch('http://192.168.45.73:3000/api/habit', {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         body: JSON.stringify({ userId, habit: allSelectedHabits })
-    //       });
+        console.log('습관 저장 버튼클릭');
+        try {
+        const response = await fetch('http://192.168.0.106:3000/api/habit', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId: userId, habit: allSelectedHabits })
+        });
+        
+        console.log("Status Code:", response.status);
+        const responseData = await response.json();
+        console.log("Response Data:", responseData);
+        
+        if (!response.ok) {
+            throw new Error('Network response was not ok.');
+        }
 
-    //       console.log("Status Code:", response.status);
-    //       const responseData = await response.json();
-    //       console.log("Response Data:", responseData);
+        Alert.alert("Success", "습관이 성공적으로 저장되었습니다!");
+        navigation.navigate('home');
+        } catch (error) {
+        Alert.alert("Error", error.message);
+        }
+    };
 
-    //       if (!response.ok) {
-    //         throw new Error('Network response was not ok.');
-    //       }
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+            <ImageBackground
+            source={require('../assets/imgs/forest_illustration.jpeg')}
+            style={styles.backgroundImage}
+            imageStyle={{ opacity: 0.3 }}
+            >
+            {showInput && (
+                <TouchableOpacity style={styles.backButton} onPress={() => setShowInput(false)}>
+                <Image source={require('../assets/imgs/backward.png')} style={styles.backIcon} />
+                </TouchableOpacity>
+            )}
+            <View style={[styles.contentContainer, showInput && styles.contentContainerCentered]}>
+                {!showInput && (
+                <>
+                    <Text style={styles.title}>습관 개선 입력창</Text>
+                    <Text style={styles.subtitle}>아이가 개선했으면 하는{'\n'}생활 습관이 있나요?</Text>
+                </>
+                )}
+                <View style={[styles.buttonContainer, showInput && styles.buttonContainerCentered]}>
+                {!showInput && (
+                    <>
+                    <TouchableOpacity style={styles.button} onPress={() => toggleHabit('washHands')}>
+                        <CheckBox value={habits.washHands} onValueChange={() => toggleHabit('washHands')} />
+                        <Text style={styles.buttonText}>손 씻기</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => toggleHabit('brushTeeth')}>
+                        <CheckBox value={habits.brushTeeth} onValueChange={() => toggleHabit('brushTeeth')} />
+                        <Text style={styles.buttonText}>양치하기</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => toggleHabit('tidyUp')}>
+                        <CheckBox value={habits.tidyUp} onValueChange={() => toggleHabit('tidyUp')} />
+                        <Text style={styles.buttonText}>이불 정리하기</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => toggleHabit('eatAtTable')}>
+                        <CheckBox value={habits.eatAtTable} onValueChange={() => toggleHabit('eatAtTable')} />
+                        <Text style={styles.buttonText}>앉아서 밥 먹기</Text>
+                    </TouchableOpacity>
+                    {customHabits.map((habit, index) => (
+                        <TouchableOpacity key={index} style={styles.button} onPress={() => toggleCustomHabit(index)}>
+                        <CheckBox value={habit.checked} onValueChange={() => toggleCustomHabit(index)} />
+                        <Text style={styles.buttonText}>{habit.text}</Text>
+                        </TouchableOpacity>
+                    ))}
+                    </>
+                )}
+                {showInput ? (
+                    <>
+                    <TextInput
+                        style={[styles.input, styles.button]}
+                        placeholder="습관을 입력하세요"
+                        placeholderTextColor="#999"
+                        value={customHabit}
+                        onChangeText={setCustomHabit}
+                        onSubmitEditing={handleCustomHabitSubmit}
+                        autoFocus={true}
+                        keyboardType="default"
+                        returnKeyType="done"
+                    />
+                    <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
+                        <Text style={styles.buttonText}>완료</Text>
+                    </TouchableOpacity>
+                    </>
+                ) : (
+                    <TouchableOpacity style={styles.button} onPress={() => setShowInput(true)}>
+                    <Text style={styles.buttonText}>직접 입력</Text>
+                    </TouchableOpacity>
+                )}
+                </View>
+                {!showInput && (
+                <TouchableOpacity style={styles.completeButton} onPress={handleSaveHabit}>
+                    <Text style={styles.buttonText}>선택 완료</Text>
+                </TouchableOpacity>
+                )}
+            </View>
+            </ImageBackground>
+        </View>
+        </TouchableWithoutFeedback>
+    );
+};
 
-    //       Alert.alert("Success", "습관이 성공적으로 저장되었습니다!");
-    //       navigation.navigate('Home');
-    //     } catch (error) {
-    //       console.error('Error:', error);
-    //       Alert.alert("Error", error.message);
-    //     }
-    //   };
 
-    //   return (
-    //     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    //       <View style={styles.container}>
-    //         <ImageBackground
-    //           source={require('../assets/imgs/forest_illustration.jpeg')}
-    //           style={styles.backgroundImage}
-    //           imageStyle={{ opacity: 0.3 }}
-    //         >
-    //           {showInput && (
-    //             <TouchableOpacity style={styles.backButton} onPress={() => setShowInput(false)}>
-    //               <Image source={require('../assets/imgs/backward.png')} style={styles.backIcon} />
-    //             </TouchableOpacity>
-    //           )}
-    //           <View style={[styles.contentContainer, showInput && styles.contentContainerCentered]}>
-    //             {!showInput && (
-    //               <>
-    //                 <Text style={styles.title}>습관 개선 입력창</Text>
-    //                 <Text style={styles.subtitle}>아이가 개선했으면 하는{'\n'}생활 습관이 있나요?</Text>
-    //               </>
-    //             )}
-    //             <View style={[styles.buttonContainer, showInput && styles.buttonContainerCentered]}>
-    //               {!showInput && (
-    //                 <>
-    //                   <TouchableOpacity style={styles.button} onPress={() => toggleHabit('washHands')}>
-    //                     <CheckBox value={habits.washHands} onValueChange={() => toggleHabit('washHands')} />
-    //                     <Text style={styles.buttonText}>손 씻기</Text>
-    //                   </TouchableOpacity>
-    //                   <TouchableOpacity style={styles.button} onPress={() => toggleHabit('brushTeeth')}>
-    //                     <CheckBox value={habits.brushTeeth} onValueChange={() => toggleHabit('brushTeeth')} />
-    //                     <Text style={styles.buttonText}>양치하기</Text>
-    //                   </TouchableOpacity>
-    //                   <TouchableOpacity style={styles.button} onPress={() => toggleHabit('tidyUp')}>
-    //                     <CheckBox value={habits.tidyUp} onValueChange={() => toggleHabit('tidyUp')} />
-    //                     <Text style={styles.buttonText}>이불 정리하기</Text>
-    //                   </TouchableOpacity>
-    //                   <TouchableOpacity style={styles.button} onPress={() => toggleHabit('eatAtTable')}>
-    //                     <CheckBox value={habits.eatAtTable} onValueChange={() => toggleHabit('eatAtTable')} />
-    //                     <Text style={styles.buttonText}>앉아서 밥 먹기</Text>
-    //                   </TouchableOpacity>
-    //                   {customHabits.map((habit, index) => (
-    //                     <TouchableOpacity key={index} style={styles.button} onPress={() => toggleCustomHabit(index)}>
-    //                       <CheckBox value={habit.checked} onValueChange={() => toggleCustomHabit(index)} />
-    //                       <Text style={styles.buttonText}>{habit.text}</Text>
-    //                     </TouchableOpacity>
-    //                   ))}
-    //                 </>
-    //               )}
-    //               {showInput ? (
-    //                 <>
-    //                   <TextInput
-    //                     style={[styles.input, styles.button]}
-    //                     placeholder="습관을 입력하세요"
-    //                     placeholderTextColor="#999"
-    //                     value={customHabit}
-    //                     onChangeText={setCustomHabit}
-    //                     onSubmitEditing={handleCustomHabitSubmit}
-    //                     autoFocus={true}
-    //                     keyboardType="default"
-    //                     returnKeyType="done"
-    //                   />
-    //                   <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
-    //                     <Text style={styles.buttonText}>완료</Text>
-    //                   </TouchableOpacity>
-    //                 </>
-    //               ) : (
-    //                 <TouchableOpacity style={styles.button} onPress={() => setShowInput(true)}>
-    //                   <Text style={styles.buttonText}>직접 입력</Text>
-    //                 </TouchableOpacity>
-    //               )}
-    //             </View>
-    //             {!showInput && (
-    //               <TouchableOpacity style={styles.completeButton} onPress={handleComplete}>
-    //                 <Text style={styles.buttonText}>선택 완료</Text>
-    //               </TouchableOpacity>
-    //             )}
-    //           </View>
-    //         </ImageBackground>
-    //       </View>
-    //     </TouchableWithoutFeedback>
-    //   );
-    // };
-
-    // const styles = StyleSheet.create({
-    //   container: {
-    //     flex: 1,
-    //   },
-    //   backgroundImage: {
-    //     flex: 1,
-    //     width: '100%',
-    //     height: '100%',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //   },
-    //   contentContainer: {
-    //     flex: 1,
-    //     width: '100%',
-    //     paddingHorizontal: 20,
-    //     alignItems: 'center',
-    //   },
-    //   contentContainerCentered: {
-    //     justifyContent: 'center',
-    //   },
-    //   title: {
-    //     fontSize: 35,
-    //     marginTop: 40, // 상단 여백 추가
-    //     fontFamily: 'Jua-Regular',
-    //   },
-    //   subtitle: {
-    //     fontSize: 25,
-    //     marginTop: 40, // 상단 여백 추가
-    //     marginBottom: 40,
-    //     fontFamily: 'Jua-Regular',
-    //     textAlign: 'center',
-    //   },
-    //   buttonContainer: {
-    //     flex: 1,
-    //     justifyContent: 'center', // 중간에 위치하도록 설정
-    //     width: '70%',
-    //   },
-    //   buttonContainerCentered: {
-    //     justifyContent: 'center',
-    //   },
-    //   button: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     backgroundColor: '#ffffff',
-    //     borderRadius: 5,
-    //     padding: 10,
-    //     marginBottom: 20,
-    //   },
-    //   buttonText: {
-    //     marginLeft: 10,
-    //     fontSize: 20,
-    //     fontFamily: 'Jua-Regular',
-    //   },
-    //   input: {
-    //     flexDirection: 'row',
-    //     alignItems: 'center',
-    //     backgroundColor: '#ffffff',
-    //     borderRadius: 5,
-    //     padding: 10,
-    //     marginBottom: 20,
-    //     width: '100%',
-    //   },
-    //   completeButton: {
-    //     backgroundColor: '#129F42',
-    //     padding: 15,
-    //     borderRadius: 5,
-    //     marginTop: 20,
-    //     alignSelf: 'stretch',
-    //     alignItems: 'center',R
-    //   },
-    //   backButton: {
-    //     position: 'absolute',
-    //     top: 40,
-    //     left: 20,
-    //     padding: 10,
-    //   },
-    //   backIcon: {
-    //     width: 30,
-    //     height: 30,
-    //   },
-    // });
-
-    // export default HabitScreen;
+export default HabitScreen;
