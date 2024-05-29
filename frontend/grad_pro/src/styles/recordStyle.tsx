@@ -81,7 +81,7 @@ const recordStyles = StyleSheet.create({
         backgroundColor: '#129F42',
       },
       buttonText: {
-        color: '#000',
+        color: '#FFFFFF',
         fontSize: 20,
         fontFamily: 'Jua-Regular',
       },
