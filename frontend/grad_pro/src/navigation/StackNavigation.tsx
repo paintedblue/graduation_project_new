@@ -6,6 +6,7 @@ import Home from '../screens/Home';
 import AdminScreen from '../screens/AdminScreen';
 import HabitScreen from '../screens/HabitScreen';
 import LyricCreation from '../screens/LyricCreation'; 
+import RecordScreen from '../screens/RecordScreen';
 
 //안지윤이 테스트로 만든 화면들
 import SummaryScreen from '../screens/SummaryScreen';
@@ -37,7 +38,7 @@ const StackNavigation = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
+            <Stack.Navigator initialRouteName={"RecordScreen"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
                 <Stack.Screen name="Home">
                     {(props) => <Home {...props} />}
@@ -54,6 +55,9 @@ const StackNavigation = () => {
                 </Stack.Screen>
                 <Stack.Screen name="SummaryScreen">
                     {(props) => <SummaryScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="RecordScreen">
+                    {(props) => <RecordScreen {...props} />}
                 </Stack.Screen>
                 
             </Stack.Navigator>
