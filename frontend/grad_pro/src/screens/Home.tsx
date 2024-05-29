@@ -4,23 +4,25 @@ import styles from '../styles/MainStyle';
 
 const Home = ({ route, navigation }) => {
     let id = 1;
+
     useEffect(() => {
 
     }, []);
 
     const handleSavedSongsPress = () => {
-        navigation.navigate('adminScreen');
+        navigation.navigate('AdminScreen');
     }
 
 
     const handleHabitScreenPress = () => {
-        navigation.navigate('HabitScreen', {userId :id});
+        navigation.navigate('HabitScreen', {userId : id});
     }
 
 
     const handleStartPress = () => {
         navigation.navigate('LyricCreation', {userId : id});
     };
+
     
     return (
         <View style={styles.container}>

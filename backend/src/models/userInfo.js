@@ -2,9 +2,10 @@ const mongoose = require('mongoose');
 
 const userInfoSchema = new mongoose.Schema({
   userId: {
+    //type: mongoose.Schema.Types.ObjectId,
+    //ref: 'user',
     type: String,
-    unique: true, // 이 필드가 고유해야 함을 명시
-    required: true // 이 필드는 필수
+    required: true
   },
   mainCharacter: {
     type: String,
@@ -25,3 +26,4 @@ const userInfoSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model('userInfo', userInfoSchema);
+

@@ -24,7 +24,7 @@ const LyricCreation = ({ route, navigation }) => {
     });
 
     VoiceUtil.setErrorCallback((error: any) => {
-      console.log('Speech recognition error', error);
+      Alert.alert("인식하지 못했습니다. 다시 입력해주세요.")
       setOnRecording(false);
     });
 
@@ -49,7 +49,7 @@ const LyricCreation = ({ route, navigation }) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId, field: fields[answerCount], value: answer })
+        body: JSON.stringify({ userId, field: fields[answerCount], value: answer, answerCount })
       });
 
       if (!response.ok) {
@@ -88,6 +88,7 @@ const LyricCreation = ({ route, navigation }) => {
       //이부분에서 서버에 결과 전송
     }else{
       Alert.alert("끝났어 뭘 바래")
+      navigation.navigate('SummaryScreen', {userId : userId });
     }
   }
 
@@ -134,3 +135,4 @@ const LyricCreation = ({ route, navigation }) => {
 };
 
 export default LyricCreation;
+
