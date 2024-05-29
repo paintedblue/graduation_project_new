@@ -57,6 +57,11 @@ class VoiceUtil {
 
   onSpeechError(e) {
     console.log('onSpeechError: ', e);
+
+    const  error = e;
+    if (error && this.errorCallback) {
+      this.errorCallback(error);
+    }
   }
 }
 

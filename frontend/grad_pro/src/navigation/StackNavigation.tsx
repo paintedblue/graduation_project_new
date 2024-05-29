@@ -39,11 +39,11 @@ const StackNavigation = () => {
         <NavigationContainer>
             <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
-                <Stack.Screen name="home">
+                <Stack.Screen name="Home">
                     {(props) => <Home {...props} />}
                 </Stack.Screen>
                 {/* 관리자 페이지 */}
-                <Stack.Screen name="adminScreen">
+                <Stack.Screen name="AdminScreen">
                     {(props) => <AdminScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="HabitScreen">
@@ -52,7 +52,7 @@ const StackNavigation = () => {
                 <Stack.Screen name="LyricCreation">
                     {(props) => <LyricCreation {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="summaryScreen">
+                <Stack.Screen name="SummaryScreen">
                     {(props) => <SummaryScreen {...props} />}
                 </Stack.Screen>
                 

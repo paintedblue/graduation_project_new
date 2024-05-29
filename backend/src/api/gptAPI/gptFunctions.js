@@ -13,8 +13,8 @@ const createExtractPrompt = (sentence, count) => {
   }
   Info :
   {
-  "문장" : "${sentence}"
-  "주제" : "${fields[count]}"
+  "문장" : ${sentence}
+  "주제" : ${fields[count]}
   }
   Output_formation : 
   {
@@ -65,19 +65,21 @@ const createGPTPrompt = (userInfo) => {
   ”논리적으로 가사 내용이 진행되도록 작성해줘.",
   "유아의 호기심과 상상력을 불러일으키고 흥미를 자극할 수 있도록 만들어 줘.",
   "내용에 적절한 의성어나 의태어를 사용해 줘.",
-  "내용을 1인칭 시점으로, '나'가 들어가게 해줘."
+  "내용을 1인칭 시점으로, '나'가 들어가게 해줘.",
   ],
   Person_info:
   [
-  "주인공": "${mainCharacter}",
-  "좋아하는 색깔": "${likeColor}",
-  "좋아하는 것": "${likeThing}",
-  "습관": "${habit}"
+  "주인공": ${mainCharacter},
+  "좋아하는 색깔": ${likeColor},
+  "좋아하는 것": ${likeThing},
+  "습관": ${habit}
   ]
   Output_formation:
-  [
-  "Json 형식으로 제목, 후렴구로 만들어"
-  ]
+  Json 형식으로
+  {
+  title : 
+  lyric :
+  }
   `;
 };
 

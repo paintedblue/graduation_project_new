@@ -15,10 +15,7 @@ exports.savePreferences = async (req, res) => {
   console.log("선호도 fetch 받음");
   const { userId, field, value, count } = req.body;
   try {
-    //const characterToSave = value.slice(0, 1);  // 문자열에서 첫 글자를 추출
-
     const prompt = createExtractPrompt(value, count);
-    console.log("prompt : " + prompt);
     const gptResponse = await extractKeyword(prompt);
     console.log("gptResponse : " + gptResponse);
 

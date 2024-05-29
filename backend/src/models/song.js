@@ -2,8 +2,12 @@ const mongoose = require('mongoose');
 
 const songSchema = new mongoose.Schema({
     userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'userInfo',
+        required: true
+    },
+    title :{
+        type: String,
         required: true
     },
     lyrics: {

@@ -10,7 +10,7 @@ const Home = ({ route, navigation }) => {
     }, []);
 
     const handleSavedSongsPress = () => {
-        navigation.navigate('adminScreen');
+        navigation.navigate('AdminScreen');
     }
 
 

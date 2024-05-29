@@ -69,7 +69,7 @@ const HabitScreen = ({ route, navigation }) => {
         }
 
         Alert.alert("Success", "습관이 성공적으로 저장되었습니다!");
-        navigation.navigate('home');
+        navigation.navigate('Home');
         } catch (error) {
         Alert.alert("Error", error.message);
         }
