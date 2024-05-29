@@ -38,7 +38,7 @@ const StackNavigation = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"RecordScreen"} screenOptions={customStackNavigationOptions}>
+            <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
                 <Stack.Screen name="Home">
                     {(props) => <Home {...props} />}
