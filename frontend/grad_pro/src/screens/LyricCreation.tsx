@@ -44,7 +44,7 @@ const LyricCreation = ({ route, navigation }) => {
     console.log("Sending request to server...");
     console.log("field: ", fields[answerCount]);
     try {
-      const response = await fetch(`http://192.168.0.106:3000/api/preferences`, {
+      const response = await fetch(`http://192.168.0.29:3000/api/preferences`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -87,7 +87,7 @@ const LyricCreation = ({ route, navigation }) => {
       //answerList.push(answer);
       //이부분에서 서버에 결과 전송
     }else{
-      Alert.alert("끝났어 뭘 바래")
+      // Alert.alert("선호도 입력 완료")
       navigation.navigate('SummaryScreen', {userId : userId });
     }
   }
@@ -96,7 +96,7 @@ const LyricCreation = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require('../assets/imgs/forest_illustration.jpeg')}
+        source={require('../assets/imgs/subpage2.png')}
         style={styles.backgroundImage}
         imageStyle={{ opacity: 0.3 }}
       >

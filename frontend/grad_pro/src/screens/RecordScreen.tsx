@@ -9,10 +9,12 @@ const RecordScreen = ({ route, navigation }) => {
     return (
         <View style={styles.container}>
             <ImageBackground
-                source={require('../assets/imgs/forest_illustration.jpeg')}
+                source={require('../assets/imgs/subpage2.png')}
                 style={styles.backgroundImage}
-                imageStyle={{ opacity: 0.4 }}
+                
+                
             >
+            
                 {Page == 0 ?
                     <View style={styles.contentContainer}>
                         <View style={styles.imageContainer}>

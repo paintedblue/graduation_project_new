@@ -6,7 +6,7 @@ import Home from '../screens/Home';
 import AdminScreen from '../screens/AdminScreen';
 import HabitScreen from '../screens/HabitScreen';
 import LyricCreation from '../screens/LyricCreation'; 
-import RecordScreen from '../screens/RecordScreen';
+import RecordScreen from '../screens/RecordScreen'; 
 
 //안지윤이 테스트로 만든 화면들
 import SummaryScreen from '../screens/SummaryScreen';
@@ -16,9 +16,7 @@ export declare module CommonType {
      * StackNavigation 관리하는 화면들
     */
     export type RootStackPageList = {
-        default: undefined;
-        home: undefined;
-        adminScreen: undefined;
+        
     };
 }
 
@@ -40,7 +38,7 @@ const StackNavigation = () => {
         <NavigationContainer>
             <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
-                <Stack.Screen name="Home">
+                <Stack.Screen name="home">
                     {(props) => <Home {...props} />}
                 </Stack.Screen>
                 {/* 관리자 페이지 */}
