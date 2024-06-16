@@ -43,7 +43,7 @@ const Home = ({ route, navigation }) => {
                         <View style={customStyles.imageContainer}>
                             {showInitialImage ? (
                                 <Image
-                                    source={require('/Users/changyoung/Desktop/myproject/grad_project/frontend/grad_pro/src/assets/imgs/title.png')}
+                                    source={require('../assets/imgs/title.png')}
                                     style={customStyles.titleImage}
                                 />
                             ) : (

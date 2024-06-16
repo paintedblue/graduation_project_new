@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Image, TouchableOpacity, ImageBackground } from "react-native";
+import { Text, View, Alert, Image, TouchableOpacity, ImageBackground } from "react-native";
 import styles from '../styles/recordStyle';
 
 const RecordScreen = ({ route, navigation }) => {
-    const [Page, setPage] = useState(2);
+    const [Page, setPage] = useState(0);
     const [isRecording, setIsRecording] = useState(true);
     const [onRecording, setOnRecording] = useState(false);
+
+    const nextPage = () => {
+        setPage(Page+1);
+    }
+
+    const startRecord = () => {
+        Alert.alert("아직 개발되지 않았습니다.")
+    }
+
     return (
         <View style={styles.container}>
             <ImageBackground
@@ -23,7 +32,7 @@ const RecordScreen = ({ route, navigation }) => {
                             <Text style={styles.QuestionText}>오늘은 oo이가 가수</Text>
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.nextContainer}>
+                            <TouchableOpacity style={styles.nextContainer}onPress={nextPage}>
                                 <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
                             </TouchableOpacity>
                         </View>
@@ -35,7 +44,7 @@ const RecordScreen = ({ route, navigation }) => {
                                 <Text style={styles.QuestionText}>가사 없는 멜로디를 불러봐요~!</Text>
                             </View>
                             <View style={styles.buttonContainer}>
-                                <TouchableOpacity style={[styles.button, styles.startButton]} >
+                                <TouchableOpacity style={[styles.button, styles.startButton]} onPress={startRecord}>
                                     <Text style={styles.buttonText}>{onRecording ? "녹음중..." : "녹음하기"}</Text>
                                 </TouchableOpacity>
                             </View>
