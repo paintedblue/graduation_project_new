@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Alert, Image, TouchableOpacity, ImageBackground } from "react-native";
+import { Text, View, Alert, Image, TouchableOpacity, ImageBackground, StyleSheet } from "react-native";
 import styles from '../styles/recordStyle';
 
 const RecordScreen = ({ route, navigation }) => {
@@ -20,10 +20,9 @@ const RecordScreen = ({ route, navigation }) => {
             <ImageBackground
                 source={require('../assets/imgs/subpage2.png')}
                 style={styles.backgroundImage}
-                
-                
             >
-            
+                <Text style={customStyles.titleText}>멜로디 만들기</Text>
+
                 {Page == 0 ?
                     <View style={styles.contentContainer}>
                         <View style={styles.imageContainer}>
@@ -32,7 +31,7 @@ const RecordScreen = ({ route, navigation }) => {
                             <Text style={styles.QuestionText}>오늘은 oo이가 가수</Text>
                         </View>
                         <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.nextContainer}onPress={nextPage}>
+                            <TouchableOpacity style={styles.nextContainer} onPress={nextPage}>
                                 <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
                             </TouchableOpacity>
                         </View>
@@ -76,5 +75,16 @@ const RecordScreen = ({ route, navigation }) => {
         </View>
     );
 };
+
+const customStyles = StyleSheet.create({
+  titleText: {
+    fontFamily: 'Jua-Regular',
+    fontSize: 34,
+    color: 'white',
+    textAlign: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+});
 
 export default RecordScreen;

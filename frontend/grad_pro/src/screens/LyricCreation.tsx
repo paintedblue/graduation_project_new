@@ -1,8 +1,7 @@
-// src/screens/LyricCreation.tsx
 import React, { useState, useEffect } from 'react';
-import { Text, View, Alert, Image, TouchableOpacity, ImageBackground,StyleSheet  } from 'react-native';
+import { Text, View, Alert, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
 import VoiceUtil from '../utils/VoiceUtil';
-import styles from '../styles/lyricCStyle'
+import styles from '../styles/lyricCStyle';
 
 const LyricCreation = ({ route, navigation }) => {
   const { userId } = route.params;
@@ -13,8 +12,8 @@ const LyricCreation = ({ route, navigation }) => {
   const [answer, setAnswer] = useState('');
   const fields = ["mainCharacter", "likeColor", "likeThing"];
 
-  const speechTextList = ["지금부터 간단한 질문 몇가지를 할게요.\n내가 가장 좋아하는 동물을\n말해볼까요?", "좋아요!\n다음은 내가 가장 좋아하는 색깔을\n말해볼까요?", "잘했어요!\n다음은 내가 가장 좋아하는 것을\n말해볼까요?"]
-  const confirmTextList = ["내가 좋아하는 동물은", "내가 좋아하는 색은", "내가 좋아하는 것은"]
+  const speechTextList = ["지금부터 간단한 질문 몇가지를 할게요.\n내가 가장 좋아하는 동물을\n말해볼까요?", "좋아요!\n다음은 내가 가장 좋아하는 색깔을\n말해볼까요?", "잘했어요!\n다음은 내가 가장 좋아하는 것을\n말해볼까요?"];
+  const confirmTextList = ["내가 좋아하는 동물은", "내가 좋아하는 색은", "내가 좋아하는 것은"];
 
   useEffect(() => {
     VoiceUtil.setSpeechResultCallback((results: string[]) => {
@@ -24,7 +23,7 @@ const LyricCreation = ({ route, navigation }) => {
     });
 
     VoiceUtil.setErrorCallback((error: any) => {
-      Alert.alert("인식하지 못했습니다. 다시 입력해주세요.")
+      Alert.alert("인식하지 못했습니다. 다시 입력해주세요.");
       setOnRecording(false);
     });
 
@@ -38,7 +37,7 @@ const LyricCreation = ({ route, navigation }) => {
       sendPreferenceToServer();
       setIsDoneRecording(true);
     }
-  }, [answerCount, isDoneRecording]);  // 의존성 배열에 answer 추가
+  }, [answerCount, isDoneRecording]);
 
   const sendPreferenceToServer = async () => {
     console.log("Sending request to server...");
@@ -65,74 +64,81 @@ const LyricCreation = ({ route, navigation }) => {
       console.error("Error during fetch operation:", error.message);
       Alert.alert("Error", error.message);
     }
-  }
+  };
 
   const startSpeech = () => {
-    if(!onRecording){
+    if (!onRecording) {
       VoiceUtil.startListening();
       setOnRecording(true);
-    }
-    else{
+    } else {
       VoiceUtil.stopListening();
       setOnRecording(false);
     }
-  }
+  };
+
   const reRecording = () => {
     setIsRecording(true);
-  }
+  };
+
   const nextStep = () => {
-    if(answerCount + 1 < speechTextList.length){
+    if (answerCount + 1 < speechTextList.length) {
       setAnswerCount(answerCount + 1);
       setIsRecording(true);
-      //answerList.push(answer);
-      //이부분에서 서버에 결과 전송
-    }else{
-      // Alert.alert("선호도 입력 완료")
-      navigation.navigate('SummaryScreen', {userId : userId });
+    } else {
+      navigation.navigate('SummaryScreen', { userId: userId });
     }
-  }
-
+  };
 
   return (
     <View style={styles.container}>
       <ImageBackground
         source={require('../assets/imgs/subpage2.png')}
         style={styles.backgroundImage}
-        imageStyle={{ opacity: 0.3 }}
       >
+        <Text style={customStyles.titleText}>가사 만들기</Text>
         {isRecording ? 
-        <View style={styles.contentContainer}>
-          <View style={styles.imageContainer}>
-              <Text style={styles.QuestionText}>{speechTextList[answerCount]}</Text>
+          <View style={styles.contentContainer}>
+            <View style={styles.imageContainer}>
+                <Text style={styles.QuestionText}>{speechTextList[answerCount]}</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={[styles.button, styles.startButton]} onPress={startSpeech}>
+                <Text style={styles.buttonText}>{onRecording ? "말하는 중..." : "말하기"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View> 
+          : 
+          <View style={styles.contentContainer}>
+            <View style={styles.imageContainer}>
+                <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
+                <Text style={styles.AnswerText}>{answer}</Text>
+                <Text style={styles.QuestionText}>맞나요?</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.rowContainer} onPress={reRecording}>
+                <Image source={require('../assets/imgs/ReRecord.png')} style={styles.rRImage} />
+                <Text style={styles.reRecordingText}>다시 말할래요</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.nextContainer} onPress={nextStep}>
+                <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
+              </TouchableOpacity>
+            </View>
           </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={[styles.button, styles.startButton]} onPress={startSpeech}>
-              <Text style={styles.buttonText}>{onRecording?"말하는 중...": "말하기"}</Text>
-            </TouchableOpacity>
-          </View>
-        </View> 
-        : 
-        <View style={styles.contentContainer}>
-          <View style={styles.imageContainer}>
-              <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
-              <Text style={styles.AnswerText}>{answer}</Text>
-              <Text style={styles.QuestionText}>맞나요?</Text>
-          </View>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.rowContainer} onPress={reRecording}>
-              <Image source={require('../assets/imgs/ReRecord.png')} style = {styles.rRImage} />
-              <Text style={styles.reRecordingText}>다시 말할래요</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.nextContainer} onPress={nextStep}>
-              <Image source={require('../assets/imgs/right_arrow.png')} style = {styles.nextImage} />
-            </TouchableOpacity>
-          </View>
-        </View>
         }
       </ImageBackground>
     </View>
   );
 };
 
-export default LyricCreation;
+const customStyles = StyleSheet.create({
+  titleText: {
+    fontFamily: 'Jua-Regular',
+    fontSize: 34,
+    color: 'white',
+    textAlign: 'center',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+});
 
+export default LyricCreation;
