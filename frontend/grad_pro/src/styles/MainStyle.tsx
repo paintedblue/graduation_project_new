@@ -75,6 +75,11 @@ const MainStyles = StyleSheet.create({
         color: '#000',
         fontFamily: 'Jua-Regular', // 폰트 설정
     },
+    topImage: {
+        width: '100%',
+        height: 200, // Adjust the height as needed
+    },
+    
 });
 
 export default MainStyles;

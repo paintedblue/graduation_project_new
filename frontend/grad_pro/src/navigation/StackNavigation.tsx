@@ -4,16 +4,19 @@ import { createStackNavigator, StackNavigationOptions } from '@react-navigation/
 
 import Home from '../screens/Home';
 import AdminScreen from '../screens/AdminScreen';
-import LyricCreation from '../screens/LyricCreation';
+import HabitScreen from '../screens/HabitScreen';
+import LyricCreation from '../screens/LyricCreation'; 
+import RecordScreen from '../screens/RecordScreen'; 
+
+//안지윤이 테스트로 만든 화면들
+import SummaryScreen from '../screens/SummaryScreen';
 
 export declare module CommonType {
     /** 
      * StackNavigation 관리하는 화면들
     */
     export type RootStackPageList = {
-        default: undefined;
-        home: undefined;
-        adminScreen: undefined;
+        
     };
 }
 
@@ -28,13 +31,7 @@ const StackNavigation = () => {
     const customStackNavigationOptions: StackNavigationOptions = {
         gestureEnabled: false,
         title: '',
-        headerStyle: {
-            backgroundColor: '#209bec',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-            fontWeight: 'bold',
-        }
+        headerShown: false,
     }
 
     return (
@@ -45,12 +42,22 @@ const StackNavigation = () => {
                     {(props) => <Home {...props} />}
                 </Stack.Screen>
                 {/* 관리자 페이지 */}
-                <Stack.Screen name="adminScreen">
+                <Stack.Screen name="AdminScreen">
                     {(props) => <AdminScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="HabitScreen">
+                    {(props) => <HabitScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="LyricCreation">
                     {(props) => <LyricCreation {...props} />}
-                </Stack.Screen>    
+                </Stack.Screen>
+                <Stack.Screen name="SummaryScreen">
+                    {(props) => <SummaryScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="RecordScreen">
+                    {(props) => <RecordScreen {...props} />}
+                </Stack.Screen>
+                
             </Stack.Navigator>
         </NavigationContainer >
     )
