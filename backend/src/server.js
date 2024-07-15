@@ -7,6 +7,7 @@ require('dotenv').config({ path: '../.env' }); // 환경 변수 사용을 위해
 console.log('OpenAI API Key:', process.env.OPENAI_API_KEY);
 
 // Routes import
+const authRoutes = require('./api/routes/authRoutes');
 const preferencesRoutes = require('./api/routes/preferencesRoutes');
 const habitRoutes = require('./api/routes/habitRoutes');
 const lyricRoutes = require('./api/routes/lyricRoutes');
@@ -30,6 +31,7 @@ app.get('/', (req, res) => {
   res.send('JEVAL');
 });
 
+app.use('/api/auth', authRoutes);
 app.use('/api/preferences', preferencesRoutes);  // preferencesRoutes 사용
 app.use('/api/habit', habitRoutes);
 app.use('/api/lyric', lyricRoutes); 

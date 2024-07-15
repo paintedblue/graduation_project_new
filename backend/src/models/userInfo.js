@@ -3,25 +3,21 @@ const mongoose = require('mongoose');
 const userInfoSchema = new mongoose.Schema({
   userId: {
     //type: mongoose.Schema.Types.ObjectId,
-    //ref: 'user',
     type: String,
+    //ref: 'userAuth',
     required: true
   },
   mainCharacter: {
-    type: String,
-    required: false // 선택적 필드
+    type: String
   },
   likeColor: {
-    type: String,
-    required: false // 선택적 필드
+    type: String
   },
   likeThing: {
-    type: String,
-    required: false // 선택적 필드
+    type: String
   },
   habit: [{  // 배열로 선언
-    type: String,
-    required: false
+    type: String
   }]
 });
 

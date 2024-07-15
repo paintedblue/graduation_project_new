@@ -2,30 +2,30 @@ const mongoose = require('mongoose');
 
 const songSchema = new mongoose.Schema({
     userId: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'userInfo',
         required: true
     },
-    title :{
+    title: {
         type: String,
         required: true
     },
-    lyrics: {
-        type: String,
+    lyricsId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'lyric',
         required: true
     },
-    melody: {
-        type: String,
-        required: false, // 멜로디 파일의 GCS URL
-        validate: {
-        validator: function(v) {
-            return /^(http|https):\/\/storage.googleapis.com\/[^ "]+$/.test(v); // GCS URL 유효성 검사
-        },
-        message: props => `${props.value} is not a valid Google Cloud Storage URL!`
-        }
+    melodyId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'melody',
+        default: null
+    },
+    finalSong: {
+        type: String,  // 파일 경로 또는 URL
+        default: null
     }
 }, {
-    timestamps: true  
+    timestamps: true
 });
 
 module.exports = mongoose.model('song', songSchema);

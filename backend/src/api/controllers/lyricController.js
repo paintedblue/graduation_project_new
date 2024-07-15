@@ -1,6 +1,7 @@
 const mongoose = require('mongoose'); 
 const { callGPTApi, createGPTPrompt } = require('../gptAPI/gptFunctions');
 const song = require('../../models/song');
+const lyric = require('../../models/lyric');
 const userInfo = require('../../models/userInfo'); 
 
 
@@ -47,13 +48,17 @@ exports.generateLyric = async (req, res) => {
         console.log("title : " + title);
         console.log("lyrics : " + lyrics);
 
+        // 새로운 가사 문서 생성
+        const newLyric = new lyric({ text: lyrics });
+        await newLyric.save();
+
         // 사용자의 song 문서 찾기 또는 새로 생성
         let userSong = await song.findOne({ userId: userId });
         if (!userSong) {
-            userSong = new song({ userId, title, lyrics }); // 새 song 생성
+            userSong = new Song({ userId, title, lyricsId: newLyric._id }); // 새 song 생성
         } else {
             userSong.title = title;
-            userSong.lyrics = lyrics;  // 기존 song 업데이트
+            userSong.lyricsId = newLyric._id;  // 기존 song 업데이트
         }
 
         // DB에 저장
@@ -71,7 +76,7 @@ exports.generateLyric = async (req, res) => {
 exports.getLyric = async (req, res) => {
     try {
         const { userId } = req.params;
-        const userSong = await song.findOne({ userId: userId });
+        const userSong = await song.findOne({ userId: userId }).populate('lyricsId');
         if (!userSong) {
             return res.status(404).json({ message: "User not found" });
         }
