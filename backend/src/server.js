@@ -7,19 +7,12 @@ require('dotenv').config({ path: '../.env' }); // 환경 변수 사용을 위해
 console.log('OpenAI API Key:', process.env.OPENAI_API_KEY);
 
 // Routes import
-const authRoutes = require('./api/routes/authRoutes');
 const preferencesRoutes = require('./api/routes/preferencesRoutes');
 const habitRoutes = require('./api/routes/habitRoutes');
 const lyricRoutes = require('./api/routes/lyricRoutes');
 
 const app = express();
 const PORT = 3000;
-
-mongoose.connect('mongodb://localhost:27017/grad_pro').then(() => {
-    console.log('MongoDB connected');
-}).catch(err => {
-    console.error('MongoDB connection error:', err);
-});
 
 // Middleware
 app.use(cors());  // Enable CORS
@@ -31,7 +24,6 @@ app.get('/', (req, res) => {
   res.send('JEVAL');
 });
 
-app.use('/api/auth', authRoutes);
 app.use('/api/preferences', preferencesRoutes);  // preferencesRoutes 사용
 app.use('/api/habit', habitRoutes);
 app.use('/api/lyric', lyricRoutes); 
@@ -43,8 +35,17 @@ app.use((err, req, res, next) => {
 });
 
 // Starting the server
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  const mongoose = require('mongoose');
+  mongoose.connect('mongodb://localhost:27017/grad_pro').then(() => {
+    console.log('MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+    });
+  }).catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
+}
 
 module.exports = app;
+

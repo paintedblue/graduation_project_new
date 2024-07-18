@@ -29,6 +29,6 @@ exports.getHabit = async (req, res) => {
       }
       res.status(200).json(user.habit);
     } catch (error) {
-      res.status(500).json({ message: "Error getting preferences", error });
+      res.status(500).json({ message: "Error getting habit", error });
     }
   };

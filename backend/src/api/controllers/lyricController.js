@@ -1,9 +1,8 @@
 const mongoose = require('mongoose'); 
 const { callGPTApi, createGPTPrompt } = require('../gptAPI/gptFunctions');
-const song = require('../../models/song');
-const lyric = require('../../models/lyric');
-const userInfo = require('../../models/userInfo'); 
-
+const Song = require('../../models/song');
+const Lyric = require('../../models/lyric');
+const UserInfo = require('../../models/userInfo'); 
 
 exports.generateLyric = async (req, res) => {
     let { userId } = req.body;
@@ -13,7 +12,7 @@ exports.generateLyric = async (req, res) => {
     }
     
     try {
-        let preferences = await userInfo.findOne({ userId: userId });
+        let preferences = await UserInfo.findOne({ userId: userId });
         if (!preferences) {
             return res.status(404).json({ message: "User not found" });
         }
@@ -44,16 +43,15 @@ exports.generateLyric = async (req, res) => {
             lyrics = lyricMatch[1].trim().replace(/\\n/g, '\n').replace(/\./g, '\n');
         }
 
-
         console.log("title : " + title);
         console.log("lyrics : " + lyrics);
 
         // 새로운 가사 문서 생성
-        const newLyric = new lyric({ text: lyrics });
+        const newLyric = new Lyric({ text: lyrics });
         await newLyric.save();
 
         // 사용자의 song 문서 찾기 또는 새로 생성
-        let userSong = await song.findOne({ userId: userId });
+        let userSong = await Song.findOne({ userId: userId });
         if (!userSong) {
             userSong = new Song({ userId, title, lyricsId: newLyric._id }); // 새 song 생성
         } else {
@@ -64,7 +62,7 @@ exports.generateLyric = async (req, res) => {
         // DB에 저장
         await userSong.save();
 
-        res.json({ title: userSong.title, lyrics: userSong.lyrics });
+        res.json({ title: userSong.title, lyrics: newLyric.text });
 
     } catch (error) {
         console.error('Error generating lyrics:', error);
@@ -72,17 +70,18 @@ exports.generateLyric = async (req, res) => {
     }
 };
 
-
 exports.getLyric = async (req, res) => {
     try {
         const { userId } = req.params;
-        const userSong = await song.findOne({ userId: userId }).populate('lyricsId');
+        const userSong = await Song.findOne({ userId: userId }).populate('lyricsId');
         if (!userSong) {
             return res.status(404).json({ message: "User not found" });
         }
-        res.status(200).json(userSong);
-        } catch (error) {
-        res.status(500).json({ message: "Error getting preferences", error });
+        res.status(200).json({
+            title: userSong.title,
+            lyrics: userSong.lyricsId.text
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error getting lyric", error });
     }
 };
-
