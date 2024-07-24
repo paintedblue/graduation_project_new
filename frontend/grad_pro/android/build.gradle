@@ -19,22 +19,3 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
-
-// Add this block to apply Kotlin plugin
-allprojects {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        google()
-    }
-}
-
-// Add this block to apply the Kotlin plugin
-subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty("android")) {
-            project.apply plugin: "kotlin-android"
-            project.apply plugin: "kotlin-android-extensions"
-        }
-    }
-}
