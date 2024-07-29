@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ImageBackground, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import styles from '../styles/habitStyle'; // 기존 스타일 가져오기
+import LyricsBox from './LyricsBox'; // Import the new LyricsBox component
+import styles from '../styles/habitStyle'; // Import existing styles
 
 const SummaryScreen = ({ route, navigation }) => {
   const { userId } = route.params;
   const [lyrics, setLyrics] = useState('');
-  const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  const [title, setTitle] = useState(''); // Add state for title
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
     fetchLyrics();
   }, []);
 
   const fetchLyrics = async () => {
-    setLoading(true); // 로딩 상태 시작
+    setLoading(true); // Start loading state
     try {
-      const response = await fetch('http://192.168.0.29:3000/api/lyric', {
+      const response = await fetch('http://172.30.1.6:3000/api/lyric', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,12 +32,13 @@ const SummaryScreen = ({ route, navigation }) => {
       console.log(data);
       const formattedLyrics = data.lyrics.replace(/[,\.]/g, '\n');
       setLyrics(formattedLyrics);
+      setTitle(data.title); // Set the title
       
     } catch (error) {
       console.error("Error during fetch operation:", error.message);
       Alert.alert("Error", "Unable to fetch lyrics. Please try again.");
     } finally {
-      setLoading(false); // 로딩 상태 종료
+      setLoading(false); // End loading state
     }
   };
 
@@ -62,7 +65,8 @@ const SummaryScreen = ({ route, navigation }) => {
             </View>
           ) : (
             <View style={customStyles.contentContainer}>
-              <Text style={customStyles.lyricsText}>{lyrics}</Text>
+              <Text style={customStyles.songTitle}>{title}</Text>
+              <LyricsBox lyrics={lyrics} />
               <TouchableOpacity style={customStyles.button} onPress={reCreating}>
                 <LinearGradient
                   colors={['#56CCF2', '#2F80ED']}
@@ -98,11 +102,18 @@ const customStyles = StyleSheet.create({
   },
   titleText: {
     fontFamily: 'Jua-Regular',
-    fontSize: 34,
+    fontSize: 28, // Adjusted font size
     color: 'white',
     textAlign: 'center',
     marginTop: 40,
     marginBottom: 20,
+  },
+  songTitle: {
+    fontFamily: 'Jua-Regular',
+    fontSize: 24, // Adjusted font size
+    color: 'black',
+    textAlign: 'center',
+    marginBottom: 10,
   },
   contentContainer: {
     flex: 1,
@@ -110,13 +121,6 @@ const customStyles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: 20,
-  },
-  lyricsText: {
-    fontFamily: 'Jua-Regular',
-    fontSize: 22,
-    color: 'black',
-    textAlign: 'center',
-    padding: 20,
   },
   loadingText: {
     fontFamily: 'Jua-Regular',

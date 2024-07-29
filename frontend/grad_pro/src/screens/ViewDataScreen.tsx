@@ -16,7 +16,7 @@ const ViewDataScreen = ({ route, navigation }) => {
     console.log("handleRecordAnswer called");
     try {
         console.log("Sending request to server...");
-        const response = await fetch('http://192.168.0.29:3000/api/preferences', {
+        const response = await fetch('http://172.30.1.6:3000/api/preferences', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ const ViewDataScreen = ({ route, navigation }) => {
       setAnswer('');
     } else {
       try {
-        const response = await fetch(`http://192.168.0.29:3000/api/preferences/${userId}`);
+        const response = await fetch(`http://172.30.1.6:3000/api/preferences/${userId}`);
         if (!response.ok) throw new Error('Network response was not ok.');
 
         const data = await response.json();
