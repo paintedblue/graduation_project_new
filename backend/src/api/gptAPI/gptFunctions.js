@@ -18,7 +18,7 @@ const createExtractPrompt = (sentence, count) => {
   }
   Output_formation : 
   {
-  "Keyword" : 
+  keyword만 추출해줘.
   }`;
 };
 
@@ -29,7 +29,7 @@ const extractKeyword = async (sentence) => {
   
   try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: 'gpt-4', 
+      model: 'gpt-4o', 
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 20
     }, {
@@ -64,8 +64,10 @@ const createGPTPrompt = (userInfo) => {
   "습관이 없다면 그냥 좋아하는 것, 좋아하는 색으로 가사 내용을 만들어 줘.",
   ”논리적으로 가사 내용이 진행되도록 작성해줘.",
   "유아의 호기심과 상상력을 불러일으키고 흥미를 자극할 수 있도록 만들어 줘.",
-  "내용에 적절한 의성어나 의태어를 사용해 줘.",
+  "내용에 문법에 맞고 적절한 의성어나 의태어를 사용해 줘.",
   "내용을 1인칭 시점으로, '나'가 들어가게 해줘.",
+  "맞춤법과 문법은 절대 틀리지 않게 해줘."
+  
   ],
   Person_info:
   [

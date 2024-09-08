@@ -1,30 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, Alert, Image, TouchableOpacity, ImageBackground, StyleSheet } from 'react-native';
+import { Text, View, Alert, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import VoiceUtil from '../utils/VoiceUtil';
-import styles from '../styles/lyricCStyle';
+import TabBarButtons from '../components/TabBarButtons';  // Your TabBar component
+
+const Frame = ({ categoryText }) => {
+  return (
+    <View style={styles.frameDiv}>
+      {/* Category text with emoji */}
+      <Text style={styles.categoryText}>{categoryText} 🍗</Text>
+    </View>
+  );
+};
+
+const getCategoryLabel = (category) => {
+  const categoryLabels = {
+    food: "내가 좋아하는 음식",
+    animal: "내가 좋아하는 동물",
+    color: "내가 좋아하는 색깔",
+    character: "내가 좋아하는 캐릭터"
+  };
+  return categoryLabels[category] || "내가 좋아하는 카테고리";
+};
 
 const LyricCreation = ({ route, navigation }) => {
-  const { userId } = route.params;
+  const { userId, category } = route.params;
   const [isRecording, setIsRecording] = useState(true);
   const [isDoneRecording, setIsDoneRecording] = useState(true);
   const [onRecording, setOnRecording] = useState(false);
   const [answerCount, setAnswerCount] = useState(0);
   const [answer, setAnswer] = useState('');
-  const fields = ["mainCharacter", "likeColor", "likeThing"];
 
-  const speechTextList = ["지금부터 간단한 질문 몇가지를 할게요.\n내가 가장 좋아하는 동물을\n말해볼까요?", "좋아요!\n다음은 내가 가장 좋아하는 색깔을\n말해볼까요?", "잘했어요!\n다음은 내가 가장 좋아하는 것을\n말해볼까요?"];
-  const confirmTextList = ["내가 좋아하는 동물은", "내가 좋아하는 색은", "내가 좋아하는 것은"];
-  const guideTextList = ["글자를 누르면 읽어줘요!"];
+  // Common prompt for all categories
+  const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는 음식을 말해보세요."];
+
+  const confirmTextByCategory = {
+    food: ["내가 좋아하는 음식은"],
+    animal: ["내가 좋아하는 동물은"],
+    color: ["내가 좋아하는 색깔은"],
+    character: ["내가 좋아하는 캐릭터는"]
+  };
+
+  const confirmTextList = confirmTextByCategory[category] || confirmTextByCategory['animal'];
 
   useEffect(() => {
-    VoiceUtil.setSpeechResultCallback((results: string[]) => {
+    VoiceUtil.setSpeechResultCallback((results) => {
       setAnswer(results[0]);
       setIsDoneRecording(false);
       setOnRecording(false);
     });
 
-    VoiceUtil.setErrorCallback((error: any) => {
+    VoiceUtil.setErrorCallback((error) => {
       Alert.alert("인식하지 못했습니다. 다시 입력해주세요.");
       setOnRecording(false);
     });
@@ -43,14 +69,13 @@ const LyricCreation = ({ route, navigation }) => {
 
   const sendPreferenceToServer = async () => {
     console.log("Sending request to server...");
-    console.log("field: ", fields[answerCount]);
     try {
-      const response = await fetch('http://172.30.1.6:3000/api/preferences', {
+      const response = await fetch('http://192.168.0.165:3000/api/preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId, field: fields[answerCount], value: answer, answerCount })
+        body: JSON.stringify({ userId, category, value: answer })
       });
 
       if (!response.ok) {
@@ -68,22 +93,12 @@ const LyricCreation = ({ route, navigation }) => {
     }
   };
 
-  const startSpeech = () => {
-    if (!onRecording) {
-      VoiceUtil.startListening();
-      setOnRecording(true);
-    } else {
-      VoiceUtil.stopListening();
-      setOnRecording(false);
-    }
-  };
-
   const reRecording = () => {
     setIsRecording(true);
   };
 
   const nextStep = () => {
-    if (answerCount + 1 < speechTextList.length) {
+    if (answerCount + 1 < commonSpeechText.length) {
       setAnswerCount(answerCount + 1);
       setIsRecording(true);
     } else {
@@ -92,134 +107,198 @@ const LyricCreation = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/imgs/subpage2.png')}
-        style={styles.backgroundImage}
-      >
-        <View style={customStyles.headerContainer}>
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <Image source={require('../assets/imgs/menu.png')} style={customStyles.menuImage} />
-          </TouchableOpacity>
-          <Text style={customStyles.titleText}>가사 만들기</Text>
+    <View style={[styles.container, { backgroundColor: '#A5BEDF' }]}>
+      {/* Header */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.appTitle}>꿈가락</Text>
+      </View>
+
+      {/* TabBar */}
+      <View style={styles.tabBarContainer}>
+        <TabBarButtons />
+      </View>
+
+      {/* Selected Category Frame */}
+      <View style={styles.contentContainer}>
+        <View style={styles.row}>
+          <Frame categoryText={getCategoryLabel(category)} />
+
+          {/* Text "은 뭘까?" placed next to the frame */}
+          <Text style={styles.outsideFrameText}>은 뭘까?</Text>
         </View>
+
         {isRecording ? 
-          <View style={styles.contentContainer}>
-            <View style={styles.imageContainer}>
-              <Text style={styles.QuestionText}>{speechTextList[answerCount]}</Text>
-              <TouchableOpacity style={customStyles.speakerContainer}>
-                <Image source={require('../assets/imgs/Voice.png')} style={customStyles.speakerImage} />
-                <Text style={customStyles.speakerText}>{guideTextList[0]}</Text>
-              </TouchableOpacity>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={customStyles.button} onPress={startSpeech}>
-                <LinearGradient
-                  colors={['#56CCF2', '#2F80ED']}
-                  style={customStyles.gradient}
-                >
-                  <Text style={customStyles.buttonText}>{onRecording ? "말하는 중..." : "말하기"}</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          </View> 
+          <View style={styles.imageContainer}>
+            {/* Recording Image */}
+            <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
+            
+            {/* Common Speech Text below the recording image */}
+            <Text style={styles.categoryText}>{commonSpeechText[answerCount]}</Text>
+          </View>
           : 
-          <View style={styles.contentContainer}>
-            <View style={styles.imageContainer}>
-                <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
-                <Text style={styles.AnswerText}>{answer}</Text>
-                <Text style={styles.QuestionText}>맞나요?</Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.rowContainer} onPress={reRecording}>
-                <Image source={require('../assets/imgs/ReRecord.png')} style={styles.rRImage} />
-                <Text style={styles.reRecordingText}>다시 말할래요</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={nextStep}>
-                <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
-              </TouchableOpacity>
-            </View>
+          <View style={styles.imageContainer}>
+              <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
+              <Text style={styles.AnswerText}>{answer}</Text>
+              <Text style={styles.QuestionText}>맞나요?</Text>
+
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity onPress={reRecording}>
+                  <Image source={require('../assets/imgs/ReRecord.png')} style={styles.rRImage} />
+                  <Text style={styles.reRecordingText}>다시 말할래요</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={nextStep}>
+                  <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
+                </TouchableOpacity>
+              </View>
           </View>
         }
-      </ImageBackground>
+
+        {/* Custom Texts */}
+        <View style={styles.customTextContainer}>
+          <Text style={styles.customText}>내가 좋아하는 건 치킨!</Text>
+          <Text style={styles.customText}>나는 치킨이 좋아</Text>
+        </View>
+
+        {/* Right Arrow at the bottom */}
+        <View style={styles.arrowContainer}>
+          <Image source={require('../assets/imgs/right_arrow.png')} style={styles.arrowImage} />
+        </View>
+
+      </View>
     </View>
   );
 };
 
-const customStyles = StyleSheet.create({
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+  },
   headerContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start', // Align items to the start (top)
-    justifyContent: 'flex-start', // Justify content to the start (left)
-    marginTop: 40,
-    marginBottom: 20,
-    paddingHorizontal: 10, // Add some horizontal padding to align menu properly
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 10,
+    paddingHorizontal: 10,
   },
-  menuImage: {
-    width: 30,
-    height: 30,
-    marginRight: 0, // Remove right margin
+  tabBarContainer: {
+    marginBottom: 0, // Adjusted to move the tab bar upwards
   },
-  titleText: {
-    fontFamily: 'Jua-Regular',
-    fontSize: 34,
-    color: 'white',
-    textAlign: 'center',
-    backgroundColor: 'transparent',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 3,
-    marginLeft: 10, // Add margin to the left of the title
-  },
-  gradientButton: {
-    padding: 10,
-    alignItems: 'center',
-    borderRadius: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-    backdropFilter: 'blur(10px)', // Background blur (Note: This might not work on all devices and requires appropriate settings)
-  },
-  button: {
-    marginVertical: 5, //버튼 상하 여백
-    width: '80%', // 버튼의 너비를 부모요소의 80%로 설정
-    alignSelf: 'center', //부모 컨테이너 안에서 버튼을 중앙에 정렬
-  },
-  gradient: {
-    borderRadius: 5, // Rectangular shape with slight rounding
-    paddingVertical: 5,
-    paddingHorizontal: 25,
-    alignItems: 'center',
-  },
-  buttonText: {
-    fontFamily: 'Jua-Regular',
-    fontSize: 25, // Increased font size
-    fontWeight: '400',
+  appTitle: {
+    width: 200,
+    position: 'relative',
+    fontSize: 25,
+    letterSpacing: -0.41,
     lineHeight: 50,
-    letterSpacing: -0.408,
-    textAlign: 'center',
-    color: 'white', // Text color set to white
+    fontFamily: 'Jua-Regular',
     backgroundColor: 'transparent',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 3,
-    paddingHorizontal: 20,
+    background: 'linear-gradient(90deg, #f7f0ac, #acf7f0 50%, #f0acf7)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    textAlign: 'center',
+    display: 'inline-block',
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 4,
   },
-  speakerContainer: {
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'flex-start',  // Align content towards the top
+    alignItems: 'center',
+    width: '80%',
+    marginTop: 80,  // Move content much higher
+  },
+  frameDiv: {
+    width: 'auto', // Dynamic width based on text
+    borderRadius: 10,
+    backgroundColor: '#f7f7f7',
+    height: 63,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  categoryText: {
+    fontSize: 21,
+    letterSpacing: 2,
+    lineHeight: 30,
+    fontFamily: 'Jua-Regular',
+    color: '#000',
+    textAlign: 'center',
+  },
+  outsideFrameText: {
+    fontSize: 21,
+    letterSpacing: 2,
+    lineHeight: 30,
+    fontFamily: 'Jua-Regular',
+    color: '#fff',
+    textAlign: 'center',
+    marginLeft: 10,  // Space between the frame and the "은 뭘까?" text
+    textShadowColor: 'rgba(0, 0, 0, 0.25)',
+    textShadowOffset: { width: 0, height: 4 },
+    textShadowRadius: 4,
+  },
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'center',
   },
-  speakerImage: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
+  imageContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50, // Adjust this value to move the recording image and text down
   },
-  speakerText: {
+  recordImage: {
+    width: 150,  // Increased width
+    height: 150,  // Increased height
+    marginVertical: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  rRImage: {
+    width: 50,
+    height: 50,
+    marginRight: 20,
+  },
+  reRecordingText: {
+    fontSize: 18,
     fontFamily: 'Jua-Regular',
-    fontSize: 16,
-    color: 'white',
+  },
+  nextImage: {
+    width: 50,
+    height: 50,
+  },
+  customTextContainer: {
+    width: 341,
+    height: 55,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  customText: {
+    fontSize: 18,
+    letterSpacing: -0.2,
+    lineHeight: 30,
+    fontFamily: 'Jua-Regular',
+    color: 'rgba(83, 83, 83, 0.5)',
+    textAlign: 'center',
+    marginVertical: 0,
+  },
+  arrowContainer: {
+    position: 'absolute',
+    bottom: 50, // Moved higher
+    right: 50,  // Moved more to the right
+  },
+  arrowImage: {
+    width: 70,  // Increased size
+    height: 70, // Increased size
   },
 });
 

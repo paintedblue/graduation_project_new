@@ -1,5 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import TabBarButtons from '../components/TabBarButtons';  
+
+
 
 const LyricsBox = ({ lyrics }) => {
   return (

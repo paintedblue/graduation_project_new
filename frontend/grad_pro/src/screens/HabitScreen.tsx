@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Alert, TouchableOpacity, TextInput, ImageBackground, Image, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import CheckBox from '@react-native-community/checkbox';
 import styles from '../styles/habitStyle';
+import TabBarButtons from '../components/TabBarButtons';  
 
 const HabitScreen = ({ route, navigation }) => {
   // Route parameters에서 userId를 추출
@@ -52,7 +53,7 @@ const HabitScreen = ({ route, navigation }) => {
 
     console.log('습관 저장 버튼클릭');
     try {
-      const response = await fetch('http://172.30.1.6:3000/api/habit', {
+      const response = await fetch('http://192.168.0.165:3000/api/habit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

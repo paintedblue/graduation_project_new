@@ -7,6 +7,8 @@ import AdminScreen from '../screens/AdminScreen';
 import HabitScreen from '../screens/HabitScreen';
 import LyricCreation from '../screens/LyricCreation'; 
 import RecordScreen from '../screens/RecordScreen'; 
+import LyricSelectScreen from '../screens/LyricSelectScreen';
+
 
 //안지윤이 테스트로 만든 화면들
 import SummaryScreen from '../screens/SummaryScreen';
@@ -56,6 +58,9 @@ const StackNavigation = () => {
                 </Stack.Screen>
                 <Stack.Screen name="RecordScreen">
                     {(props) => <RecordScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="LyricSelectScreen">
+                    {(props) => <LyricSelectScreen {...props} />}
                 </Stack.Screen>
                 
             </Stack.Navigator>

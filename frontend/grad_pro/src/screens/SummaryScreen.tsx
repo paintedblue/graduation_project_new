@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, ImageBackground, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, ActivityIndicator, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import LyricsBox from './LyricsBox'; // Import the new LyricsBox component
 import styles from '../styles/habitStyle'; // Import existing styles
+import TabBarButtons from '../components/TabBarButtons';  
 
 const SummaryScreen = ({ route, navigation }) => {
   const { userId } = route.params;
@@ -17,7 +18,7 @@ const SummaryScreen = ({ route, navigation }) => {
   const fetchLyrics = async () => {
     setLoading(true); // Start loading state
     try {
-      const response = await fetch('http://172.30.1.6:3000/api/lyric', {
+      const response = await fetch('http://192.168.0.165:3000/api/lyric', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,54 +53,42 @@ const SummaryScreen = ({ route, navigation }) => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <ImageBackground
-          source={require('../assets/imgs/subpage2.png')}
-          style={customStyles.backgroundImage}
-        >
-          {!loading && <Text style={customStyles.titleText}>가사가 완성됐어요!</Text>}
-          {loading ? (
-            <View style={customStyles.contentContainer}>
-              <Text style={customStyles.loadingText}>가사가 만들어지고 있어요...</Text>
-              <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-          ) : (
-            <View style={customStyles.contentContainer}>
-              <Text style={customStyles.songTitle}>{title}</Text>
-              <LyricsBox lyrics={lyrics} />
-              <TouchableOpacity style={customStyles.button} onPress={reCreating}>
-                <LinearGradient
-                  colors={['#56CCF2', '#2F80ED']}
-                  style={customStyles.gradient}
-                >
-                  <Text style={customStyles.buttonText}>다시 만들기</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-              <TouchableOpacity style={customStyles.button} onPress={nextStep}>
-                <LinearGradient
-                  colors={['#56CCF2', '#2F80ED']}
-                  style={customStyles.gradient}
-                >
-                  <Text style={customStyles.buttonText}>멜로디 만들러 가기</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
-          )}
-        </ImageBackground>
+      <View style={[styles.container, { backgroundColor: '#A5BEDF' }]}>
+        <TabBarButtons />
+        {!loading && <Text style={customStyles.titleText}>가사가 완성됐어요!</Text>}
+        {loading ? (
+          <View style={customStyles.contentContainer}>
+            <Text style={customStyles.loadingText}>가사가 만들어지고 있어요...</Text>
+            <ActivityIndicator size="large" color="#0000ff" />
+          </View>
+        ) : (
+          <View style={customStyles.contentContainer}>
+            <Text style={customStyles.songTitle}>{title}</Text>
+            <LyricsBox lyrics={lyrics} />
+            <TouchableOpacity style={customStyles.button} onPress={reCreating}>
+              <LinearGradient
+                colors={['#56CCF2', '#2F80ED']}
+                style={customStyles.gradient}
+              >
+                <Text style={customStyles.buttonText}>다시 만들기</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            <TouchableOpacity style={customStyles.button} onPress={nextStep}>
+              <LinearGradient
+                colors={['#56CCF2', '#2F80ED']}
+                style={customStyles.gradient}
+              >
+                <Text style={customStyles.buttonText}>멜로디 만들러 가기</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </TouchableWithoutFeedback>
   );
 };
 
 const customStyles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
-    height: '100%',
-  },
   titleText: {
     fontFamily: 'Jua-Regular',
     fontSize: 28, // Adjusted font size
