@@ -10,6 +10,8 @@ console.log('OpenAI API Key:', process.env.OPENAI_API_KEY);
 const preferencesRoutes = require('./api/routes/preferencesRoutes');
 const habitRoutes = require('./api/routes/habitRoutes');
 const lyricRoutes = require('./api/routes/lyricRoutes');
+const instruRoutes = require('./api/routes/instruRoutes');
+const songRoutes = require('./api/routes/songRoutes');
 
 const app = express();
 const PORT = 3000;
@@ -33,6 +35,8 @@ app.get('/', (req, res) => {
 app.use('/api/preferences', preferencesRoutes);  // preferencesRoutes 사용
 app.use('/api/habit', habitRoutes);
 app.use('/api/lyric', lyricRoutes); 
+app.use('/api/instrument', instruRoutes); 
+app.use('/api/song', songRoutes); 
 
 // Error handling middleware
 app.use((err, req, res, next) => {

@@ -15,7 +15,7 @@ const SummaryScreen = ({ route, navigation }) => {
   const fetchLyrics = async () => {
     setLoading(true); // 로딩 상태 시작
     try {
-      const response = await fetch('http://192.168.0.29:3000/api/lyric', {
+      const response = await fetch('http://192.168.0.40:3000/api/lyric', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

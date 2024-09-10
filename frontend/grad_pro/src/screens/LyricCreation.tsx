@@ -44,7 +44,7 @@ const LyricCreation = ({ route, navigation }) => {
     console.log("Sending request to server...");
     console.log("field: ", fields[answerCount]);
     try {
-      const response = await fetch(`http://192.168.0.29:3000/api/preferences`, {
+      const response = await fetch(`http://192.168.0.40:3000/api/preferences`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
