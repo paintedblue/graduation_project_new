@@ -1,30 +1,53 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
-const TabBarButtons: React.FC = () => {
+const Header: React.FC = () => {
   return (
-    <View style={styles.tabBarButtons}>
-      <View style={styles.tab}>
-        <Text style={styles.symbol}>⏰</Text>
-        <Text style={styles.label}>습관</Text>
+    <View style= {styles.headerContainer}>
+      <View style= {styles.headerContainer}>
+        <Text style={styles.appTitle}>꿈가락</Text>
       </View>
-      <View style={styles.tab}>
-        <Text style={styles.symbol}>📃</Text>
-        <Text style={styles.label}>가사</Text>
+      <View style={styles.tabBarButtons}>
+        <View style={styles.tab}>
+          <Text style={styles.symbol}>⏰</Text>
+          <Text style={styles.label}>습관</Text>
+        </View>
+        <View style={styles.tab}>
+          <Text style={styles.symbol}>📃</Text>
+          <Text style={styles.label}>가사</Text>
+        </View>
+        <View style={styles.tab}>
+          <Text style={styles.symbol}>🎶</Text>
+          <Text style={styles.label2}>멜로디</Text>
+        </View>
+        <View style={styles.tab}>
+          <Text style={styles.symbol}>✅</Text>
+          <Text style={styles.label3}>동요 완성!</Text>
+        </View>
       </View>
-      <View style={styles.tab}>
-        <Text style={styles.symbol}>🎶</Text>
-        <Text style={styles.label2}>멜로디</Text>
-      </View>
-      <View style={styles.tab}>
-        <Text style={styles.symbol}>✅</Text>
-        <Text style={styles.label3}>동요 완성!</Text>
+      <View style={styles.line}>
+
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  headerContainer:{
+    justifyContent:'center',
+    width: '100%',
+    marginVertical:3,
+  },
+  appTitle:{
+    fontSize:25,
+    fontFamily: "Jua-Regular",
+    lineHeight: 50,
+    textAlign: 'center',
+    color: '#FFF',
+    textShadowColor:"rgba(0, 0, 0, 0.5)",
+    textShadowOffset:{width: 2, height: 2},
+    textShadowRadius: 3,
+  },
   tabBarButtons: {
     width: '100%',
     flexDirection: 'row',
@@ -32,7 +55,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between', // Adjusted to evenly distribute the tabs
     paddingHorizontal: 10,
     paddingVertical: 3,
-    boxSizing: 'border-box',
   },
   tab: {
     flex: 1, // Each tab takes up an equal amount of space
@@ -66,6 +88,11 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
   },
+  line: {
+    width:'100%',
+    backgroundColor:'rgba(0,0,0,0.25)',
+    padding:1,
+  },
 });
 
-export default TabBarButtons;
+export default Header;

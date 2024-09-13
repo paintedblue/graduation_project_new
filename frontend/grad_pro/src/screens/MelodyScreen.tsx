@@ -4,14 +4,14 @@ import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 import { ScrollView } from "react-native-gesture-handler";
 
-const HabirScreen = ({route, navigation}) => {
+const MelodyScreen = ({route, navigation}) => {
 
     const [habit, setHabit] = useState(''); 
 
     const [popup, setpopup] = useState(false); 
 
-    const maintitleText = "습관 입력하기"
-    const subtitleText = "아이가 잘 해냈으면 하는 습관을 입력해주세요.\nex. 양치하기, 손씻기"
+    const maintitleText = "악기 고르기"
+    const subtitleText = "노래에 넣고 싶은 악기를 골라볼까요?\n악기를 클릭하면 연주돼요."
 
     const handleCustomHabitSubmit = () => {
         
@@ -34,47 +34,37 @@ const HabirScreen = ({route, navigation}) => {
                         <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
                         <Text style={[BaseStyles.mainText, styles.subtitle]}>{subtitleText}</Text>
                     </View>
-                    <View style={[BaseStyles.middleContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerOpenPopUP}>
-                            <View style={[styles.habitBox]}>
-                                    <Text style={[BaseStyles.text, styles.addText]}>+</Text>
-                            </View>
+                    <View style={[BaseStyles.middleContainer, {justifyContent:"flex-start"}]}>
+                        <View style={BaseStyles.row}>
+                        <TouchableOpacity style={styles.frameDiv}>
+                            <Image source={require('../assets/imgs/icons8-피아노-96.png')}/>
+                            <Text style={styles.categoryText}>피아노</Text>
                         </TouchableOpacity>
-                        <ScrollView style={[styles.scrollView]}>
-                            
-                        </ScrollView>
+
+                        <TouchableOpacity style={styles.frameDiv}>
+                            <Image source={require('../assets/imgs/icons8-기타-96.png')}/>
+                            <Text style={styles.categoryText}>기타</Text>
+                        </TouchableOpacity>
+                        </View>
+                        <View style={BaseStyles.row}>
+                        <TouchableOpacity style={styles.frameDiv}>
+                            <Image source={require('../assets/imgs/icons8-녹음기-악기-96.png')}/>
+                            <Text style={styles.categoryText}>리코더</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.frameDiv}>
+                            <Image source={require('../assets/imgs/icons8-목금-96.png')}/>
+                            <Text style={styles.categoryText}>실로폰</Text>
+                        </TouchableOpacity>
+                        </View>
                     </View>
                     <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
                         <TouchableOpacity style={[BaseStyles.button]}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
                     </View>
-                    
                 </View>
-                {popup ? 
-                <View style={[styles.popupBg]}>
-                    <View style={[styles.popupWin]}>
-                        <Text style={[BaseStyles.text, {fontSize:25}]}>습관 입력하기</Text>
-                        <TextInput style={styles.inputField}
-                        placeholder="습관을 입력하세요"
-                        placeholderTextColor="#999"
-                        value={habit}
-                        onChangeText={setHabit}
-                        autoFocus={true}
-                        keyboardType="default"
-                        returnKeyType="done"
-                        />
-                        <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
-                            <Text style={[BaseStyles.text, {color:'#000'}]}>완료</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.closeButton} onPress={handlerClosePopUP}>
-                            <Text style={[BaseStyles.text, {fontSize:30}]}>x</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                :
-                <></>
-                }
+                
         </View>
     )
 };
@@ -105,7 +95,33 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginVertical:5,
     },
-    
+    frameDiv: {
+        width: 150, 
+        margin: 10,
+        borderRadius: 10,
+        backgroundColor: '#FFFFFF',
+        height: 150,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    categoryText: {
+        position: 'relative',
+        fontSize: 21,
+        letterSpacing: 2,
+        lineHeight: 30,
+        fontFamily: 'Jua-Regular',
+        color: '#000',
+        textAlign: 'center',
+        height: 30,
+        textShadowColor: 'rgba(0, 0, 0, 0.25)',
+        textShadowOffset: { width: 0, height: 4 },
+        textShadowRadius: 4,
+    },
     addText:{
         fontSize:35,
         color:"#000",
@@ -163,4 +179,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default HabirScreen;
+export default MelodyScreen;
