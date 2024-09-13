@@ -20,10 +20,10 @@ const Frame = ({ children, isChecked, onPress }) => {
 
 const LyricSelectScreen = ({ navigation }) => {
   const [selectedCategories, setSelectedCategories] = useState({
-    food: false,
-    animal: false,
-    color: false,
-    character: false,
+    likeFood: false,
+    likeAnimal: false,
+    likeColor: false,
+    likeCharacter: false,
   });
 
   const handleCategoryPress = (category) => {
@@ -53,37 +53,43 @@ const LyricSelectScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.contentContainer}>
-        <Text style={styles.title}>가사 만들기</Text>
-        <Text style={styles.subtitle}>카테고리를 눌러 대답해보세요</Text>
-
-        <Frame
-          isChecked={selectedCategories.food}
-          onPress={() => handleCategoryPress('food')}
+        <View style={styles.TopContainer}>
+          <Text style={styles.title}>가사 만들기</Text>
+          <Text style={styles.subtitle}>카테고리를 눌러 대답해보세요</Text>
+        </View>
+        
+        <View style={styles.MiddleContainer}>
+          <Frame
+          isChecked={selectedCategories.likeFood}
+          onPress={() => handleCategoryPress('likeFood')}
         >
           내가 좋아하는 음식🍗
         </Frame>
         <Frame
-          isChecked={selectedCategories.animal}
-          onPress={() => handleCategoryPress('animal')}
+          isChecked={selectedCategories.likeAnimal}
+          onPress={() => handleCategoryPress('likeAnimal')}
         >
           내가 좋아하는 동물🐰
         </Frame>
         <Frame
-          isChecked={selectedCategories.color}
-          onPress={() => handleCategoryPress('color')}
+          isChecked={selectedCategories.likeColor}
+          onPress={() => handleCategoryPress('likeColor')}
         >
           내가 좋아하는 색깔🍀
         </Frame>
         <Frame
-          isChecked={selectedCategories.character}
-          onPress={() => handleCategoryPress('character')}
+          isChecked={selectedCategories.likeCharacter}
+          onPress={() => handleCategoryPress('likeCharacter')}
         >
           내가 좋아하는 캐릭터🐳
         </Frame>
-
+        </View>
+        
+        <View style = {styles.BottomContainer}>
         <TouchableOpacity style={styles.button} onPress={handleLyricCreationPress}>
           <Text style={styles.buttonText}>가사 생성하기</Text>
         </TouchableOpacity>
+        </View>
       </View>
     </View>
   );
@@ -98,8 +104,8 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     paddingHorizontal: 10,
   },
   tabBarContainer: {
@@ -124,22 +130,53 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    marginTop: -20, // Added negative margin to move content upwards
+
+  },
+  TopContainer:{
+    height: '25%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  MiddleContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  BottomContainer:{
+    height: '30%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
+    fontFamily: "Jua-Regular",
     fontSize: 35,
-    fontFamily: 'Jua-Regular',
-    color: '#000',
-    marginBottom: 20,
+    fontWeight: "400",
+    lineHeight: 50,
+    letterSpacing: -0.408,
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "transparent",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+    paddingHorizontal: 20,
   },
   subtitle: {
+    fontFamily: "Jua-Regular",
     fontSize: 20,
-    fontFamily: 'Jua-Regular',
-    color: '#000',
-    marginBottom: 40,
+    fontWeight: "400",
+    lineHeight: 50,
+    letterSpacing: -0.408,
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "transparent",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+    paddingHorizontal: 20,
   },
   frameDiv: {
     width: '75%', // Increased the width of the frame

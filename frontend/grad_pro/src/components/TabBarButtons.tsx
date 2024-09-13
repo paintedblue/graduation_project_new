@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between', // Adjusted to evenly distribute the tabs
     paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingVertical: 3,
     boxSizing: 'border-box',
   },
   tab: {

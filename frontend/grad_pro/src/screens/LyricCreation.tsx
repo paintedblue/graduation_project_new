@@ -15,10 +15,10 @@ const Frame = ({ categoryText }) => {
 
 const getCategoryLabel = (category) => {
   const categoryLabels = {
-    food: "내가 좋아하는 음식",
-    animal: "내가 좋아하는 동물",
-    color: "내가 좋아하는 색깔",
-    character: "내가 좋아하는 캐릭터"
+    likeFood: "내가 좋아하는 음식",
+    likeAnimal: "내가 좋아하는 동물",
+    likeColor: "내가 좋아하는 색깔",
+    likeCharacter: "내가 좋아하는 캐릭터"
   };
   return categoryLabels[category] || "내가 좋아하는 카테고리";
 };
@@ -32,16 +32,7 @@ const LyricCreation = ({ route, navigation }) => {
   const [answer, setAnswer] = useState('');
 
   // Common prompt for all categories
-  const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는 음식을 말해보세요."];
-
-  const confirmTextByCategory = {
-    food: ["내가 좋아하는 음식은"],
-    animal: ["내가 좋아하는 동물은"],
-    color: ["내가 좋아하는 색깔은"],
-    character: ["내가 좋아하는 캐릭터는"]
-  };
-
-  const confirmTextList = confirmTextByCategory[category] || confirmTextByCategory['animal'];
+  const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n음식을 말해보세요."];
 
   useEffect(() => {
     VoiceUtil.setSpeechResultCallback((results) => {
@@ -70,26 +61,35 @@ const LyricCreation = ({ route, navigation }) => {
   const sendPreferenceToServer = async () => {
     console.log("Sending request to server...");
     try {
-      const response = await fetch('http://192.168.0.165:3000/api/preferences', {
+      const response = await fetch('http://15.165.249.244:3000/api/preferences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId, category, value: answer })
+        body: JSON.stringify({ userId:"1", field:"likeFood", value: answer })
       });
-
+      console.log(category);
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(`Network response was not ok: ${errorText}`);
       }
-
       const data = await response.json();
       console.log("Response data:", data);
-      setAnswer(data);
+      setAnswer(data.keyword);
       setIsRecording(false);
     } catch (error) {
       console.error("Error during fetch operation:", error.message);
       Alert.alert("Error", error.message);
+    }
+  };
+
+  const startSpeech = () => {
+    if (!onRecording) {
+      VoiceUtil.startListening();
+      setOnRecording(true);
+    } else {
+      VoiceUtil.stopListening();
+      setOnRecording(false);
     }
   };
 
@@ -120,48 +120,67 @@ const LyricCreation = ({ route, navigation }) => {
 
       {/* Selected Category Frame */}
       <View style={styles.contentContainer}>
+
+        <View style={styles.TopContainer}>
         <View style={styles.row}>
           <Frame categoryText={getCategoryLabel(category)} />
 
           {/* Text "은 뭘까?" placed next to the frame */}
+          {isRecording ?
           <Text style={styles.outsideFrameText}>은 뭘까?</Text>
+          :
+          <></>
+          }
+        </View>
         </View>
 
+
+        <View style={styles.MiddleContainer}>
         {isRecording ? 
           <View style={styles.imageContainer}>
             {/* Recording Image */}
-            <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
-            
+            {onRecording ? 
+            <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
+            :
+              <TouchableOpacity onPress={startSpeech}>
+              <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
+            </TouchableOpacity>
+            }
             {/* Common Speech Text below the recording image */}
-            <Text style={styles.categoryText}>{commonSpeechText[answerCount]}</Text>
+            <Text style={styles.subtitle}>{commonSpeechText[answerCount]}</Text>
           </View>
           : 
           <View style={styles.imageContainer}>
-              <Text style={styles.QuestionText}>{confirmTextList[answerCount]}</Text>
-              <Text style={styles.AnswerText}>{answer}</Text>
-              <Text style={styles.QuestionText}>맞나요?</Text>
+              <View style={styles.AnswerText}> 
+                <Text style={styles.categoryText}>{"'"+answer+"'"}</Text>
+              </View>
 
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity onPress={reRecording}>
+              
+                <TouchableOpacity style={styles.row} onPress={reRecording}>
                   <Image source={require('../assets/imgs/ReRecord.png')} style={styles.rRImage} />
                   <Text style={styles.reRecordingText}>다시 말할래요</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={nextStep}>
-                  <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextImage} />
-                </TouchableOpacity>
-              </View>
           </View>
         }
-
+        
         {/* Custom Texts */}
+        {isRecording ? 
         <View style={styles.customTextContainer}>
           <Text style={styles.customText}>내가 좋아하는 건 치킨!</Text>
           <Text style={styles.customText}>나는 치킨이 좋아</Text>
         </View>
-
+        :
+        <></>  
+        }
+        </View>
         {/* Right Arrow at the bottom */}
-        <View style={styles.arrowContainer}>
-          <Image source={require('../assets/imgs/right_arrow.png')} style={styles.arrowImage} />
+        <View style={styles.BottomContainer}>
+          
+          {isRecording ? <></>:
+          <TouchableOpacity onPress={nextStep}>
+            <Image source={require('../assets/imgs/right_arrow.png')} style={styles.arrowImage} />
+          </TouchableOpacity>
+          }
         </View>
 
       </View>
@@ -178,12 +197,12 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
     paddingHorizontal: 10,
   },
   tabBarContainer: {
-    marginBottom: 0, // Adjusted to move the tab bar upwards
+    marginBottom: 0, // Adjusted if needed to move content upwards
   },
   appTitle: {
     width: 200,
@@ -204,10 +223,54 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'flex-start',  // Align content towards the top
+    justifyContent: 'space-between',
     alignItems: 'center',
-    width: '80%',
-    marginTop: 80,  // Move content much higher
+    width: '100%',
+
+  },
+  TopContainer:{
+    height: '25%',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  MiddleContainer:{
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  BottomContainer:{
+    height: '30%',
+    width: '100%',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
+  },
+  title: {
+    fontFamily: "Jua-Regular",
+    fontSize: 35,
+    fontWeight: "400",
+    lineHeight: 50,
+    letterSpacing: -0.408,
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "transparent",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+    paddingHorizontal: 20,
+  },
+  subtitle: {
+    fontFamily: "Jua-Regular",
+    fontSize: 20,
+    fontWeight: "200",
+    lineHeight: 40,
+    letterSpacing: -0.408,
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "transparent",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+    paddingVertical: 10,
   },
   frameDiv: {
     width: 'auto', // Dynamic width based on text
@@ -224,12 +287,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   categoryText: {
-    fontSize: 21,
-    letterSpacing: 2,
+    fontSize: 20,
+    letterSpacing: 1,
     lineHeight: 30,
     fontFamily: 'Jua-Regular',
     color: '#000',
     textAlign: 'center',
+    marginVertical: 0,
   },
   outsideFrameText: {
     fontSize: 21,
@@ -251,16 +315,10 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50, // Adjust this value to move the recording image and text down
   },
   recordImage: {
     width: 150,  // Increased width
     height: 150,  // Increased height
-    marginVertical: 20,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
   },
   rRImage: {
     width: 50,
@@ -280,7 +338,6 @@ const styles = StyleSheet.create({
     height: 55,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 30,
   },
   customText: {
     fontSize: 18,
@@ -291,15 +348,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 0,
   },
-  arrowContainer: {
-    position: 'absolute',
-    bottom: 50, // Moved higher
-    right: 50,  // Moved more to the right
-  },
+  
   arrowImage: {
     width: 70,  // Increased size
     height: 70, // Increased size
+    margin:20
   },
+  AnswerText: { //임시 적으로 만들어 놓은 확인 창
+    backgroundColor: '#F5F5DC',
+    borderRadius: 20,
+    height: 300,
+    width:300,
+    margin:10,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  }
 });
 
 export default LyricCreation;

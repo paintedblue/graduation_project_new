@@ -7,6 +7,7 @@ import AdminScreen from '../screens/AdminScreen';
 import HabitScreen from '../screens/HabitScreen';
 import LyricCreation from '../screens/LyricCreation'; 
 import RecordScreen from '../screens/RecordScreen'; 
+import NewRecordScreen from '../screens/NewRecordScreen';
 import LyricSelectScreen from '../screens/LyricSelectScreen';
 
 
@@ -38,7 +39,7 @@ const StackNavigation = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
+            <Stack.Navigator initialRouteName={"SummaryScreen"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
                 <Stack.Screen name="home">
                     {(props) => <Home {...props} />}
@@ -58,6 +59,9 @@ const StackNavigation = () => {
                 </Stack.Screen>
                 <Stack.Screen name="RecordScreen">
                     {(props) => <RecordScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="NewRecordScreen">
+                    {(props) => <NewRecordScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="LyricSelectScreen">
                     {(props) => <LyricSelectScreen {...props} />}

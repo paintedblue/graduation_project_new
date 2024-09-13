@@ -6,7 +6,7 @@ import styles from '../styles/habitStyle'; // Import existing styles
 import TabBarButtons from '../components/TabBarButtons';  
 
 const SummaryScreen = ({ route, navigation }) => {
-  const { userId } = route.params;
+  //const { userId } = route.params;
   const [lyrics, setLyrics] = useState('');
   const [title, setTitle] = useState(''); // Add state for title
   const [loading, setLoading] = useState(true); // Add loading state

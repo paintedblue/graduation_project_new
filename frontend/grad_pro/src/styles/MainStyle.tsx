@@ -1,85 +1,76 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
-const MainStyles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    backgroundImage: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    contentContainer: {
-        flex: 1,
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        width: '100%',
-        paddingVertical: 20, // 위아래 여백 추가
-    },
-    imageContainer: {
-        alignItems: 'center',
-        marginTop: 40, // 위로 더 이동
-    },
-    image: {
-        width: 200,
-        height: 200,
-    },
-    speechBubble: {
-        padding: 10,
-        marginBottom: 10,
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#000',
-        width: '80%',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    speechBubbleText: {
-        color: '#000',
-        textAlign: 'center',
-        fontFamily: 'Jua-Regular',
-        fontSize: 20, 
-    },
-    buttonContainer: {
-        width: '80%',
-        alignItems: 'center',
-        marginBottom: 40, 
-    },
-    button: {
-        marginVertical: 5,
-        padding: 15,
-        borderRadius: 5,
-        alignItems: 'center',
-        width: '50%',
-    },
-    startButton: {
-        backgroundColor: '#129F42',
-    },
-    savedSongsButton: {
-        backgroundColor: '#3E68FA',
-    },
-    buttonText: {
-        color: '#FFFFFF',
-        fontSize: 20,
-        fontFamily: 'Jua-Regular',
-    },
-    songsList: {
-        marginTop: 20,
-        alignItems: 'center',
-    },
-    songText: {
-        fontSize: 16,
-        color: '#000',
-        fontFamily: 'Jua-Regular', // 폰트 설정
-    },
-    topImage: {
-        width: '100%',
-        height: 200, // Adjust the height as needed
-    },
-    
+const MainStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  backgroundImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+    justifyContent: "center",
+    alignItems: "center",
+    flex: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    paddingVertical: 20,
+  },
+  imageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+    marginTop: 40,
+  },
+  titleImage: {
+    width: 331,
+    height: 140,
+    resizeMode: "contain",
+  },
+  mainText: {
+    fontFamily: "Jua-Regular",
+    fontSize: 35,
+    fontWeight: "400",
+    lineHeight: 50,
+    letterSpacing: -0.408,
+    textAlign: "center",
+    color: "white",
+    backgroundColor: "transparent",
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 3,
+    paddingHorizontal: 20,
+  },
+  buttonContainer: {
+    justifyContent: "center",
+    width: "80%",
+    marginBottom: 70,
+  },
+  button: {
+    alignSelf: "center",
+    padding: 15,
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  savedSongsButton: {
+    backgroundColor: "#3E68FA",
+  },
+  gradient: {
+    borderRadius: 5,
+    paddingVertical: 15,
+    paddingHorizontal: 25,
+    alignItems: "center",
+    width:200,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    fontFamily: "Jua-Regular",
+  },
 });
 
-export default MainStyles;
+export default MainStyle;
