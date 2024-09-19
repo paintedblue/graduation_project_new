@@ -6,7 +6,7 @@ exports.getHabit = async (req, res) => {
     const { userId } = req.params;
     const user = await UserInfo.findOne({ userId: userId });
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      user = new UserInfo({ userId: userId });
     }
 
     res.status(200).json({ habits: user.habits });
@@ -24,7 +24,7 @@ exports.saveHabit = async (req, res) => {
     let user = await UserInfo.findOne({ userId: userId });
     
     if (!user) {
-      user = new userInfo({ userId: userId });
+      user = new UserInfo({ userId: userId });
     }
 
     // 기존 습관이 있는지 확인

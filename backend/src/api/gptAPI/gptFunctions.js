@@ -18,15 +18,16 @@ const createExtractPrompt = (sentence, field) => {
   }
   Output_formation : 
   {
-    "keyword" : "추출된 키워드",
-    "color" : "#HEX 형식의 색상 코드",
-    "image_description" : "키워드에 맞는 사진의 설명"
+    "keyword" : ,
+    "color" : ,
+    "image_description" : 
   }`;
 };
 
 // 키워드 추출 GPT API를 호출하는 함수
 const extractKeyword = async (sentence, field) => {
   const prompt = createExtractPrompt(sentence, field);
+  // console.log(prompt);
   
   try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
@@ -40,10 +41,18 @@ const extractKeyword = async (sentence, field) => {
       }
     });
     
-    // GPT 응답에서 필요한 정보 추출
-    const { keyword, color, image_description } = JSON.parse(response.data.choices[0].message.content);
+    const gptText = response.data.choices[0].message.content.trim();
+    // console.log(gptText);
 
-    return { keyword, color, image_description };
+    // 응답이 JSON 형식인지 검증
+    if (gptText.startsWith('{') && gptText.endsWith('}')) {
+      // 응답이 JSON 형식이면 파싱
+      return JSON.parse(gptText);
+    } else {
+      // 응답이 JSON 형식이 아닐 경우 처리
+      console.error('GPT API 응답이 JSON이 아닙니다:', gptText);
+      throw new Error('GPT did not return valid JSON');
+    }
 
   } catch (error) {
     console.error('Error calling GPT API:', error.response ? error.response.data : error.message);
