@@ -16,18 +16,20 @@ const songSchema = new mongoose.Schema({
     },
     lyric: {
         type: String,  // 동요 생성 시점의 가사
-        required: true
+        required: false
     },
     instrument: {
         type: String,  // 동요 생성 시점의 악기
-        required: true
+        required: false
     },
-    songLink: {
+    id: {
         type: String,
         required: true
+    },
+    created_at : {
+        type: Date,  // Suno API에서 받은 created_at 값
+        required: true // Suno API로부터 항상 제공되므로 필수 필드로 설정
     }
-}, {
-    timestamps: true
 });
 
 const Song = mongoose.model('Song', songSchema);

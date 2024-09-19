@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 const cors = require('cors');
-require('dotenv').config({ path: '../.env' }); // 환경 변수 사용을 위해 dotenv 모듈 사용
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') }); // 환경 변수 사용을 위해 dotenv 모듈 사용
 console.log('OpenAI API Key:', process.env.OPENAI_API_KEY);
 
 // Routes import
