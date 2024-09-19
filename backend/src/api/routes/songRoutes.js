@@ -6,6 +6,6 @@ const songController = require('../controllers/songController');
 router.post('/', songController.createSong);
 
 // 동요 정보 조회 (GET 요청)
-router.get('/:userId/:songId', songController.getSong);
+router.get('/:userId', songController.getSong);
 
 module.exports = router;
