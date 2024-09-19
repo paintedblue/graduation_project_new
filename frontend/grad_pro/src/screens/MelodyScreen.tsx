@@ -1,28 +1,45 @@
 import React, {useState} from "react";
-import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet} from "react-native";
+import {Text, View, TouchableOpacity, Alert, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 import { ScrollView } from "react-native-gesture-handler";
 
 const MelodyScreen = ({route, navigation}) => {
 
-    const [habit, setHabit] = useState(''); 
-
-    const [popup, setpopup] = useState(false); 
+    const {userId} = route.params;
+    const [select, setSelect] = useState("Piano"); 
+    const type = "Music"
 
     const maintitleText = "악기 고르기"
     const subtitleText = "노래에 넣고 싶은 악기를 골라볼까요?\n악기를 클릭하면 연주돼요."
 
-    const handleCustomHabitSubmit = () => {
-        
+    const handlerCheck = (instrument) => {
+        //요청
+        setSelect(instrument);
     };
 
-    const handlerOpenPopUP = () => {
-        setpopup(true);
-    };
+    const handlerNext = async() => {
+        //요청
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/instrument', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId:userId.toString(), instrument:select})
+            });
 
-    const handlerClosePopUP = () => {
-        setpopup(false);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+
+            navigation.navigate('LoadingScreen', {userId, type})
+            } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+            }
     };
 
 
@@ -36,30 +53,30 @@ const MelodyScreen = ({route, navigation}) => {
                     </View>
                     <View style={[BaseStyles.middleContainer, {justifyContent:"flex-start"}]}>
                         <View style={BaseStyles.row}>
-                        <TouchableOpacity style={styles.frameDiv}>
+                        <TouchableOpacity style={[styles.frameDiv, select === "Piano"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Piano")}>
                             <Image source={require('../assets/imgs/icons8-피아노-96.png')}/>
                             <Text style={styles.categoryText}>피아노</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.frameDiv}>
+                        <TouchableOpacity style={[styles.frameDiv, select === "Guitar"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Guitar")}>
                             <Image source={require('../assets/imgs/icons8-기타-96.png')}/>
                             <Text style={styles.categoryText}>기타</Text>
                         </TouchableOpacity>
                         </View>
                         <View style={BaseStyles.row}>
-                        <TouchableOpacity style={styles.frameDiv}>
+                        <TouchableOpacity style={[styles.frameDiv, select === "Recorder"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Recorder")}>
                             <Image source={require('../assets/imgs/icons8-녹음기-악기-96.png')}/>
                             <Text style={styles.categoryText}>리코더</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.frameDiv}>
+                        <TouchableOpacity style={[styles.frameDiv, select === "Xylophone"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Xylophone")}>
                             <Image source={require('../assets/imgs/icons8-목금-96.png')}/>
                             <Text style={styles.categoryText}>실로폰</Text>
                         </TouchableOpacity>
                         </View>
                     </View>
                     <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]}>
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
                     </View>
@@ -140,37 +157,6 @@ const styles = StyleSheet.create({
     nextButton:{
         width:90,
         height:90,
-    },
-    popupBg:{
-        position:'absolute',
-        width:'100%',
-        height:'100%',
-        backgroundColor:'rgba(150,150,150,0.5)',
-        justifyContent:'center',
-        alignItems:'center',
-    },
-    popupWin:{
-        borderRadius:10,
-        width:300,
-        height:200,
-        backgroundColor:'#0052D4',
-        justifyContent:'center',
-        alignItems:'center',
-    },
-    inputField:{
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.6)',
-        borderRadius: 5,
-        width: '80%',
-        marginVertical: 20,
-    },
-    completeButton: {
-        backgroundColor: '#FFF',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
-        alignItems: 'center',
     },
     closeButton:{
         position:'absolute',

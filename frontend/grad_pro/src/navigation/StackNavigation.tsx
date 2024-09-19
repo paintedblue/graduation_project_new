@@ -7,9 +7,10 @@ import HabitScreen from '../screens/HabitScreen';
 import LyricQuestionScreen from '../screens/LyricQuestionScreen';
 import LyricSelectScreen from '../screens/LyricSelectScreen';
 import MelodyScreen from '../screens/MelodyScreen';
-import LodingScreen from '../screens/LodingScreen';
+import LoadingScreen from '../screens/LoadingScreen';
 import PlayScreen from '../screens/PlayScreen';
 import SongListScreen from '../screens/SongListScreen';
+import LyricMakeScreen from '../screens/LyricMakeScreen';
 
 export declare module CommonType {
     /** 
@@ -36,7 +37,7 @@ const StackNavigation = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"SongListScreen"} screenOptions={customStackNavigationOptions}>
+            <Stack.Navigator initialRouteName={"HomeScreen"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
                 <Stack.Screen name="HomeScreen">
                     {(props) => <HomeScreen {...props} />}
@@ -53,14 +54,17 @@ const StackNavigation = () => {
                 <Stack.Screen name="MelodyScreen">
                     {(props) => <MelodyScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="LodingScreen">
-                    {(props) => <LodingScreen {...props} />}
+                <Stack.Screen name="LoadingScreen">
+                    {(props) => <LoadingScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="PlayScreen">
                     {(props) => <PlayScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="SongListScreen">
                     {(props) => <SongListScreen {...props} />}
+                </Stack.Screen>
+                <Stack.Screen name="LyricMakeScreen">
+                    {(props) => <LyricMakeScreen {...props} />}
                 </Stack.Screen>
             </Stack.Navigator>
         </NavigationContainer >

@@ -1,20 +1,80 @@
-import React, {useState} from "react";
-import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet} from "react-native";
+import React, {useState, useEffect} from "react";
+import {Text, View, TouchableOpacity, TextInput, Alert, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 import { ScrollView } from "react-native-gesture-handler";
 
 const HabirScreen = ({route, navigation}) => {
+    //개발용 더미 데이터!
+    const exData = {"habits" :  [
+        { "name": "편식", "selected": true },
+        { "name": "늦잠", "selected": false },
+        { "name": "책 읽기", "selected": false }
+    ]}
+    //끝
 
-    const [habit, setHabit] = useState(''); 
+    const {userId} = route.params;
 
+    const [newHabit, setNewHabit] = useState(''); 
+    const [habits, setHabits] = useState(exData.habits); 
     const [popup, setpopup] = useState(false); 
 
     const maintitleText = "습관 입력하기"
     const subtitleText = "아이가 잘 해냈으면 하는 습관을 입력해주세요.\nex. 양치하기, 손씻기"
 
-    const handleCustomHabitSubmit = () => {
-        
+
+    //첫 마운트 되었을 때 실행
+    useEffect(() => {
+        requestHabitList();
+    }, []);
+
+    const requestHabitList = async () => {
+        console.log("서버) 습관 요청");
+        try {
+        const response = await fetch(`http://15.165.249.244:3000/api/habit/${userId}`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                }
+        });
+        if (!response.ok) {
+            throw new Error(`Network response was not ok`);
+        }
+        const data = await response.json();
+        setHabits(data.habits);
+        } catch (error) {
+        console.error("Error during fetch operation:", error.message);
+        Alert.alert("Error", error.message);
+        }
+    };
+
+    const handleCustomHabitSubmit = async () => {
+        if(newHabit.trim() === '') return;
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/habit', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId:userId.toString(), habitName:newHabit})
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log("Response data:", data);
+            setHabits(data.habits);
+            } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+            }
+       // 아래는 임시적인 예시이며 실제론 데이터 전달 해야함.
+            finally{
+                setNewHabit('');
+                setpopup(false);
+            }
     };
 
     const handlerOpenPopUP = () => {
@@ -25,6 +85,40 @@ const HabirScreen = ({route, navigation}) => {
         setpopup(false);
     };
 
+    const selectHabit = async(index) => {
+        // 아래는 임시적인 예시이며 실제론 데이터 전달 해야함.
+        //???
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/habit/toggle', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId:userId.toString(), habitName:habits[index].name})
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log("Response data:", data);
+            setHabits(data.habits);
+            } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+            }
+    };
+
+    const handlerNext = () => {
+        const tempSelectedCategories = {
+            likeFood: false,
+            likeAnimal: false,
+            likeColor: false,
+            likeCharacter: false,
+        };
+        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
+    }
 
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
@@ -41,11 +135,18 @@ const HabirScreen = ({route, navigation}) => {
                             </View>
                         </TouchableOpacity>
                         <ScrollView style={[styles.scrollView]}>
-                            
+                            {habits.map((habit, index) => (
+                                <TouchableOpacity style={[BaseStyles.button]} onPress={() => selectHabit(index)}>
+                                <View style={[styles.habitBox, habit.selected ? styles.selectBox:null]}>
+                                        <Text style={[BaseStyles.text, {fontSize: 25, color:'#000'}]}>{habit.name}</Text>
+                                </View>
+                            </TouchableOpacity>
+                            ))
+                            }
                         </ScrollView>
                     </View>
                     <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]}>
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
                     </View>
@@ -58,8 +159,8 @@ const HabirScreen = ({route, navigation}) => {
                         <TextInput style={styles.inputField}
                         placeholder="습관을 입력하세요"
                         placeholderTextColor="#999"
-                        value={habit}
-                        onChangeText={setHabit}
+                        value={newHabit}
+                        onChangeText={setNewHabit}
                         autoFocus={true}
                         keyboardType="default"
                         returnKeyType="done"
@@ -103,7 +204,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
-        marginVertical:5,
     },
     
     addText:{
@@ -160,6 +260,9 @@ const styles = StyleSheet.create({
         position:'absolute',
         right:20,
         top:15,
+    },
+    selectBox:{
+        backgroundColor:'#6E77FB'
     }
 });
 

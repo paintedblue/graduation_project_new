@@ -1,33 +1,34 @@
-import React, {useState} from "react";
+import React, {useState,useEffect} from "react";
 import {Text, View, TouchableOpacity, ImageBackground, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 
 const LyricSelectScreen = ({route, navigation}) => {
 
+    const{userId, tempSelectedCategories} = route.params;
+    const type = "Lyric"
     const [complete, setComplete] = useState(false); 
 
     const maintitleText = "가사 만들기"
     const subtitleText = "카테고리를 눌러 대답해보세요."
 
-    const [selectedCategories, setSelectedCategories] = useState({
-        likeFood: false,
-        likeAnimal: false,
-        likeColor: false,
-        likeCharacter: false,
-    });
+    const [selectedCategories, setSelectedCategories] = useState(tempSelectedCategories);
     
-    const handleCategoryPress = (category) => {
-    setSelectedCategories((prevState) => ({
-        ...prevState,
-        [category]: !prevState[category],
-    }));
+    //tempSelectedCategories가 변경 되었을 때 실행
+    useEffect(() => {
+        setSelectedCategories(tempSelectedCategories);
+        setComplete(Object.values(tempSelectedCategories).every(value => value === true));
+    }, [tempSelectedCategories]);
 
-    // Navigate to LyricCreation screen and pass the selected category
-    navigation.navigate('LyricCreation', {
-        category, // Pass the selected category to LyricCreation screen
+    const handleCategoryPress = (category) => {
+    navigation.navigate('LyricQuestionScreen', {
+        userId, category, selectedCategories
     });
     };
+    
+    const handlerLyricMake = () => {
+        navigation.navigate('LoadingScreen', {userId, type})
+    }
 
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
@@ -65,7 +66,7 @@ const LyricSelectScreen = ({route, navigation}) => {
                     </View>
                     <View style={[BaseStyles.bottomContainer, {justifyContent:'center'}]}>
                     {complete ?
-                        <TouchableOpacity style={styles.button} disabled={false}>
+                        <TouchableOpacity style={styles.button} onPress={handlerLyricMake}>
                             <Text style={[BaseStyles.mainText, {fontSize:25}]}>가사 생성하기</Text>
                         </TouchableOpacity>
                         :

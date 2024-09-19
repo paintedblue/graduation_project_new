@@ -4,6 +4,12 @@ import LinearGradient from "react-native-linear-gradient";
 import BaseStyles from "../styles/BaseStyles";
 
 const HomeScreen = ({navigation}) => {
+    //개발용 더미 데이터!
+    const exData = {
+        "title" :  "예시 제목입니다~~",
+        "lyric" : "예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다.\n예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다."
+    }
+    //끝
     const userId = 1;
 
     const [showInitImage, setShowInitImage] = useState(true);
@@ -16,10 +22,11 @@ const HomeScreen = ({navigation}) => {
         }
     }
     const handlerSavedSong = () => {
-        navigation.navigate('')
+        //navigation.navigate('SongListScreen', {userId})
+        navigation.navigate('SongListScreen', {userId})
     }
     const handlerStart = () => {
-        navigation.navigate('')
+        navigation.navigate('HabitScreen', {userId})
     }
 
     return (
@@ -39,12 +46,12 @@ const HomeScreen = ({navigation}) => {
                         <Text style={[BaseStyles.text, styles.titleText]}>{titleText}</Text>
                     </View>
                     <View style={[BaseStyles.bottomContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]}>
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerSavedSong}>
                             <LinearGradient colors={['#56CCF2','#2F80ED']} style={[styles.homeButton]}>
                                 <Text style={[BaseStyles.text, styles.buttonText]}>저장된 노래</Text>
                             </LinearGradient>
                         </TouchableOpacity>
-                        <TouchableOpacity style={[BaseStyles.button]}>
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerStart}>
                             <LinearGradient colors={['#56CCF2','#2F80ED']} style={[styles.homeButton]}>
                                 <Text style={[BaseStyles.text, styles.buttonText]}>시작하기</Text>
                             </LinearGradient>

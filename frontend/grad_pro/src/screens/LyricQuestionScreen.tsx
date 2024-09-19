@@ -5,7 +5,7 @@ import Header from "../components/TabBarButtons";
 import VoiceUtil from '../utils/VoiceUtil';
 
 const LyricQuestionScreen = ({route, navigation}) => {
-    const category = 'likeAnimal'
+    const {userId, category , selectedCategories} = route.params;
     const [isRecording, setIsRecording] = useState(true);
     const [isDoneRecording, setIsDoneRecording] = useState(true);
     const [onRecording, setOnRecording] = useState(false);
@@ -47,7 +47,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
             headers: {
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userId:"1", field:"likeFood", value: answer })
+            body: JSON.stringify({ userId:userId.toString(), field:category, value: answer })
         });
         console.log(category);
         if (!response.ok) {
@@ -77,6 +77,11 @@ const LyricQuestionScreen = ({route, navigation}) => {
     const reRecording = () => {
         setIsRecording(true);
     };
+
+    const handlerNext = () => {
+        const tempSelectedCategories = {...selectedCategories, [category] : true};
+        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
+    }
 
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
@@ -112,7 +117,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
                     : 
                         <View style={styles.imageContainer}>
                             <View style={styles.AnswerBox}> 
-                                <Text style={[styles.categoryText, {lineHeight:40}]}>{"'"+answer+"'"}</Text>
+                                <Text style={[styles.categoryText, {marginVertical:8}]}>{"'"+answer+"'"}</Text>
                             </View>
 
                             
@@ -128,7 +133,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
                     <></>
                     :
                     
-                        <TouchableOpacity style={[BaseStyles.button]}>
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
                     
@@ -211,7 +216,7 @@ const styles = StyleSheet.create({
         marginRight: 20,
       },
       reRecordingText: {
-        fontSize: 18,
+        fontSize: 22,
         fontFamily: 'Jua-Regular',
       },
 });
