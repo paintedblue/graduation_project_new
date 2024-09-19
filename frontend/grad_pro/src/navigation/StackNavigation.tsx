@@ -2,15 +2,14 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator, StackNavigationOptions } from '@react-navigation/stack';
 
-import HomeScreen from '../screens/HomeScreen';
+import Home from '../screens/Home';
+import AdminScreen from '../screens/AdminScreen';
 import HabitScreen from '../screens/HabitScreen';
-import LyricQuestionScreen from '../screens/LyricQuestionScreen';
-import LyricSelectScreen from '../screens/LyricSelectScreen';
-import MelodyScreen from '../screens/MelodyScreen';
-import LoadingScreen from '../screens/LoadingScreen';
-import PlayScreen from '../screens/PlayScreen';
-import SongListScreen from '../screens/SongListScreen';
-import LyricMakeScreen from '../screens/LyricMakeScreen';
+import LyricCreation from '../screens/LyricCreation'; 
+import RecordScreen from '../screens/RecordScreen'; 
+
+//안지윤이 테스트로 만든 화면들
+import SummaryScreen from '../screens/SummaryScreen';
 
 export declare module CommonType {
     /** 
@@ -37,35 +36,28 @@ const StackNavigation = () => {
 
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName={"HomeScreen"} screenOptions={customStackNavigationOptions}>
+            <Stack.Navigator initialRouteName={"home"} screenOptions={customStackNavigationOptions}>
                 {/* 메인 페이지 */}
-                <Stack.Screen name="HomeScreen">
-                    {(props) => <HomeScreen {...props} />}
+                <Stack.Screen name="home">
+                    {(props) => <Home {...props} />}
+                </Stack.Screen>
+                {/* 관리자 페이지 */}
+                <Stack.Screen name="AdminScreen">
+                    {(props) => <AdminScreen {...props} />}
                 </Stack.Screen>
                 <Stack.Screen name="HabitScreen">
                     {(props) => <HabitScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="LyricSelectScreen">
-                    {(props) => <LyricSelectScreen {...props} />}
+                <Stack.Screen name="LyricCreation">
+                    {(props) => <LyricCreation {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="LyricQuestionScreen">
-                    {(props) => <LyricQuestionScreen {...props} />}
+                <Stack.Screen name="SummaryScreen">
+                    {(props) => <SummaryScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="MelodyScreen">
-                    {(props) => <MelodyScreen {...props} />}
+                <Stack.Screen name="RecordScreen">
+                    {(props) => <RecordScreen {...props} />}
                 </Stack.Screen>
-                <Stack.Screen name="LoadingScreen">
-                    {(props) => <LoadingScreen {...props} />}
-                </Stack.Screen>
-                <Stack.Screen name="PlayScreen">
-                    {(props) => <PlayScreen {...props} />}
-                </Stack.Screen>
-                <Stack.Screen name="SongListScreen">
-                    {(props) => <SongListScreen {...props} />}
-                </Stack.Screen>
-                <Stack.Screen name="LyricMakeScreen">
-                    {(props) => <LyricMakeScreen {...props} />}
-                </Stack.Screen>
+                
             </Stack.Navigator>
         </NavigationContainer >
     )
