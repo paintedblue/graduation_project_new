@@ -2,7 +2,6 @@ import React, {useState} from "react";
 import {Text, View, TouchableOpacity, Alert, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
-import { ScrollView } from "react-native-gesture-handler";
 
 const MelodyScreen = ({route, navigation}) => {
 
@@ -54,23 +53,23 @@ const MelodyScreen = ({route, navigation}) => {
                     <View style={[BaseStyles.middleContainer, {justifyContent:"flex-start"}]}>
                         <View style={BaseStyles.row}>
                         <TouchableOpacity style={[styles.frameDiv, select === "Piano"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Piano")}>
-                            <Image source={require('../assets/imgs/icons8-피아노-96.png')}/>
+                            <Image source={require('../assets/imgs/icons8-p.png')}/>
                             <Text style={styles.categoryText}>피아노</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.frameDiv, select === "Guitar"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Guitar")}>
-                            <Image source={require('../assets/imgs/icons8-기타-96.png')}/>
+                            <Image source={require('../assets/imgs/icons8-g.png')}/>
                             <Text style={styles.categoryText}>기타</Text>
                         </TouchableOpacity>
                         </View>
                         <View style={BaseStyles.row}>
                         <TouchableOpacity style={[styles.frameDiv, select === "Recorder"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Recorder")}>
-                            <Image source={require('../assets/imgs/icons8-녹음기-악기-96.png')}/>
+                            <Image source={require('../assets/imgs/icons8-r.png')}/>
                             <Text style={styles.categoryText}>리코더</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.frameDiv, select === "Xylophone"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Xylophone")}>
-                            <Image source={require('../assets/imgs/icons8-목금-96.png')}/>
+                            <Image source={require('../assets/imgs/icons8-x.png')}/>
                             <Text style={styles.categoryText}>실로폰</Text>
                         </TouchableOpacity>
                         </View>
@@ -88,12 +87,12 @@ const MelodyScreen = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     scrollView:{
         flex:1,

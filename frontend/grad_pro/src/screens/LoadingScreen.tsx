@@ -4,10 +4,25 @@ import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 
 const LoadingScreen = ({route, navigation}) => {
+    const exSongData = {
+        "__v": 0, 
+        "_id": "1", 
+        "created_at": "2024-09-20T08:35:38.081Z", 
+        "id": "임의 id", 
+        "instrument": "Xylophone", 
+        "lyric": "임시 가사입니다", 
+        "songId": "2", 
+        "title": "임시 제목입니다.", 
+        "userId": "1"
+    }
+    const exLyricData = {
+        "lyric": "임시 가사 입니다", "title": "임시 제목입니다"
+    }
     const {userId, type} = route.params;
     const [isLoading, setIsLoading] = useState(true); 
 
-    const [requestData, setRequestData] = useState({}); 
+    const [songData, setSongData] = useState(exSongData);
+    const [lyricData, setLyricData] = useState(exLyricData); 
 
     const [mainText,setMainText] = useState("");
     
@@ -41,13 +56,14 @@ const LoadingScreen = ({route, navigation}) => {
 
             const data = await response.json();
             console.log("Response data:", data);
-            setRequestData(data);
+            setLyricData(data);
+            const requestData = lyricData;
+            setIsLoading(false);
+            navigation.replace('LyricMakeScreen', {userId, requestData});
         } catch (error) {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
-        } finally {
-            setIsLoading(false);
-            navigation.replace('LyricMakeScreen', {userId, requestData})
+            navigation.goBack();
         }
     };
     const requestMakeMusic = async () => {
@@ -59,20 +75,23 @@ const LoadingScreen = ({route, navigation}) => {
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({body: JSON.stringify({ userId:userId.toString()})}
-                )
+                body: JSON.stringify({userId:userId.toString()})
             });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
             const data = await response.json();
-            console.log("Response data:", data);
-            setRequestData(data);
-            const type = "Gen"
+            setIsLoading(false);
+            const requestData = data.song;
+            const type = "Gen";
+            navigation.replace('PlayScreen', {userId, requestData, type})
         } catch (error) {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
-        } finally {
-            setIsLoading(false);
-            navigation.replace('PlayScreen', {userId, requestData, type})
-        }
+            navigation.goBack();
+        } 
     };
 
     return (

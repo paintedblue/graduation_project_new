@@ -19,7 +19,6 @@ const LyricQuestionScreen = ({route, navigation}) => {
         VoiceUtil.setSpeechResultCallback((results) => {
         setAnswer(results[0]);
         setIsDoneRecording(false);
-        setOnRecording(false);
         });
     
         VoiceUtil.setErrorCallback((error) => {
@@ -35,7 +34,6 @@ const LyricQuestionScreen = ({route, navigation}) => {
     useEffect(() => {
         if (!isDoneRecording) {
         sendPreferenceToServer();
-        setIsDoneRecording(true);
         }
     }, [0, isDoneRecording]);
     
@@ -61,6 +59,10 @@ const LyricQuestionScreen = ({route, navigation}) => {
         } catch (error) {
         console.error("Error during fetch operation:", error.message);
         Alert.alert("Error", error.message);
+        }
+        finally{
+            setIsDoneRecording(true);
+            setOnRecording(false);
         }
     };
     

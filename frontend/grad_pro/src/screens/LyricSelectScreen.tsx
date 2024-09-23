@@ -17,7 +17,7 @@ const LyricSelectScreen = ({route, navigation}) => {
     //tempSelectedCategories가 변경 되었을 때 실행
     useEffect(() => {
         setSelectedCategories(tempSelectedCategories);
-        setComplete(Object.values(tempSelectedCategories).every(value => value === true));
+        setComplete(Object.values(tempSelectedCategories).some(value => value === true));
     }, [tempSelectedCategories]);
 
     const handleCategoryPress = (category) => {
@@ -82,12 +82,12 @@ const LyricSelectScreen = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     frameDiv: {
         width: '75%', // Increased the width of the frame

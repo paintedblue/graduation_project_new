@@ -110,21 +110,38 @@ const HabirScreen = ({route, navigation}) => {
             }
     };
 
-    const handlerNext = () => {
-        const tempSelectedCategories = {
-            likeFood: false,
-            likeAnimal: false,
-            likeColor: false,
-            likeCharacter: false,
-        };
-        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
+    const handlerNext = async() => {
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/preferences/reset', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId:userId.toString()})
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const tempSelectedCategories = {
+                likeFood: false,
+                likeAnimal: false,
+                likeColor: false,
+                likeCharacter: false,
+            };
+            navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
+            } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+            }
     }
 
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
             <Header></Header>
             <View style={[BaseStyles.contentContainer]}>
-                    <View style={[BaseStyles.topContainer]}>
+                    <View style={[BaseStyles.topContainer, {height:"auto"}]}>
                         <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
                         <Text style={[BaseStyles.mainText, styles.subtitle]}>{subtitleText}</Text>
                     </View>
@@ -182,12 +199,12 @@ const HabirScreen = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     scrollView:{
         flex:1,
@@ -216,7 +233,7 @@ const styles = StyleSheet.create({
     },
 
     bottomContainer:{
-        height:"15%",
+        height:"auto",
         justifyContent:'flex-end',
         alignItems:'flex-end',
         padding:20,

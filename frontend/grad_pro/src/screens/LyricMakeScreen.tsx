@@ -2,7 +2,6 @@ import React, {useState, useEffect} from "react";
 import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
-import { ScrollView } from "react-native-gesture-handler";
 
 const LyricMakeScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
@@ -79,12 +78,12 @@ const LyricMakeScreen = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     scrollView:{
         flex:1,

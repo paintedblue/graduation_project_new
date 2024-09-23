@@ -1,22 +1,29 @@
 import React, {useState, useEffect} from "react";
-import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet, Button} from "react-native";
+import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet, BackHandler} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
-import SoundPlayer from 'react-native-sound-player'
+import SoundPlayer from 'react-native-sound-player';
 import Slider from '@react-native-community/slider';
 
 const LyricMakeScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
-    const exData = {
-        "title" :  "예시 제목입니다~~",
-        "lyric" : "예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다.\n예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다."
+    const exSongData = {
+        "__v": 0, 
+        "_id": "1", 
+        "created_at": "2024-09-20T08:35:38.081Z", 
+        "id": "임의 id", 
+        "instrument": "Xylophone", 
+        "lyric": "임시 가사입니다", 
+        "songId": "2", 
+        "title": "임시 제목입니다.", 
+        "userId": "1"
     }
     //끝
 
     const {userId, requestData, type} = route.params;
-    const [audioUrl, setAudioUrl] = useState("https://cdn1.suno.ai/b75bae35-8041-4d42-a1b1-4e226a241206.mp3"); 
-    const [title, setTitle] = useState(exData.title); 
-    const [lyric, setLyric] = useState(exData.lyric); 
+    const [audioUrl, setAudioUrl] = useState(exSongData.id); 
+    const [title, setTitle] = useState(exSongData.title); 
+    const [lyric, setLyric] = useState(exSongData.lyric); 
 
     const maintitleText = "동요 재생"
 
@@ -27,15 +34,40 @@ const LyricMakeScreen = ({route, navigation}) => {
     const [isSeeking, setIsSeeking] = useState(false);
 
     useEffect(() => {
-        if(type === "Gen"){
-            setAudioUrl("https://cdn1.suno.ai/{requestData.id}.mp3")
+        console.log(requestData);
+        console.log(type);
+        if(type == "Gen"){
+            setAudioUrl(`https://cdn.aimlapi.com/suno/audio/?item_id=${requestData.id}`);
         }
-        else if (type === "Play"){
-            setAudioUrl("https://cdn.aimlapi.com/suno/audio/?item_id={requestData.id}")
+        else if (type == 'Play'){
+            setAudioUrl(`https://cdn1.suno.ai/${requestData.id}.mp3`);
         }
         setTitle(requestData.title);
         setLyric(requestData.lyric);
-    },[]);
+        console.log("변경 시킴");
+    },[requestData]);
+
+    useEffect(() => {
+        console.log(audioUrl);
+        SoundPlayer.loadUrl(audioUrl);
+    },[audioUrl]);
+
+    useEffect(() => {
+        const backAction = () => {
+          // 오디오 중지
+          SoundPlayer.stop(); // 또는 SoundPlayer.pause()
+          return false; // 기본 뒤로가기 동작도 실행되게 함
+        };
+    
+        // 뒤로가기 버튼 이벤트 등록
+        const backHandler = BackHandler.addEventListener(
+          'hardwareBackPress',
+          backAction
+        );
+    
+        // 컴포넌트가 unmount되면 이벤트 해제
+        return () => backHandler.remove();
+      }, []);
 
     // 음악 재생/일시정지
     const playPause = () => {
@@ -88,30 +120,28 @@ const LyricMakeScreen = ({route, navigation}) => {
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
-    //첫 마운트 되었을 때 실행
-    useEffect(() => {
-        //setAudioUrl(requestData.audio_url);
-        SoundPlayer.loadUrl(audioUrl);
-        console.log(audioUrl);
-    },[requestData]);
-
+    const handlerhome = () => {
+        if (navigation.canGoBack()) {
+            navigation.popToTop();
+        }
+    };
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
             <Header></Header>
             <View style={[BaseStyles.contentContainer]}>
-                    <View style={[BaseStyles.topContainer, {justifyContent:'center'}]}>
+                    <View style={[BaseStyles.topContainer, {height:'auto'}]}>
                         <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
-                        <View style={[styles.frameTitle]}>
-                            <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{title}</Text>
-                        </View>
                     </View>
                     <View style={[BaseStyles.middleContainer, {justifyContent:'flex-start'}]}>
+                        <View style={[styles.frameTitle,{marginBottom:20}]}>
+                            <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{title}</Text>
+                        </View>
                         <View style={[styles.frameLyric]}>
                             <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{lyric}</Text>
                         </View>
                         
                     </View>
-                    <View style={[BaseStyles.bottomContainer]}>
+                    <View style={[BaseStyles.bottomContainer, {height:'auto'}]}>
                         {/* 현재 재생 시간 및 총 시간 */}
                         <View style={styles.timeContainer}>
                             <Text>{formatTime(currentTime)}</Text>
@@ -145,7 +175,13 @@ const LyricMakeScreen = ({route, navigation}) => {
                             <Image source={require('../assets/imgs/play.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
                         </>}
-
+                        {type == 'Gen' ?
+                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerhome}>
+                            <Text style={[BaseStyles.text, {color:'#000', fontSize:20}]}> 홈으로 </Text>
+                        </TouchableOpacity>
+                        :
+                        <></>
+                        }
                         </View>
                     
                 </View>
@@ -156,12 +192,12 @@ const LyricMakeScreen = ({route, navigation}) => {
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     scrollView:{
         flex:1,
@@ -187,7 +223,8 @@ const styles = StyleSheet.create({
         position: 'relative',
         borderRadius: 10,
         backgroundColor: '#f7f7f7',
-        height: "90%",
+        flex:1,
+        paddingVertical:40,
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
@@ -226,7 +263,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         width: 300,
-        marginBottom: 10,
+        marginVertical: 10,
       },
 });
 

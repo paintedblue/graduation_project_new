@@ -6,16 +6,28 @@ import { ScrollView } from "react-native-gesture-handler";
 
 const SongListScreen = ({route, navigation}) => {
 //개발용 더미 데이터!
-const exData = [{"created_at": "2024-09-17T19:38:30.716Z", 
-            "id": "b75bae35-8041-4d42-a1b1-4e226a241206", 
-            "lyric": "나는 나는 지윤, 초콜릿을 좋아해\n근데 매일매일 양치해야 해\n노란 빛 칫솔로 씽씽씽\n건강한 미소로 빙글빙글 웃지", 
-            "title": "지윤이 양치송", 
-            },
-            {"created_at": "2024-09-17T19:38:30.716Z", 
-            "id": "b75bae35-8041-4d42-a1b1-4e226a241206", 
-            "lyric": "나는 나는 지윤, 초콜릿을 좋아해\n근데 매일매일 양치해야 해\n노란 빛 칫솔로 씽씽씽\n건강한 미소로 빙글빙글 웃지", 
-            "title": "지윤이 양치송", 
-            }]
+const exData = [{
+    "__v": 0, 
+    "_id": "1", 
+    "created_at": "2024-09-20T08:35:38.081Z", 
+    "id": "임의 id", 
+    "instrument": "Xylophone", 
+    "lyric": "임시 가사입니다", 
+    "songId": "2", 
+    "title": "임시 제목입니다.", 
+    "userId": "1"
+},
+{
+    "__v": 0, 
+    "_id": "1", 
+    "created_at": "2024-09-20T08:35:38.081Z", 
+    "id": "임의 id", 
+    "instrument": "Xylophone", 
+    "lyric": "임시 가사입니다", 
+    "songId": "2", 
+    "title": "임시 제목입니다.", 
+    "userId": "1"
+}]
 
 //끝
     const {userId} = route.params;
@@ -40,7 +52,7 @@ const exData = [{"created_at": "2024-09-17T19:38:30.716Z",
             throw new Error(`Network response was not ok`);
         }
         const data = await response.json();
-        setSongs(data.habits);
+        setSongs(data.songs);
         } catch (error) {
         console.error("Error during fetch operation:", error.message);
         Alert.alert("Error", error.message);
@@ -50,6 +62,7 @@ const exData = [{"created_at": "2024-09-17T19:38:30.716Z",
 
     const selectSong = (index) => {
         const requestData = songs[index];
+        console.log(requestData);
         navigation.navigate('PlayScreen', {userId, requestData, type});
     };
 
@@ -69,7 +82,7 @@ const exData = [{"created_at": "2024-09-17T19:38:30.716Z",
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
             <Header></Header>
             <View style={[BaseStyles.contentContainer]}>
-                    <View style={[BaseStyles.topContainer, {height:'15%'}]}>
+                    <View style={[BaseStyles.topContainer, {height:'auto'}]}>
                         <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
                         
                     </View>
@@ -94,12 +107,12 @@ const exData = [{"created_at": "2024-09-17T19:38:30.716Z",
 
 const styles = StyleSheet.create({
     title:{
-        fontSize: 35,
-        lineHeight:90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle:{
-        fontSize: 20,
-        lineHeight:40,
+        fontSize: 18,
+        lineHeight:30,
     },
     scrollView:{
         flex:1,
