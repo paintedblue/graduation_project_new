@@ -1,4 +1,4 @@
-import React, {useState,useEffect} from "react";
+import React, {useState, useEffect} from "react";
 import {Text, View, TouchableOpacity, Alert, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
@@ -14,7 +14,6 @@ const LyricQuestionScreen = ({route, navigation}) => {
     const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n"+getCategoryText(category)+"을 말해보세요."];
     const commonSpeechEx = ["'내가 좋아하는 건 치킨!'\n'나는 치킨이 좋아'"];
     
-
     useEffect(() => {
         VoiceUtil.setSpeechResultCallback((results) => {
         setAnswer(results[0]);
@@ -37,7 +36,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
         sendPreferenceToServer();
         setIsDoneRecording(true);
         }
-    }, [0, isDoneRecording]);
+    }, [isDoneRecording]);
     
     const sendPreferenceToServer = async () => {
         console.log("Sending request to server...");
@@ -47,7 +46,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
             headers: {
             'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ userId:userId.toString(), field:category, value: answer })
+            body: JSON.stringify({ userId: userId.toString(), field: category, value: answer })
         });
         console.log(category);
         if (!response.ok) {
@@ -80,91 +79,106 @@ const LyricQuestionScreen = ({route, navigation}) => {
 
     const handlerNext = () => {
         const tempSelectedCategories = {...selectedCategories, [category] : true};
-        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
-    }
+        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories});
+    };
 
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
-            <Header></Header>
+            <Header />
+            
             <View style={[BaseStyles.contentContainer]}>
-                    <View style={[BaseStyles.topContainer, {justifyContent:'center'}]}>
-                        <View style={[BaseStyles.row]}>
-                            <Frame categoryText={getCategoryLabel(category)} />
+                <View style={[BaseStyles.topContainer, {justifyContent:'center'}]}>
+                    <View style={[BaseStyles.row]}>
+                        <Frame categoryText={getCategoryLabel(category)} />
 
-                            {/* Text "은 뭘까?" placed next to the frame */}
-                            {isRecording ?
-                            <Text style={[BaseStyles.mainText, {fontSize:25}]}> 은 뭘까?</Text>
-                            :
-                            <></>
-                            }
-                        </View>
+                        {/* Text "은 뭘까?" placed next to the frame */}
+                        {isRecording ?
+                        <Text style={[BaseStyles.mainText, {fontSize:25}]}> 은 뭘까?</Text>
+                        :
+                        <></>
+                        }
                     </View>
-                    <View style={[BaseStyles.middleContainer]}>
-                    {isRecording ? 
-                        <View style={styles.imageContainer}>
-                            {/* Recording Image */}
-                            {onRecording ? 
-                            <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
-                            :
-                            <TouchableOpacity onPress={startSpeech}>
-                            <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
+                </View>
+                <View style={[BaseStyles.middleContainer]}>
+                {isRecording ? 
+                    <View style={styles.imageContainer}>
+                        {/* Recording Image */}
+                        {onRecording ? 
+                        <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
+                        :
+                        <TouchableOpacity onPress={startSpeech}>
+                        <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
+                        </TouchableOpacity>
+                        }
+                        {/* Common Speech Text below the recording image */}
+                        <Text style={[BaseStyles.mainText, {fontSize:22, lineHeight: 40}]}>{commonSpeechText}</Text>
+                        <Text style={[BaseStyles.text, {color:'#777',fontSize:18, lineHeight: 35}]}>{commonSpeechEx}</Text>
+                    </View>
+                : 
+                    <View style={styles.imageContainer}>
+                        <View style={styles.AnswerBox}> 
+                            <Text style={[styles.categoryText, {marginVertical:8}]}>{"'"+answer+"'"}</Text>
+                        </View>
+
+                        
+                            <TouchableOpacity style={BaseStyles.row} onPress={reRecording}>
+                            <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
+                            <Text style={styles.reRecordingText}>다시 말할래요</Text>
                             </TouchableOpacity>
-                            }
-                            {/* Common Speech Text below the recording image */}
-                            <Text style={[BaseStyles.mainText, {fontSize:22, lineHeight: 40}]}>{commonSpeechText}</Text>
-                            <Text style={[BaseStyles.text, {color:'#777',fontSize:18, lineHeight: 35}]}>{commonSpeechEx}</Text>
-                        </View>
-                    : 
-                        <View style={styles.imageContainer}>
-                            <View style={styles.AnswerBox}> 
-                                <Text style={[styles.categoryText, {marginVertical:8}]}>{"'"+answer+"'"}</Text>
-                            </View>
-
-                            
-                                <TouchableOpacity style={BaseStyles.row} onPress={reRecording}>
-                                <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
-                                <Text style={styles.reRecordingText}>다시 말할래요</Text>
-                                </TouchableOpacity>
-                        </View>
-                    }
                     </View>
-                    <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                    {isRecording?
+                }
+                </View>
+                <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
+                    
+                    {/* Back Button on the bottom left */}
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
+                    </TouchableOpacity>
+
+                    {/* Next Button on the bottom right */}
+                    {isRecording ? 
                     <></>
                     :
-                    
                         <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
                         </TouchableOpacity>
-                    
                     }
-                    </View>
-                    
                 </View>
+            </View>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
-    title:{
+    title: {
         fontSize: 35,
-        lineHeight:90,
+        lineHeight: 90,
     },
-    subtitle:{
+    subtitle: {
         fontSize: 20,
-        lineHeight:40,
+        lineHeight: 40,
     },
-    bottomContainer:{
-        justifyContent:'flex-end',
-        alignItems:'flex-end',
-        padding:20,
+    bottomContainer: {
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
     },
-    nextButton:{
-        width:90,
-        height:90,
+    nextButton: {
+        width: 90,
+        height: 90,
+    },
+    backButton: {
+        width: 90,
+        height: 90,
+    },
+    backButtonImage: {
+        width: 90,
+        height: 90,
     },
     frameDiv: {
-        width: 230, // Increased the width of the frame
+        width: 270, 
         position: 'relative',
         borderRadius: 10,
         backgroundColor: '#f7f7f7',
@@ -177,10 +191,10 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
-        flexDirection: 'row', // To position the text and checkmark in a row
+        flexDirection: 'row',
     },
     categoryText: {
-        width: 220,
+        width: 280,  
         position: 'relative',
         fontSize: 21,
         letterSpacing: 2,
@@ -193,12 +207,12 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 0, height: 4 },
         textShadowRadius: 4,
     },
-    AnswerBox: { //임시 적으로 만들어 놓은 확인 창
+    AnswerBox: {
         backgroundColor: '#F5F5DC',
         borderRadius: 20,
         height: 300,
-        width:300,
-        margin:10,
+        width: 300,
+        margin: 10,
         alignItems: 'center',
         justifyContent: 'flex-end',
     },
@@ -207,45 +221,42 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     recordImage: {
-        width: 150,  // Increased width
-        height: 150,  // Increased height
+        width: 150,  
+        height: 150,  
     },
     reRecordingImage: {
         width: 50,
         height: 50,
         marginRight: 20,
-      },
-      reRecordingText: {
+    },
+    reRecordingText: {
         fontSize: 22,
         fontFamily: 'Jua-Regular',
-      },
+    },
 });
 
 const Frame = ({ categoryText }) => {
     return (
-    <View style={styles.frameDiv}>
-        {/* Category text with emoji */}
-        <Text style={styles.categoryText}>{categoryText}</Text>
-    </View>
+        <View style={styles.frameDiv}>
+            <Text style={styles.categoryText}>{categoryText}</Text>
+        </View>
     );
 };
 
 const getCategoryLabel = (category) => {
     const categoryLabels = {
-    likeFood: "내가 좋아하는 음식 🍗",
-    likeAnimal: "내가 좋아하는 동물 🐰",
-    likeColor: "내가 좋아하는 색깔 🍀",
-    likeCharacter: "내가 좋아하는 캐릭터 🐳"
+        likeFood: "내가 좋아하는 음식 🍗",
+        likeAnimalOrCharacter: "내가 좋아하는 캐릭터나 동물 🐰🐳", 
+        likeColor: "내가 좋아하는 색깔 🍀",
     };
     return categoryLabels[category] || "내가 좋아하는 카테고리";
 };
 
 const getCategoryText = (category) => {
     const categoryLabels = {
-    likeFood: "음식",
-    likeAnimal: "동물",
-    likeColor: "색깔",
-    likeCharacter: "캐릭터"
+        likeFood: "음식",
+        likeAnimalOrCharacter: "캐릭터나 동물", 
+        likeColor: "색깔",
     };
     return categoryLabels[category] || "카테고리";
 };

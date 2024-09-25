@@ -4,7 +4,7 @@ import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 import { ScrollView } from "react-native-gesture-handler";
 
-const HabirScreen = ({route, navigation}) => {
+const HabitScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
     const exData = {"habits" :  [
         { "name": "편식", "selected": true },
@@ -21,7 +21,6 @@ const HabirScreen = ({route, navigation}) => {
 
     const maintitleText = "습관 입력하기"
     const subtitleText = "아이가 잘 해냈으면 하는 습관을 입력해주세요.\nex. 양치하기, 손씻기"
-
 
     //첫 마운트 되었을 때 실행
     useEffect(() => {
@@ -86,8 +85,6 @@ const HabirScreen = ({route, navigation}) => {
     };
 
     const selectHabit = async(index) => {
-        // 아래는 임시적인 예시이며 실제론 데이터 전달 해야함.
-        //???
         try {
             const response = await fetch('http://15.165.249.244:3000/api/habit/toggle', {
                 method: 'POST',
@@ -123,59 +120,66 @@ const HabirScreen = ({route, navigation}) => {
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
             <Header></Header>
+            
             <View style={[BaseStyles.contentContainer]}>
-                    <View style={[BaseStyles.topContainer]}>
-                        <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
-                        <Text style={[BaseStyles.mainText, styles.subtitle]}>{subtitleText}</Text>
-                    </View>
-                    <View style={[BaseStyles.middleContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerOpenPopUP}>
-                            <View style={[styles.habitBox]}>
-                                    <Text style={[BaseStyles.text, styles.addText]}>+</Text>
-                            </View>
-                        </TouchableOpacity>
-                        <ScrollView style={[styles.scrollView]}>
-                            {habits.map((habit, index) => (
-                                <TouchableOpacity style={[BaseStyles.button]} onPress={() => selectHabit(index)}>
+                <View style={[BaseStyles.topContainer]}>
+                    <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
+                    <Text style={[BaseStyles.mainText, styles.subtitle]}>{subtitleText}</Text>
+                </View>
+                <View style={[BaseStyles.middleContainer]}>
+                    <TouchableOpacity style={[BaseStyles.button]} onPress={handlerOpenPopUP}>
+                        <View style={[styles.habitBox]}>
+                            <Text style={[BaseStyles.text, styles.addText]}>+</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <ScrollView style={[styles.scrollView]}>
+                        {habits.map((habit, index) => (
+                            <TouchableOpacity key={index} style={[BaseStyles.button]} onPress={() => selectHabit(index)}>
                                 <View style={[styles.habitBox, habit.selected ? styles.selectBox:null]}>
-                                        <Text style={[BaseStyles.text, {fontSize: 25, color:'#000'}]}>{habit.name}</Text>
+                                    <Text style={[BaseStyles.text, {fontSize: 25, color:'#000'}]}>{habit.name}</Text>
                                 </View>
                             </TouchableOpacity>
-                            ))
-                            }
-                        </ScrollView>
-                    </View>
-                    <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
-                            <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
-                        </TouchableOpacity>
-                    </View>
+                        ))}
+                    </ScrollView>
+                </View>
+                
+                <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
+                    {/* Back Button */}
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
+                    </TouchableOpacity>
                     
+                    {/* Next Button */}
+                    <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
+                        <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
+                    </TouchableOpacity>
                 </View>
-                {popup ? 
-                <View style={[styles.popupBg]}>
-                    <View style={[styles.popupWin]}>
-                        <Text style={[BaseStyles.text, {fontSize:25}]}>습관 입력하기</Text>
-                        <TextInput style={styles.inputField}
-                        placeholder="습관을 입력하세요"
-                        placeholderTextColor="#999"
-                        value={newHabit}
-                        onChangeText={setNewHabit}
-                        autoFocus={true}
-                        keyboardType="default"
-                        returnKeyType="done"
-                        />
-                        <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
-                            <Text style={[BaseStyles.text, {color:'#000'}]}>완료</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.closeButton} onPress={handlerClosePopUP}>
-                            <Text style={[BaseStyles.text, {fontSize:30}]}>x</Text>
-                        </TouchableOpacity>
-                    </View>
+            </View>
+            
+            {popup ? 
+            <View style={[styles.popupBg]}>
+                <View style={[styles.popupWin]}>
+                    <Text style={[BaseStyles.text, {fontSize:25}]}>습관 입력하기</Text>
+                    <TextInput style={styles.inputField}
+                    placeholder="습관을 입력하세요"
+                    placeholderTextColor="#999"
+                    value={newHabit}
+                    onChangeText={setNewHabit}
+                    autoFocus={true}
+                    keyboardType="default"
+                    returnKeyType="done"
+                    />
+                    <TouchableOpacity style={styles.completeButton} onPress={handleCustomHabitSubmit}>
+                        <Text style={[BaseStyles.text, {color:'#000'}]}>완료</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.closeButton} onPress={handlerClosePopUP}>
+                        <Text style={[BaseStyles.text, {fontSize:30}]}>x</Text>
+                    </TouchableOpacity>
                 </View>
-                :
-                <></>
-                }
+            </View>
+            :
+            <></>
+            }
         </View>
     )
 };
@@ -205,7 +209,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
-    
     addText:{
         fontSize:35,
         color:"#000",
@@ -214,12 +217,13 @@ const styles = StyleSheet.create({
         fontSize:20,
         color:"#000",
     },
-
     bottomContainer:{
         height:"15%",
-        justifyContent:'flex-end',
-        alignItems:'flex-end',
-        padding:20,
+        justifyContent:'space-between',
+        alignItems:'center',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
     },
     nextButton:{
         width:90,
@@ -263,7 +267,15 @@ const styles = StyleSheet.create({
     },
     selectBox:{
         backgroundColor:'#6E77FB'
+    },
+    backButton:{
+        width:90,
+        height:90,
+    },
+    backButtonImage: {
+        width: 90,
+        height: 90,
     }
 });
 
-export default HabirScreen;
+export default HabitScreen;
