@@ -84,8 +84,6 @@ const HabitScreen = ({ route, navigation }) => {
     };
 
     const selectHabit = async(index) => {
-        // 아래는 임시적인 예시이며 실제론 데이터 전달 해야함.
-        //???
         try {
             const response = await fetch('http://192.168.0.31:3000/api/habit/toggle', {
                 method: 'POST',

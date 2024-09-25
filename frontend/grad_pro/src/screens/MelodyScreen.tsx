@@ -13,12 +13,10 @@ const MelodyScreen = ({route, navigation}) => {
     const subtitleText = "노래에 넣고 싶은 악기를 골라볼까요?\n악기를 클릭하면 연주돼요."
 
     const handlerCheck = (instrument) => {
-        //요청
         setSelect(instrument);
     };
 
     const handlerNext = async() => {
-        //요청
         try {
             const response = await fetch('http://192.168.0.31:3000/api/instrument', {
                 method: 'POST',
@@ -41,10 +39,10 @@ const MelodyScreen = ({route, navigation}) => {
             }
     };
 
-
     return (
         <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
             <Header></Header>
+            
             <View style={[BaseStyles.contentContainer]}>
                     <View style={[BaseStyles.topContainer]}>
                         <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
@@ -72,17 +70,23 @@ const MelodyScreen = ({route, navigation}) => {
                             <Image source={require('../assets/imgs/iconX.png')}/>
                             <Text style={styles.categoryText}>실로폰</Text>
                         </TouchableOpacity>
-                        </View>
-                    </View>
-                    <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
-                            <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
-                        </TouchableOpacity>
                     </View>
                 </View>
                 
+                <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
+                    {/* Back Button */}
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
+                    </TouchableOpacity>
+
+                    {/* Next Button */}
+                    <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
+                        <Image source={require('../assets/imgs/right_arrow.png')} style={styles.nextButton}></Image>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
-    )
+    );
 };
 
 const styles = StyleSheet.create({
@@ -96,20 +100,6 @@ const styles = StyleSheet.create({
     },
     scrollView:{
         flex:1,
-    },
-    habitBox:{
-        justifyContent:'center',
-        alignItems:'center',
-        borderRadius: 35,
-        width:250,
-        height:70,
-        backgroundColor:'#FFF',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5,
-        marginVertical:5,
     },
     frameDiv: {
         width: 150, 
@@ -126,42 +116,36 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     categoryText: {
-        position: 'relative',
         fontSize: 21,
         letterSpacing: 2,
         lineHeight: 30,
         fontFamily: 'Jua-Regular',
         color: '#000',
         textAlign: 'center',
-        height: 30,
         textShadowColor: 'rgba(0, 0, 0, 0.25)',
         textShadowOffset: { width: 0, height: 4 },
         textShadowRadius: 4,
     },
-    addText:{
-        fontSize:35,
-        color:"#000",
-    },
-    habitText:{
-        fontSize:20,
-        color:"#000",
-    },
-
     bottomContainer:{
-        height:"15%",
-        justifyContent:'flex-end',
-        alignItems:'flex-end',
-        padding:20,
+        height: "15%",
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexDirection: 'row',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
     },
     nextButton:{
-        width:90,
-        height:90,
+        width: 90,
+        height: 90,
     },
-    closeButton:{
-        position:'absolute',
-        right:20,
-        top:15,
-    }
+    backButton:{
+        width: 90,
+        height: 90,
+    },
+    backButtonImage: {
+        width: 90,
+        height: 90,
+    },
 });
 
 export default MelodyScreen;
