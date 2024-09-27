@@ -7,7 +7,7 @@ import { ScrollView } from "react-native-gesture-handler";
 const LyricMakeScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
     //끝
-    const {userId, exData} = route.params;
+    const {userId, requestData} = route.params;
     const [title, setTitle] = useState(""); 
     const [lyric, setLyric] = useState(""); 
     const type = "Lyric"        
@@ -15,7 +15,6 @@ const LyricMakeScreen = ({route, navigation}) => {
 
     useEffect(() => {
         requestLiric();
-        setLyric(exData.lyric)
     },[]);
 
     const requestLiric = async() =>{
