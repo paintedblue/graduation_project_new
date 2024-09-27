@@ -30,7 +30,7 @@ const HabitScreen = ({ route, navigation }) => {
     const requestHabitList = async () => {
         console.log("서버) 습관 요청");
         try {
-            const response = await fetch(`http://192.168.0.31:3000/api/habit/${userId}`, {
+            const response = await fetch(`http://10.22.164.133:3000/api/habit/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const HabitScreen = ({ route, navigation }) => {
     const handleCustomHabitSubmit = async () => {
         if (newHabit.trim() === '') return;
         try {
-            const response = await fetch('http://192.168.0.31:3000/api/habit', {
+            const response = await fetch('http://10.22.164.133:3000/api/habit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const HabitScreen = ({ route, navigation }) => {
 
     const selectHabit = async(index) => {
         try {
-            const response = await fetch('http://192.168.0.31:3000/api/habit/toggle', {
+            const response = await fetch('http://10.22.164.133:3000/api/habit/toggle', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

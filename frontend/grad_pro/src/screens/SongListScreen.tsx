@@ -42,7 +42,7 @@ const exData = [{
     const requestSongList = async () => {
         console.log("서버) 동요 리스트 요청");
         try {
-            const response = await fetch(`http://15.165.249.244:3000/api/song/${userId}`, {
+            const response = await fetch(`http://10.22.164.133:3000/api/song/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',

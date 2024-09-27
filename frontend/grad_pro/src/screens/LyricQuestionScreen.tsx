@@ -39,7 +39,7 @@ const LyricQuestionScreen = ({route, navigation}) => {
     const sendPreferenceToServer = async () => {
         console.log("Sending request to server...");
         try {
-        const response = await fetch('http://192.168.0.31:3000/api/preferences', {
+        const response = await fetch('http://10.22.164.133:3000/api/preferences', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

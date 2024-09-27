@@ -41,7 +41,7 @@ const LoadingScreen = ({route, navigation}) => {
         console.log("서버) 가사 생성 요청...");
         setIsLoading(true);
         try {
-            const response = await fetch('http://192.168.0.31:3000/api/lyric', {
+            const response = await fetch('http://10.22.164.133:3000/api/lyric', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const LoadingScreen = ({route, navigation}) => {
         console.log("서버) 동요 생성 요청...");
         setIsLoading(true);
         try {
-            const response = await fetch('http://192.168.0.31:3000/api/song', {
+            const response = await fetch('http://10.22.164.133:3000/api/song', {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
