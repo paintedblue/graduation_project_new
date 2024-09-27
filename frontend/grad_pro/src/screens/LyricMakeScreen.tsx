@@ -19,7 +19,7 @@ const LyricMakeScreen = ({route, navigation}) => {
 
     const requestLiric = async() =>{
         try {
-            const response = await fetch(`http://10.22.164.133:3000/api/lyric/${userId}`, {
+            const response = await fetch(`http://15.165.249.244:3000/api/lyric/${userId}`, {
                     method: 'GET',
                     headers: {
                     'Content-Type': 'application/json',

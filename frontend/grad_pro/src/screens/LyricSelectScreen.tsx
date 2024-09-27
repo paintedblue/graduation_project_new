@@ -1,10 +1,10 @@
-import React, {useState,useEffect} from "react";
-import {Text, View, TouchableOpacity, ImageBackground, Image, StyleSheet} from "react-native";
-import BaseStyles from "../styles/BaseStyles"
+import React, { useState, useEffect } from "react";
+import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { useFocusEffect } from "@react-navigation/native";
+import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
 
-const LyricSelectScreen = ({route, navigation}) => {
-
+const LyricSelectScreen = ({ route, navigation }) => {
     const { userId, tempSelectedCategories } = route.params;
     const type = "Lyric";
     const [complete, setComplete] = useState(false);
@@ -13,32 +13,39 @@ const LyricSelectScreen = ({route, navigation}) => {
     const subtitleText = "카테고리를 눌러 대답해보세요.";
 
     // 선택된 카테고리 상태 업데이트
-    const [selectedCategories, setSelectedCategories] = useState(tempSelectedCategories);
-    
-    useEffect(() => {
-        setSelectedCategories(tempSelectedCategories);
-        setComplete(Object.values(tempSelectedCategories).some(value => value === true));
-    }, [tempSelectedCategories]);
+    const [selectedCategories, setSelectedCategories] = useState(tempSelectedCategories || {});
 
+    // tempSelectedCategories가 변경되었을 때 실행
+
+     useEffect(() => {
+        const categories = tempSelectedCategories || {}; // tempSelectedCategories가 undefined일 경우 빈 객체로 초기화
+        setSelectedCategories(categories);
+        console.log('tempSelectedCategories:', categories);
+        setComplete(Object.values(categories).every(value => value === true));
+    }, [tempSelectedCategories]);
+    
     const handleCategoryPress = (category) => {
-        navigation.navigate('LyricQuestionScreen', {
-            userId, category, selectedCategories
-        });
+    console.log('선택한 카테고리:', category);
+    navigation.navigate('LyricQuestionScreen', {
+        userId, category, selectedCategories
+    });
     };
+    
+
 
     const handlerLyricMake = () => {
         navigation.navigate('LoadingScreen', { userId, type });
     };
 
     return (
-        <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
+        <View style={[BaseStyles.flexContainer, { backgroundColor: '#A5BEDF' }]}>
             <Header />
             <View style={[BaseStyles.contentContainer]}>
                 <View style={[BaseStyles.topContainer]}>
                     <Text style={[BaseStyles.mainText, styles.title]}>{maintitleText}</Text>
                     <Text style={[BaseStyles.mainText, styles.subtitle]}>{subtitleText}</Text>
                 </View>
-                <View style={[BaseStyles.middleContainer, {justifyContent: 'flex-start'}]}>
+                <View style={[BaseStyles.middleContainer, { justifyContent: 'flex-start' }]}>
                     <Frame
                         isChecked={selectedCategories.likeFood}
                         onPress={() => handleCategoryPress('likeFood')}
@@ -46,8 +53,8 @@ const LyricSelectScreen = ({route, navigation}) => {
                         내가 좋아하는 음식🍗
                     </Frame>
                     <Frame
-                        isChecked={selectedCategories.likeAnimal || selectedCategories.likeCharacter} // 동물이나 캐릭터 선택 여부
-                        onPress={() => handleCategoryPress('likeAnimalOrCharacter')} // 이 버튼을 눌렀을 때 처리할 동작
+                        isChecked={selectedCategories.likeAnimalOrCharacter}
+                        onPress={() => handleCategoryPress('likeAnimalOrCharacter')}
                     >
                         내가 좋아하는 {'\n'} 캐릭터나 동물🐰🐳
                     </Frame>
@@ -58,14 +65,14 @@ const LyricSelectScreen = ({route, navigation}) => {
                         내가 좋아하는 색깔🍀
                     </Frame>
                 </View>
-                <View style={[BaseStyles.bottomContainer, {justifyContent: 'center'}]}>
+                <View style={[BaseStyles.bottomContainer, { justifyContent: 'center' }]}>
                     {complete ?
                         <TouchableOpacity style={styles.button} onPress={handlerLyricMake}>
-                            <Text style={[BaseStyles.mainText, {fontSize: 25}]}>가사 생성하기</Text>
+                            <Text style={[BaseStyles.mainText, { fontSize: 25 }]}>가사 생성하기</Text>
                         </TouchableOpacity>
                         :
-                        <View style={[styles.button, {backgroundColor: 'rgba(0,82,212,0.5)'}]}>
-                            <Text style={[BaseStyles.mainText, {fontSize: 25, color: 'rgba(255,241,241,0.5)'}]}>가사 생성하기</Text>
+                        <View style={[styles.button, { backgroundColor: 'rgba(0,82,212,0.5)' }]}>
+                            <Text style={[BaseStyles.mainText, { fontSize: 25, color: 'rgba(255,241,241,0.5)' }]}>가사 생성하기</Text>
                         </View>
                     }
                 </View>
@@ -75,20 +82,20 @@ const LyricSelectScreen = ({route, navigation}) => {
 };
 
 const styles = StyleSheet.create({
-    title:{
+    title: {
         fontSize: 30,
-        lineHeight:60,
+        lineHeight: 60,
     },
-    subtitle:{
+    subtitle: {
         fontSize: 18,
-        lineHeight:30,
+        lineHeight: 30,
     },
     frameDiv: {
         width: '75%',
         position: 'relative',
         borderRadius: 10,
         backgroundColor: '#f7f7f7',
-        height: 70, 
+        height: 70,
         overflow: 'hidden',
         justifyContent: 'center',
         alignItems: 'center',
@@ -134,21 +141,23 @@ const styles = StyleSheet.create({
     },
 });
 
-const Frame = ({ children, isChecked, onPress, isLarge }) => {
+const Frame = ({ children, isChecked, onPress }) => {
+    console.log('isChecked:', isChecked);
     return (
-    <TouchableOpacity 
-        style={[styles.frameDiv, isLarge && styles.largeFrameDiv]} 
-        onPress={onPress}>
-        <Text style={styles.categoryText}>{children}</Text>
-        <Image
-        source={
-            isChecked
-              ? require('../assets/imgs/CheckMark_blue.png')
-              : require('../assets/imgs/CheckMark.png')
-        }
-        style={styles.checkMark}
-        />
-    </TouchableOpacity>
+        <TouchableOpacity
+            style={styles.frameDiv}
+            onPress={onPress}
+        >
+            <Text style={styles.categoryText}>{children}</Text>
+            <Image
+                source={
+                    isChecked
+                        ? require('../assets/imgs/CheckMark_blue.png')
+                        : require('../assets/imgs/CheckMark.png')
+                }
+                style={styles.checkMark}
+            />
+        </TouchableOpacity>
     );
 };
 

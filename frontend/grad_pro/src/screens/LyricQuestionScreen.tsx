@@ -1,150 +1,152 @@
-import React, {useState, useEffect} from "react";
-import {Text, View, TouchableOpacity, Alert, Image, StyleSheet} from "react-native";
-import BaseStyles from "../styles/BaseStyles"
+import React, { useState, useEffect } from "react";
+import { Text, View, TouchableOpacity, Alert, Image, StyleSheet } from "react-native";
+import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
 import VoiceUtil from '../utils/VoiceUtil';
 
-const LyricQuestionScreen = ({route, navigation}) => {
-    const {userId, category , selectedCategories} = route.params;
+const LyricQuestionScreen = ({ route, navigation }) => {
+    const { userId, category, selectedCategories } = route.params;
     const [isRecording, setIsRecording] = useState(true);
     const [isDoneRecording, setIsDoneRecording] = useState(true);
     const [onRecording, setOnRecording] = useState(false);
     const [answer, setAnswer] = useState('');
 
-    const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n"+getCategoryText(category)+"을 말해보세요."];
+    const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n" + getCategoryText(category) + "을 말해보세요."];
     const commonSpeechEx = ["'내가 좋아하는 건 치킨!'\n'나는 치킨이 좋아'"];
-    
+
     useEffect(() => {
         VoiceUtil.setSpeechResultCallback((results) => {
-        setAnswer(results[0]);
-        setIsDoneRecording(false);
+            setAnswer(results[0]);
+            setIsDoneRecording(false);
+            setOnRecording(false);
         });
-    
+
         VoiceUtil.setErrorCallback((error) => {
-        Alert.alert("인식하지 못했습니다. 다시 입력해주세요.");
-        setOnRecording(false);
+            Alert.alert("인식하지 못했습니다. 다시 입력해주세요.");
+            setOnRecording(false);
         });
-    
+
         return () => {
-        VoiceUtil.destroyRecognizer();
+            VoiceUtil.destroyRecognizer();
         };
     }, []);
-    
+
     useEffect(() => {
         if (!isDoneRecording) {
-        sendPreferenceToServer();
+            sendPreferenceToServer();
+            setIsDoneRecording(true);
+
         }
     }, [isDoneRecording]);
-    
+
     const sendPreferenceToServer = async () => {
         console.log("Sending request to server...");
         try {
-        const response = await fetch('http://10.22.164.133:3000/api/preferences', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ userId: userId.toString(), field: category, value: answer })
-        });
-        console.log(category);
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Network response was not ok: ${errorText}`);
-        }
-        const data = await response.json();
-        console.log("Response data:", data);
-        setAnswer(data.keyword);
-        setIsRecording(false);
+            const response = await fetch('http://15.165.249.244:3000/api/preferences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: userId.toString(), field: category, value: answer })
+            });
+            console.log(category);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log("Response data:", data);
+            setAnswer(data.keyword);
+            setIsRecording(false);
         } catch (error) {
-        console.error("Error during fetch operation:", error.message);
-        Alert.alert("Error", error.message);
-        }
-        finally{
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+        } finally {
             setIsDoneRecording(true);
             setOnRecording(false);
         }
     };
-    
+
     const startSpeech = () => {
         if (!onRecording) {
-        VoiceUtil.startListening();
-        setOnRecording(true);
+            VoiceUtil.startListening();
+            setOnRecording(true);
         } else {
-        VoiceUtil.stopListening();
-        setOnRecording(false);
+            VoiceUtil.stopListening();
+            setOnRecording(false);
         }
     };
-    
+
     const reRecording = () => {
         setIsRecording(true);
     };
 
     const handlerNext = () => {
-        const tempSelectedCategories = {...selectedCategories, [category] : true};
-        navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories});
+        const tempSelectedCategories = { ...selectedCategories, [category]: true };
+        // Navigate to the next screen with updated categories
+        navigation.navigate('LyricSelectScreen', { userId, tempSelectedCategories });
     };
 
     return (
-        <View style={[BaseStyles.flexContainer, {backgroundColor: '#A5BEDF'}]}>
+        <View style={[BaseStyles.flexContainer, { backgroundColor: '#A5BEDF' }]}>
             <Header />
-            
+
             <View style={[BaseStyles.contentContainer]}>
-                <View style={[BaseStyles.topContainer, {justifyContent:'center'}]}>
+                <View style={[BaseStyles.topContainer, { justifyContent: 'center' }]}>
                     <View style={[BaseStyles.row]}>
                         <Frame categoryText={getCategoryLabel(category)} />
 
                         {/* Text "은 뭘까?" placed next to the frame */}
-                        {isRecording ?
-                        <Text style={[BaseStyles.mainText, {fontSize:25}]}> 은 뭘까?</Text>
-                        :
-                        <></>
-                        }
+                        {isRecording ? (
+                            <Text style={[BaseStyles.mainText, { fontSize: 25 }]}> 은 뭘까?</Text>
+                        ) : (
+                            <></>
+                        )}
                     </View>
                 </View>
                 <View style={[BaseStyles.middleContainer]}>
-                {isRecording ? 
-                    <View style={styles.imageContainer}>
-                        {/* Recording Image */}
-                        {onRecording ? 
-                        <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
-                        :
-                        <TouchableOpacity onPress={startSpeech}>
-                        <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
-                        </TouchableOpacity>
-                        }
-                        {/* Common Speech Text below the recording image */}
-                        <Text style={[BaseStyles.mainText, {fontSize:22, lineHeight: 40}]}>{commonSpeechText}</Text>
-                        <Text style={[BaseStyles.text, {color:'#777',fontSize:18, lineHeight: 35}]}>{commonSpeechEx}</Text>
-                    </View>
-                : 
-                    <View style={styles.imageContainer}>
-                        <View style={styles.AnswerBox}> 
-                            <Text style={[styles.categoryText, {marginVertical:8}]}>{"'"+answer+"'"}</Text>
+                    {isRecording ? (
+                        <View style={styles.imageContainer}>
+                            {/* Recording Image */}
+                            {onRecording ? (
+                                <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
+                            ) : (
+                                <TouchableOpacity onPress={startSpeech}>
+                                    <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
+                                </TouchableOpacity>
+                            )}
+                            {/* Common Speech Text below the recording image */}
+                            <Text style={[BaseStyles.mainText, { fontSize: 22, lineHeight: 40 }]}>{commonSpeechText}</Text>
+                            <Text style={[BaseStyles.text, { color: '#777', fontSize: 18, lineHeight: 35 }]}>{commonSpeechEx}</Text>
                         </View>
+                    ) : (
+                        <View style={styles.imageContainer}>
+                            <View style={styles.AnswerBox}>
+                                <Text style={[styles.categoryText, { marginVertical: 8 }]}>{`'${answer}'`}</Text>
+                            </View>
 
-                        
                             <TouchableOpacity style={BaseStyles.row} onPress={reRecording}>
-                            <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
-                            <Text style={styles.reRecordingText}>다시 말할래요</Text>
+                                <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
+                                <Text style={styles.reRecordingText}>다시 말할래요</Text>
                             </TouchableOpacity>
-                    </View>
-                }
+                        </View>
+                    )}
                 </View>
                 <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
-                    
+
                     {/* Back Button on the bottom left */}
                     <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                         <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
                     </TouchableOpacity>
 
                     {/* Next Button on the bottom right */}
-                    {isRecording ? 
-                    <></>
-                    :
+                    {isRecording ? (
+                        <></>
+                    ) : (
                         <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
-                            <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]}></Image>
+                            <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]} />
                         </TouchableOpacity>
-                    }
+                    )}
                 </View>
             </View>
         </View>
@@ -180,7 +182,7 @@ const styles = StyleSheet.create({
         height: 90,
     },
     frameDiv: {
-        width: 270, 
+        width: 270,
         position: 'relative',
         borderRadius: 10,
         backgroundColor: '#f7f7f7',
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     categoryText: {
-        width: 280,  
+        width: 280,
         position: 'relative',
         fontSize: 21,
         letterSpacing: 2,
@@ -223,8 +225,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     recordImage: {
-        width: 150,  
-        height: 150,  
+        width: 150,
+        height: 150,
     },
     reRecordingImage: {
         width: 50,
@@ -248,7 +250,7 @@ const Frame = ({ categoryText }) => {
 const getCategoryLabel = (category) => {
     const categoryLabels = {
         likeFood: "내가 좋아하는 음식 🍗",
-        likeAnimalOrCharacter: "내가 좋아하는 캐릭터나 동물 🐰🐳", 
+        likeAnimalOrCharacter: "내가 좋아하는 캐릭터나 동물 🐰🐳",
         likeColor: "내가 좋아하는 색깔 🍀",
     };
     return categoryLabels[category] || "내가 좋아하는 카테고리";
@@ -257,7 +259,7 @@ const getCategoryLabel = (category) => {
 const getCategoryText = (category) => {
     const categoryLabels = {
         likeFood: "음식",
-        likeAnimalOrCharacter: "캐릭터나 동물", 
+        likeAnimalOrCharacter: "캐릭터나 동물",
         likeColor: "색깔",
     };
     return categoryLabels[category] || "카테고리";

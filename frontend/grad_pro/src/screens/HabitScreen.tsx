@@ -30,7 +30,7 @@ const HabitScreen = ({ route, navigation }) => {
     const requestHabitList = async () => {
         console.log("서버) 습관 요청");
         try {
-            const response = await fetch(`http://10.22.164.133:3000/api/habit/${userId}`, {
+            const response = await fetch(`http://15.165.249.244:3000/api/habit/${userId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -51,7 +51,7 @@ const HabitScreen = ({ route, navigation }) => {
     const handleCustomHabitSubmit = async () => {
         if (newHabit.trim() === '') return;
         try {
-            const response = await fetch('http://10.22.164.133:3000/api/habit', {
+            const response = await fetch('http://15.165.249.244:3000/api/habit', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -85,7 +85,7 @@ const HabitScreen = ({ route, navigation }) => {
 
     const selectHabit = async(index) => {
         try {
-            const response = await fetch('http://10.22.164.133:3000/api/habit/toggle', {
+            const response = await fetch('http://15.165.249.244:3000/api/habit/toggle', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -106,15 +106,38 @@ const HabitScreen = ({ route, navigation }) => {
         }
     };
 
-    const handlerNext = () => {
-        const tempSelectedCategories = {
-            likeFood: false,
-            likeAnimal: false,
-            likeColor: false,
-            likeCharacter: false,
-        };
-        navigation.navigate('LyricSelectScreen', { userId, tempSelectedCategories });
-    };
+    const handlerNext = async() => {
+        if(habits.every(habit => habit.selected === false)){
+            Alert.alert("습관을 하나 이상 체크해야 합니다.");
+        }else{
+
+        
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/preferences/reset', {
+                method: 'POST',
+                headers: {
+                'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId:userId.toString()})
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const tempSelectedCategories = {
+                likeFood: false,
+                likeAnimalOrCharacter: false,
+                likeColor: false,
+            };
+            navigation.navigate('LyricSelectScreen', {userId, tempSelectedCategories})
+            } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+            }
+        }
+    }
+
 
     return (
         <View style={[BaseStyles.flexContainer, { backgroundColor: '#A5BEDF' }]}>
@@ -184,12 +207,13 @@ const HabitScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
     title: {
-        fontSize: 35,
-        lineHeight: 90,
+        fontSize: 30,
+        lineHeight:60,
     },
     subtitle: {
-        fontSize: 20,
-        lineHeight: 40,
+        fontSize: 18,
+        lineHeight:30,
+
     },
     scrollView: {
         flex: 1,
