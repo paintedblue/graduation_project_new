@@ -111,6 +111,11 @@ const HabirScreen = ({route, navigation}) => {
     };
 
     const handlerNext = async() => {
+        if(habits.every(habit => habit.selected === false)){
+            Alert.alert("습관을 하나 이상 체크해야 합니다.");
+        }else{
+
+        
         try {
             const response = await fetch('http://15.165.249.244:3000/api/preferences/reset', {
                 method: 'POST',
@@ -135,6 +140,7 @@ const HabirScreen = ({route, navigation}) => {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
             }
+        }
     }
 
     return (
