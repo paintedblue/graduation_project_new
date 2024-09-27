@@ -20,7 +20,7 @@ const BaseStyles = StyleSheet.create({
         width:'100%'
     },
     topContainer:{
-        height:'25%',
+        height:'20%',
         width:'100%',
         justifyContent:'flex-start',
         alignItems:'center',
