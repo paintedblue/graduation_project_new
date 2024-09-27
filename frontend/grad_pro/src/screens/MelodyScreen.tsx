@@ -53,23 +53,23 @@ const MelodyScreen = ({route, navigation}) => {
                     <View style={[BaseStyles.middleContainer, {justifyContent:"flex-start"}]}>
                         <View style={BaseStyles.row}>
                         <TouchableOpacity style={[styles.frameDiv, select === "Piano"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Piano")}>
-                            <Image source={require('../assets/imgs/icons8-p.png')}/>
+                            <Image source={require('../assets/imgs/iconP.png')}/>
                             <Text style={styles.categoryText}>피아노</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.frameDiv, select === "Guitar"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Guitar")}>
-                            <Image source={require('../assets/imgs/icons8-g.png')}/>
+                            <Image source={require('../assets/imgs/iconG.png')}/>
                             <Text style={styles.categoryText}>기타</Text>
                         </TouchableOpacity>
                         </View>
                         <View style={BaseStyles.row}>
                         <TouchableOpacity style={[styles.frameDiv, select === "Recorder"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Recorder")}>
-                            <Image source={require('../assets/imgs/icons8-r.png')}/>
+                            <Image source={require('../assets/imgs/iconR.png')}/>
                             <Text style={styles.categoryText}>리코더</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={[styles.frameDiv, select === "Xylophone"?{backgroundColor : '#4F8FED'}:{}]} onPress={() => handlerCheck("Xylophone")}>
-                            <Image source={require('../assets/imgs/icons8-x.png')}/>
+                            <Image source={require('../assets/imgs/iconX.png')}/>
                             <Text style={styles.categoryText}>실로폰</Text>
                         </TouchableOpacity>
                         </View>

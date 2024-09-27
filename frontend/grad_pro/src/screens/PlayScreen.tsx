@@ -4,6 +4,7 @@ import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
 import SoundPlayer from 'react-native-sound-player';
 import Slider from '@react-native-community/slider';
+import { ScrollView } from "react-native-gesture-handler";
 
 const LyricMakeScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
@@ -137,7 +138,9 @@ const LyricMakeScreen = ({route, navigation}) => {
                             <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{title}</Text>
                         </View>
                         <View style={[styles.frameLyric]}>
-                            <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{lyric}</Text>
+                            <ScrollView style={[styles.scrollView]}>
+                                <Text style={[BaseStyles.text, {color:'#000', fontSize:25}]}>{lyric}</Text>
+                            </ScrollView>
                         </View>
                         
                     </View>

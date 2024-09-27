@@ -2,13 +2,12 @@ import React, {useState, useEffect} from "react";
 import {Text, View, TouchableOpacity, TextInput, Image, StyleSheet} from "react-native";
 import BaseStyles from "../styles/BaseStyles"
 import Header from "../components/TabBarButtons";
+import { ScrollView } from "react-native-gesture-handler";
 
 const LyricMakeScreen = ({route, navigation}) => {
     //개발용 더미 데이터!
-    const exData = {
-    }
     //끝
-    const {userId, requestData} = route.params;
+    const {userId, exData} = route.params;
     const [title, setTitle] = useState(""); 
     const [lyric, setLyric] = useState(""); 
     const type = "Lyric"        
@@ -16,6 +15,7 @@ const LyricMakeScreen = ({route, navigation}) => {
 
     useEffect(() => {
         requestLiric();
+        setLyric(exData.lyric)
     },[]);
 
     const requestLiric = async() =>{
@@ -56,7 +56,9 @@ const LyricMakeScreen = ({route, navigation}) => {
                     </View>
                     <View style={[BaseStyles.middleContainer, {justifyContent:'flex-start'}]}>
                         <View style={[styles.frameLyric]}>
+                        <ScrollView style={[styles.scrollView]}>
                             <Text style={[BaseStyles.text, {color:'#000', fontSize:20}]}>{lyric}</Text>
+                        </ScrollView>
                         </View>
                         <TouchableOpacity style={[BaseStyles.row, {marginTop:20}]} onPress={handlerReGenerate}>
                             <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
@@ -159,6 +161,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontFamily: 'Jua-Regular',
       },
+    
 });
 
 export default LyricMakeScreen;
