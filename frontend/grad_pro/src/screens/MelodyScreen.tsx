@@ -20,7 +20,7 @@ const MelodyScreen = ({route, navigation}) => {
     const handlerNext = async() => {
         //요청
         try {
-            const response = await fetch('http://15.165.249.244:3000/api/instrument', {
+            const response = await fetch('http://192.168.0.31:3000/api/instrument', {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',

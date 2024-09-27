@@ -17,20 +17,19 @@ const createExtractPrompt = (sentence, field) => {
   },
   Output_formation : 
   {
-    "keyword" : ,
-    "color" : ,
-    "image_description" : 
+    "keyword" : "",
+    "color" : "",
+    "image_description" : ""
   }`;
 };
 
 // 키워드 추출 GPT API를 호출하는 함수
 const extractKeyword = async (sentence, field) => {
   const prompt = createExtractPrompt(sentence, field);
-  // console.log(prompt);
   
   try {
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: 'gpt-4', 
+      model: 'gpt-4o', 
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 100
     }, {
@@ -41,7 +40,6 @@ const extractKeyword = async (sentence, field) => {
     });
     
     const gptText = response.data.choices[0].message.content.trim();
-    // console.log(gptText);
 
     // 응답이 JSON 형식인지 검증
     if (gptText.startsWith('{') && gptText.endsWith('}')) {
@@ -187,30 +185,24 @@ const createGPTPrompt = (userInfo) => {
 
 // 가사 생성 GPT API를 호출하는 함수
 const callGPTApi = async (prompt) => {
-    // console.log(`Bearer ${process.env.OPENAI_API_KEY}`)
-  for (let i = 0; i < 3; i++) {
-    try {
-      const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-        model: 'gpt-4',
-        messages: [{ role: 'user', content: prompt }],
-        max_tokens: 300
-      }, {
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data.choices[0].message.content;
-    } catch (error) {
-      console.error(`GPT API 호출 오류 (시도 ${i + 1}/${retries}):`, error.message);
-      if (i === retries - 1) {
-        throw new Error('Error generating song lyrics after multiple attempts: ' + error.message); // 최대 시도 후 에러 발생
+  try {
+    const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content: prompt }],
+      max_tokens: 300
+    }, {
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json'
       }
-    }
+    });
+
+    return response.data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('Error calling GPT API:', error.response ? error.response.data : error.message);
+    throw error;
   }
 };
-
-
 
 module.exports = {
   directKeyword,
