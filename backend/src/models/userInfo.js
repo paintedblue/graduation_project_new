@@ -14,7 +14,7 @@ const userInfoSchema = new mongoose.Schema({
     image_description: { type: String, required: false }
   },
   
-  likeAnimal: {
+  likeAnimalOrCharacter: {
     keyword: { type: String, required: false },
     color: { type: String, required: false },
     image_description: { type: String, required: false }
@@ -25,15 +25,9 @@ const userInfoSchema = new mongoose.Schema({
     color: { type: String, required: false },
     image_description: { type: String, required: false }
   },
-
-  likeCharacter: {
-    keyword: { type: String, required: false },
-    color: { type: String, required: false },
-    image_description: { type: String, required: false }
-  },
   
   habits: [{ 
-    name: { type: String, required: true },  // 습관명
+    name: { type: String, required: false },  // 습관명
     selected: { type: Boolean, default: false }  // 선택 여부
   }]
 }, {

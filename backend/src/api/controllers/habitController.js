@@ -4,7 +4,7 @@ const { saveLog } = require('./logSaver');
 exports.getHabit = async (req, res) => {
   try {
     const { userId } = req.params;
-    const user = await UserInfo.findOne({ userId: userId });
+    let user = await UserInfo.findOne({ userId: userId });
     if (!user) {
       user = new UserInfo({ userId: userId });
     }

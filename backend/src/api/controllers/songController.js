@@ -19,11 +19,11 @@ exports.createSong = async (req, res) => {
         if (!currentSongBase.lyric || !currentSongBase.instrument) {
             return res.status(400).json({ message: "가사 또는 악기가 설정되지 않았습니다." });
         }
-
+        // nursery rhyme
         // 외부 API에 보낼 데이터 준비
         const songData = {
             prompt: `[Verse] ${currentSongBase.lyric}`,
-            tags: `children song, ${currentSongBase.instrument} accompaniment`, // 예: 'children song, piano'
+            tags: `nursery rhyme, children song, ${currentSongBase.instrument} accompaniment, only the first verse, a short song`, // 예: 'children song, piano'
             title: currentSongBase.title,
             make_instrumental: false,
             wait_audio: true
@@ -40,7 +40,7 @@ exports.createSong = async (req, res) => {
         });
 
         const data = await response.json(); 
-
+        console.log(data);
         // 첫 번째 응답 객체만 사용
         const firstSong = data[0];
 
@@ -50,8 +50,8 @@ exports.createSong = async (req, res) => {
             userId: currentSongBase.userId,
             created_at: firstSong.created_at, // 생성된 시간
             id: firstSong.id, // 외부 API에서 반환된 ID
-            lyric: firstSong.lyric, // 가사
-            title: firstSong.title, // 제목
+            lyric: currentSongBase.lyric, // 가사
+            title: currentSongBase.title, // 제목
             instrument: currentSongBase.instrument // 악기 정보
         });
 
@@ -84,10 +84,12 @@ exports.getSong = async (req, res) => {
 
         // 동요 정보 리스트 반환
         const songList = songs.map(song => ({
+            songId: song.songId,
+            userId: song.userId,
             created_at: song.created_at,
             id: song.id,
             lyric: song.lyric,
-            title: song.title
+            title: song.title,
         }));
 
         res.status(200).json({
@@ -104,3 +106,31 @@ exports.getSong = async (req, res) => {
     }
 };
 
+// 동요 삭제 (DELETE 요청)
+exports.deleteSong = async (req, res) => {
+    const { songId } = req.params; // songId를 URL에서 받아옴
+
+    try {
+        // songId로 해당 동요 찾기
+        const song = await Song.findOne({ songId });
+
+        if (!song) {
+            return res.status(404).json({ message: "해당 동요를 찾을 수 없습니다." });
+        }
+
+        // 동요 삭제
+        await Song.deleteOne({ songId });
+
+        // 로그 저장 (삭제된 동요 제목 포함)
+        await saveLog(song.userId, `'${song.title}' 제목의 동요가 삭제되었습니다.`, { songId: song.songId, id: song.id });
+
+        res.status(200).json({ message: "동요가 성공적으로 삭제되었습니다." });
+
+    } catch (error) {
+        console.error('동요 삭제 중 오류 발생:', error);
+        res.status(500).json({
+            message: '동요 삭제 중 오류 발생',
+            error: error.message
+        });
+    }
+};
