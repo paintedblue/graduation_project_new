@@ -115,36 +115,67 @@ const directKeyword = async (value, field) => {
 };
 
 
-// 가사 생성 GPT 프롬프트를 생성하는 함수
 const createGPTPrompt = (userInfo) => {
   const { userId, likeAnimalOrCharacter, likeColor, likeFood, habits } = userInfo;
 
-  // 선택된 습관들만 필터링
-  const selectedHabits = habits && habits.length > 0
-    ? habits.filter(habit => habit.selected).map(habit => habit.name).join(', ') : '습관이 없습니다';
-
   // 필수 데이터가 없을 경우 공백 또는 기본값으로 처리
-  const animalCharacterKeyword = likeAnimalOrCharacter && likeAnimalOrCharacter.keyword
-    ? likeAnimalOrCharacter.keyword : "";
+  const animalCharacterKeyword = likeAnimalOrCharacter?.keyword || "";
+  const colorKeyword = likeColor?.keyword || "";
+  const foodKeyword = likeFood?.keyword || "";
+  const selectedHabits = habits?.filter(habit => habit.selected).map(habit => habit.name).join(', ') || '습관이 없습니다';
 
-  const colorKeyword = likeColor && likeColor.keyword
-    ? likeColor.keyword : "";
+  // 동물 또는 캐릭터에 따른 의성어 맵핑
+  const animalSoundMap = {
+    '고양이': '야옹 야옹',
+    '강아지': '멍멍',
+    '병아리' : '삐약삐약',
+    '오리': '꽥꽥',
+    '소': '음매',
+    '돼지': '꿀꿀',
+    '호랑이': '어흥',
+    '늑대': '아우우',
+    '공룡': '크아아',
+    '개구리': '개굴개굴',
+    '닭': '꼬꼬닭',
+    '쥐' : '찍찍',
+    '코끼리' :'뿌우'
 
-  const foodKeyword = likeFood && likeFood.keyword
-    ? likeFood.keyword : "";
+  };
+
+  // 입력된 동물 또는 캐릭터에 해당하는 의성어 찾기 (기본값: '신나신나')
+  const animalSound = Object.keys(animalSoundMap).find(key => animalCharacterKeyword.includes(key)) 
+                       ? animalSoundMap[Object.keys(animalSoundMap).find(key => animalCharacterKeyword.includes(key))] 
+                       : '신나신나';
+
+  // 습관에 따른 의성어 및 의태어 추가
+  let habitSounds = [];
+  if (selectedHabits.includes('씻기')) habitSounds.push('쓱싹쓱싹');
+  if (selectedHabits.includes('정리')) habitSounds.push('반짝반짝');
+  if (selectedHabits.includes('먹기')) habitSounds.push('냠냠');
+  if (selectedHabits.includes('잠')) habitSounds.push('쿨쿨');
+  if (selectedHabits.includes('친구')) habitSounds.push('하하');
+
+  // 공통 의성어 및 의태어 목록 (습관에 특정 단어가 없을 때 사용할 것)
+  const commonSounds = ['깡총깡총', '폴짝폴짝', '오물오물', '반짝반짝', '쓱싹쓱싹', '쿨쿨', '하하하', '솔솔', '두근두근','콩닥콩닥'];
+
+  // 습관에 의성어가 없으면 공통 목록에서 추가
+  if (habitSounds.length === 0) {
+    habitSounds.push(...commonSounds);
+  }
 
   return `
-  너는 아이들을 위한 동요 작가이다. 다음 정보를 바탕으로, 5~7세 아이들이 이해하기 쉬운 짧은 동요 가사를 만들어.
+  너는 아이들을 위한 동요 작가이다. 다음 정보를 바탕으로, 5~7세 아이들이 이해하기 쉽고 교육적이며 짧은 동요 가사를 만들어.
 
-  1. 동물 또는 캐릭터: ${animalCharacterKeyword}
+  1. 동물 또는 캐릭터: ${animalCharacterKeyword} (${animalSound} 소리)
   2. 색깔: ${colorKeyword}
   3. 음식: ${foodKeyword}
   4. 습관: ${selectedHabits}
 
   동물 또는 캐릭터(${animalCharacterKeyword})와 '나'가 주인공이며, 이 캐릭터가 ${selectedHabits}을 즐거워하며 수행하는 내용을 가사에 포함해.
-  가사에 좋아하는 색깔(${colorKeyword})이나 음식(${foodKeyword})은 선택적으로 사용해.
-  가사는 유아의 상상력을 자극하고, 쉬운 단어를 사용해 4줄로 구성해. 
-  흥미를 끌 수 있도록 의성어와 의태어도 적절히 사용해.
+  가사에 좋아하는 색깔(${colorKeyword})과 음식(${foodKeyword})을 적절히 넣어.
+  가사는 유아의 상상력을 자극하고, 쉬운 단어를 사용해 4줄로 구성해. 동물 또는 캐릭터에 맞는 의성어(${animalSound})와 습관에 따른 의성어와 의태어(${habitSounds.join(', ')})를 사용해 흥미롭게 표현해.
+  만약 동물 또는 캐릭터에 맞는 의성어, 의태어가 없다면 ${commonSounds}에서만 골라서 사용해. 다른 효과음은 "절대" 사용하지마.
+  문법은 절대 틀리지마.
 
   최종 출력 형식:
   {
@@ -152,6 +183,7 @@ const createGPTPrompt = (userInfo) => {
     "lyric": "~~~~~~"
   }
   `;
+
   // return `
   // Task :
   // [
