@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, TouchableOpacity, Alert, Image, StyleSheet } from "react-native";
+import { Text, View,TextInput, TouchableOpacity, Alert, Image, StyleSheet } from "react-native";
 import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
 import VoiceUtil from '../utils/VoiceUtil';
@@ -10,6 +10,10 @@ const LyricQuestionScreen = ({ route, navigation }) => {
     const [isDoneRecording, setIsDoneRecording] = useState(true);
     const [onRecording, setOnRecording] = useState(false);
     const [answer, setAnswer] = useState('');
+    const [imageUrl, setImageUrl] = useState('https://picsum.photos/400/400');
+    const [popup, setpopup] = useState(false); 
+    const [newAnswer, setNewAnswer] = useState('');
+    const [isOk, setIsOk] = useState(true); 
 
     const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n" + getCategoryText(category) + "을 말해보세요."];
     const commonSpeechEx = ["'내가 좋아하는 건 치킨!'\n'나는 치킨이 좋아'"];
@@ -57,6 +61,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
             const data = await response.json();
             console.log("Response data:", data);
             setAnswer(data.keyword);
+            setImageUrl(data.image_url);
             setIsRecording(false);
         } catch (error) {
             console.error("Error during fetch operation:", error.message);
@@ -86,6 +91,46 @@ const LyricQuestionScreen = ({ route, navigation }) => {
         // Navigate to the next screen with updated categories
         navigation.navigate('LyricSelectScreen', { userId, tempSelectedCategories });
     };
+
+    
+    const handlerOpenPopUP = () => {
+        setNewAnswer(answer);
+        setpopup(true);
+    };
+
+    const handlerClosePopUP = () => {
+        setpopup(false);
+    };
+
+    const handlerInputSubmit = async() => {
+        console.log("Sending request to server...");
+        setIsOk(false);
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/preferences/direct', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ userId: userId.toString(), field: category, value: newAnswer })
+            });
+            console.log(category);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log("Response data:", data);
+            setAnswer(data.keyword);
+            setImageUrl(data.image_url);
+            handlerClosePopUP();
+        } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+        } 
+        finally{
+            setIsOk(true);
+        }
+      };
 
     return (
         <View style={[BaseStyles.flexContainer, { backgroundColor: '#A5BEDF' }]}>
@@ -122,7 +167,24 @@ const LyricQuestionScreen = ({ route, navigation }) => {
                     ) : (
                         <View style={styles.imageContainer}>
                             <View style={styles.AnswerBox}>
-                                <Text style={[styles.categoryText, { marginVertical: 8 }]}>{`'${answer}'`}</Text>
+
+                                <Image source={{ uri: imageUrl }} style={[{width:200, height:200}]}/>
+
+                                {/* <TextInput
+                                style={[styles.categoryText, {}]}
+                                placeholder=""
+                                placeholderTextColor="#999"
+                                value={answer}
+                                autoFocus={false}
+                                onChangeText={setAnswer}
+                                onSubmitEditing={handlerInputSubmit}
+                                /> */}
+
+                                <TouchableOpacity onPress={handlerOpenPopUP}>
+                                    <Text style={[styles.categoryText, { marginVertical: 8 }]}>{`'${answer}'`}</Text>
+                                </TouchableOpacity>
+                                
+                                <Text style={[BaseStyles.text, { fontSize:20, color:'#89888C', marginVertical: 7 }]}>{`텍스트를 누르면 수정할 수 있어요`}</Text>
                             </View>
 
                             <TouchableOpacity style={BaseStyles.row} onPress={reRecording}>
@@ -149,6 +211,36 @@ const LyricQuestionScreen = ({ route, navigation }) => {
                     )}
                 </View>
             </View>
+
+            {popup && (
+                <View style={[styles.popupBg]}>
+                    <View style={[styles.popupWin]}>
+                        <Text style={[BaseStyles.text, { fontSize: 25 }]}>직접 입력</Text>
+                        <TextInput
+                            style={styles.inputField}
+                            placeholder="습관을 입력하세요"
+                            placeholderTextColor="#999"
+                            value={newAnswer}
+                            onChangeText={setNewAnswer}
+                            autoFocus={true}
+                            keyboardType="default"
+                            returnKeyType="done"
+                        />
+                        {isOk?
+                        <TouchableOpacity style={styles.completeButton} onPress={handlerInputSubmit}>
+                            <Text style={[BaseStyles.text, { color: '#000' }]}>전송</Text>
+                        </TouchableOpacity>
+                        :
+                        <View style={styles.completeButton}>
+                            <Text style={[BaseStyles.text, { color: '#000' }]}>전송 중...</Text>
+                        </View>
+                        }
+                        <TouchableOpacity style={styles.closeButton} onPress={handlerClosePopUP}>
+                            <Text style={[BaseStyles.text, { fontSize: 30 }]}>x</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
         </View>
     );
 };
@@ -202,11 +294,9 @@ const styles = StyleSheet.create({
         position: 'relative',
         fontSize: 21,
         letterSpacing: 2,
-        lineHeight: 30,
         fontFamily: 'Jua-Regular',
         color: '#000',
         textAlign: 'center',
-        height: 30,
         textShadowColor: 'rgba(0, 0, 0, 0.25)',
         textShadowOffset: { width: 0, height: 4 },
         textShadowRadius: 4,
@@ -236,6 +326,42 @@ const styles = StyleSheet.create({
     reRecordingText: {
         fontSize: 22,
         fontFamily: 'Jua-Regular',
+    },
+    popupBg: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(150,150,150,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    popupWin: {
+        borderRadius: 10,
+        width: 300,
+        height: 200,
+        backgroundColor: '#0052D4',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    inputField: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255,255,255,0.6)',
+        borderRadius: 5,
+        width: '80%',
+        marginVertical: 20,
+    },
+    completeButton: {
+        backgroundColor: '#FFF',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+    },
+    closeButton: {
+        position: 'absolute',
+        right: 20,
+        top: 15,
     },
 });
 
