@@ -43,7 +43,6 @@ exports.savePreferences = async (req, res) => {
 
           // DALL·E API로 이미지 생성
           generatedImageUrl = await generateImage(parsedResponse);
-          console.log(generatedImageUrl);
 
         } else {
           console.warn(`'undefined' 키워드를 받았습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
@@ -70,6 +69,7 @@ exports.savePreferences = async (req, res) => {
       keyword: parsedResponse.keyword,
       color: parsedResponse.color,
       image_description: parsedResponse.image_description,
+      image_url: generatedImageUrl 
     };
 
     await preferences.save();
@@ -81,9 +81,6 @@ exports.savePreferences = async (req, res) => {
       keyword: parsedResponse.keyword,
       color: parsedResponse.color
     });
-
-    // 이미지 URL 추가
-    preferences[field].image_url = generatedImageUrl;
 
     return res.status(201).json(preferences[field]);
 
@@ -131,7 +128,6 @@ exports.saveDirectPreferences = async (req, res) => {
 
           // DALL·E API로 이미지 생성
           generatedImageUrl = await generateImage(parsedResponse);
-          console.log(generatedImageUrl);
 
         } else {
           console.warn(`'undefined' 키워드를 받았습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
@@ -158,6 +154,7 @@ exports.saveDirectPreferences = async (req, res) => {
       keyword: parsedResponse.keyword,
       color: parsedResponse.color,
       image_description: parsedResponse.image_description,
+      image_url: generatedImageUrl
     };
 
     await preferences.save();
@@ -167,11 +164,8 @@ exports.saveDirectPreferences = async (req, res) => {
     await saveLog(userId, `'${field}' 선호 데이터가 저장되었습니다.`, {
       field,
       keyword: parsedResponse.keyword,
-      color: parsedResponse.color
+      image_description: parsedResponse.image_description
     });
-
-    // 이미지 URL 추가
-    preferences[field].image_url = generatedImageUrl;
 
     return res.status(201).json(preferences[field]);
 
@@ -206,10 +200,10 @@ const generateImage = async (parsedResponse) => {
 
     const data = await response.json();
 
-    console.log(data);
+    // console.log("DALL·E API Response Data:", data);
     
     // 응답에서 이미지 URL을 추출
-    return data.url;
+    return data.data[0].url 
 
   } catch (error) {
     console.error('Error generating image:', error.message);
@@ -260,7 +254,8 @@ exports.resetPreferences = async (req, res) => {
         user[f] = {
           keyword: null,
           color: null,
-          image_description: null
+          image_description: null,
+          image_url: null
         };
       });
     } else {
@@ -268,7 +263,8 @@ exports.resetPreferences = async (req, res) => {
       user[field] = {
         keyword: null,
         color: null,
-        image_description: null
+        image_description: null,
+        image_url: null
       };
     }
 

@@ -11,19 +11,22 @@ const userInfoSchema = new mongoose.Schema({
   likeFood: {
     keyword: { type: String, required: false },
     color: { type: String, required: false },
-    image_description: { type: String, required: false }
+    image_description: { type: String, required: false },
+    image_url : { type: String, required: false }
   },
   
   likeAnimalOrCharacter: {
     keyword: { type: String, required: false },
     color: { type: String, required: false },
-    image_description: { type: String, required: false }
+    image_description: { type: String, required: false },
+    image_url : { type: String, required: false }
   },
   
   likeColor: {
     keyword: { type: String, required: false },
     color: { type: String, required: false },
-    image_description: { type: String, required: false }
+    image_description: { type: String, required: false },
+    image_url : { type: String, required: false }
   },
   
   habits: [{ 

@@ -13,10 +13,8 @@ exports.generateLyric = async (req, res) => {
         console.log(preferences);
         if (!preferences) {
             return res.status(404).json({ message: "User not found" });
-        }
-        const prompt = createGPTPrompt(preferences);
-        // console.log(prompt);
-        const gptResponse = await callGPTApi(prompt);
+        };
+        const gptResponse = await callGPTApi(preferences);
         console.log("gptResponse : " + gptResponse);
 
         let title, lyric;
