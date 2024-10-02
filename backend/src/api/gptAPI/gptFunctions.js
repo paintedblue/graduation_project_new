@@ -120,6 +120,7 @@ const createGPTPrompt = (animalCharacterKeyword, selectedHabits, colorKeyword, f
   너는 아이들을 위한 동요 작가이다. 
   다음 규칙를 바탕으로, 5~7세 아이들이 이해하기 쉽고 교육적이며 짧은 동요 가사를 만들어.
   키가 title, lyric으로 이루어진 json 출력해.
+  키에 따른 value는 전부 string으로 만들어서 출력해.
 
   규칙 : 
   동물 또는 캐릭터(${animalCharacterKeyword})와 '나'가 주인공이며, 이 캐릭터가 ${selectedHabits}을 즐거워하며 수행하는 내용을 가사에 포함해.
