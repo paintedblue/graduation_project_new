@@ -34,7 +34,8 @@ const exData = [{
     const [songs, setSongs] = useState(exData); 
     const type = "Play";
     const maintitleText = "저장된 노래";
-    
+    const [popup, setpopup] = useState(false); 
+    const [delIndex, setDelIndex] = useState(0); 
     useEffect(() => {
         requestSongList();
     }, []);
@@ -65,6 +66,44 @@ const exData = [{
         navigation.navigate('PlayScreen', {userId, requestData, type});
     };
 
+    const deleteSong = (index) => {
+        setDelIndex(index);
+        handlerOpenPopUP();
+    };
+
+    const deleteSongTrue = async () => {
+        try {
+            const response = await fetch('http://15.165.249.244:3000/api/song/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ songId: songs[delIndex].songId })
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Network response was not ok: ${errorText}`);
+            }
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error("Error during fetch operation:", error.message);
+            Alert.alert("Error", error.message);
+        }finally{
+        requestSongList();
+        handlerClosePopUP();
+        }
+    };
+
+    const handlerOpenPopUP = () => {
+        setpopup(true);
+    };
+
+    const handlerClosePopUP = () => {
+        setpopup(false);
+    };
+
     const formatDate = (isoString) => {
         const date = new Date(isoString);
         const month = date.getMonth() + 1;
@@ -93,12 +132,31 @@ const exData = [{
                                 <View style={[styles.habitBox, BaseStyles.row, {justifyContent : 'flex-start'}]}>
                                     <Text style={[BaseStyles.text, styles.dateText]}>{formatDate(song.created_at)}</Text>
                                     <Text style={[BaseStyles.text, styles.addText]}>{song.title}</Text>
+
+                                    <TouchableOpacity style={styles.closeButton} onPress={() => deleteSong(index)}>
+                                    <Text style={[BaseStyles.text, styles.closeButtonText]}>X</Text>
+                                    </TouchableOpacity>
                                 </View>
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
                 </View>
             </View>
+            {popup && (
+                <View style={[styles.popupBg]}>
+                    <View style={[styles.popupWin]}>
+                        <Text style={[BaseStyles.text, { fontSize: 25 }]}>정말로 삭제하시겠습니까?</Text>
+                        <View style={[BaseStyles.row,{width:'100%',justifyContent:'space-between', paddingHorizontal:80}]}>
+                            <TouchableOpacity style={styles.completeButton} onPress={deleteSongTrue}>
+                                <Text style={[BaseStyles.text, { color: '#000' }]}>네</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.completeButton} onPress={handlerClosePopUP}>
+                                <Text style={[BaseStyles.text, { color: '#000' }]}>아니요</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            )}
         </View>
     );
 };
@@ -155,6 +213,42 @@ const styles = StyleSheet.create({
     backButtonImage: {
         width: 90,
         height: 90,
+    },
+    closeButton: {
+        position: 'absolute',
+        top: 15,
+        right: 10,
+        borderRadius: 20,
+        padding: 5,
+      },
+      closeButtonText: {
+        color:'#F22',
+        fontSize: 16,
+        fontWeight: 'bold',
+      },
+    popupBg: {
+        position: 'absolute',
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(150,150,150,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    popupWin: {
+        borderRadius: 10,
+        width: 300,
+        height: 200,
+        backgroundColor: '#0052D4',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical:50
+    },
+    completeButton: {
+        backgroundColor: '#FFF',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 5,
+        alignItems: 'center',
     },
 });
 

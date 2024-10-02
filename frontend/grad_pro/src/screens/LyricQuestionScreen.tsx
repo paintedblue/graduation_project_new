@@ -22,7 +22,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
         VoiceUtil.setSpeechResultCallback((results) => {
             setAnswer(results[0]);
             setIsDoneRecording(false);
-            setOnRecording(false);
+            //setOnRecording(false);
         });
 
         VoiceUtil.setErrorCallback((error) => {

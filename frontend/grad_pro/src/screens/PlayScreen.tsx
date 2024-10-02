@@ -123,6 +123,7 @@ const LyricMakeScreen = ({route, navigation}) => {
 
     const handlerhome = () => {
         if (navigation.canGoBack()) {
+            SoundPlayer.stop();
             navigation.popToTop();
         }
     };
@@ -146,12 +147,19 @@ const LyricMakeScreen = ({route, navigation}) => {
                     </View>
                     <View style={[BaseStyles.bottomContainer, {height:'auto'}]}>
                         {/* 현재 재생 시간 및 총 시간 */}
+                        {type == 'Play'?
+                        
                         <View style={styles.timeContainer}>
                             <Text>{formatTime(currentTime)}</Text>
                             <Text>{formatTime(duration)}</Text>
                         </View>
-
+                        :
+                        <></>
+                        }
                         {/* 진행도 바 */}
+
+                        {type == 'Play'?
+                        
                         <Slider
                             style={styles.slider}
                             value={progress}
@@ -166,7 +174,9 @@ const LyricMakeScreen = ({route, navigation}) => {
                             }}
                             onValueChange={(value) => setProgress(value)}
                         />
-
+                        :
+                        <></>
+                        }
                         {/* 재생 및 일시정지 버튼 */}
                         {isPlaying ? 
                         <TouchableOpacity style={[BaseStyles.button]} onPress={playPause}>
