@@ -27,7 +27,7 @@ const extractKeyword = async (sentence, field) => {
         { role: "system", "content": prompt},
         { role: "user", "content": `문장 : ${sentence} \n카테고리 : ${field}`}
       ],
-      "response_format": {
+      response_format: {
         "type": "json_object"
       },
       max_tokens: 200

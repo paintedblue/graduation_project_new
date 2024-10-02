@@ -28,7 +28,7 @@ exports.createSong = async (req, res) => {
             make_instrumental: false,
             wait_audio: true
         };
-
+        
         // 외부 API 호출 (예: Suno API)
         const response = await fetch('https://api.aimlapi.com/generate/custom-mode', {
             method: 'POST',
