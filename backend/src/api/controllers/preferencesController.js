@@ -36,6 +36,10 @@ exports.savePreferences = async (req, res) => {
         // GPT 응답을 바로 사용하여 JSON 파싱 (불필요한 문자열 변환 제거)
         parsedResponse = gptResponse;
 
+        if (parsedResponse.keyword && parsedResponse.keyword === '없음'){
+          console.error("올바른 단어를 찾지 못했습니다. 다시 실행해주세요.");
+        }
+
         // keyword가 'undefined'가 아닌지 확인
         if (parsedResponse.keyword && parsedResponse.keyword !== 'NaN' && parsedResponse.keyword !== 'error' && parsedResponse.keyword !== 'undefined' && parsedResponse.keyword !== 'none' && parsedResponse.keyword !== 'null' && parsedResponse.keyword !== 'N/A') {
           validResponse = true; // 유효한 응답을 받음
@@ -120,6 +124,10 @@ exports.saveDirectPreferences = async (req, res) => {
 
         // GPT 응답을 바로 사용하여 JSON 파싱 (불필요한 문자열 변환 제거)
         parsedResponse = gptResponse;
+
+        if (parsedResponse.keyword && parsedResponse.keyword === '없음'){
+          console.error("올바른 단어를 찾지 못했습니다. 다시 실행해주세요.");
+        }
 
         // keyword가 'undefined'가 아닌지 확인
         if (parsedResponse.keyword && parsedResponse.keyword !== 'NaN' && parsedResponse.keyword !== 'error' && parsedResponse.keyword !== 'undefined' && parsedResponse.keyword !== 'none' && parsedResponse.keyword !== 'null' && parsedResponse.keyword !== 'N/A') {
