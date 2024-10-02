@@ -108,7 +108,7 @@ exports.getSong = async (req, res) => {
 
 // 동요 삭제 (DELETE 요청)
 exports.deleteSong = async (req, res) => {
-    const { songId } = req.params; // songId를 URL에서 받아옴
+    const { songId } = req.body; // songId를 URL에서 받아옴
 
     try {
         // songId로 해당 동요 찾기

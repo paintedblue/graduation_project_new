@@ -9,6 +9,6 @@ router.post('/', songController.createSong);
 router.get('/:userId', songController.getSong);
 
 // 동요 삭제
-router.post('/delete/:songId', songController.deleteSong);
+router.post('/delete', songController.deleteSong);
 
 module.exports = router;
