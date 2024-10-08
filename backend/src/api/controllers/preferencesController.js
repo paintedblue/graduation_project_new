@@ -19,8 +19,10 @@ exports.savePreferences = async (req, res) => {
   let validResponse = false;
   let parsedResponse;
 
-  let generatedImageUrl;
-
+  const isValidKeyword = keyword => {
+    const invalidKeywords = new Set(['NaN', 'error', 'undefined', 'none', 'null', 'N/A', '없음']);
+    return !invalidKeywords.has(keyword);
+  }
 
   try {
     // GPT API를 최대 maxRetries 횟수까지 재시도
@@ -28,28 +30,19 @@ exports.savePreferences = async (req, res) => {
       retryCount++;
       
       try {
-        // GPT 프롬프트 생성 및 호출
-        // const prompt = createExtractPrompt(value, field);
         console.log(`GPT API 호출 시도 ${retryCount}/${maxRetries}...`);
         const gptResponse = await extractKeyword(value, field);
 
         // GPT 응답을 바로 사용하여 JSON 파싱 (불필요한 문자열 변환 제거)
         parsedResponse = gptResponse;
 
-        if (parsedResponse.keyword && parsedResponse.keyword === '없음'){
-          console.error("올바른 단어를 찾지 못했습니다. 다시 실행해주세요.");
-        }
-
         // keyword가 'undefined'가 아닌지 확인
-        if (parsedResponse.keyword && parsedResponse.keyword !== 'NaN' && parsedResponse.keyword !== 'error' && parsedResponse.keyword !== 'undefined' && parsedResponse.keyword !== 'none' && parsedResponse.keyword !== 'null' && parsedResponse.keyword !== 'N/A') {
+        if (parsedResponse.keyword && isValidKeyword(parsedResponse.keyword)) {
           validResponse = true; // 유효한 응답을 받음
           console.log("유효한 GPT 응답을 받았습니다.");
 
-          // DALL·E API로 이미지 생성
-          generatedImageUrl = await generateImage(parsedResponse);
-
         } else {
-          console.warn(`'undefined' 키워드를 받았습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
+          console.warn(`올바른 단어를 찾지 못했습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
         }
 
       } catch (apiError) {
@@ -72,8 +65,7 @@ exports.savePreferences = async (req, res) => {
     preferences[field] = {
       keyword: parsedResponse.keyword,
       color: parsedResponse.color,
-      image_description: parsedResponse.image_description,
-      image_url: generatedImageUrl 
+      image_description: parsedResponse.image_description
     };
 
     await preferences.save();
@@ -82,8 +74,7 @@ exports.savePreferences = async (req, res) => {
     console.log(`'${field}' 필드의 선호 데이터로 '${parsedResponse.keyword}'가 저장되었습니다.`);
     await saveLog(userId, `'${field}' 선호 데이터가 저장되었습니다.`, {
       field,
-      keyword: parsedResponse.keyword,
-      color: parsedResponse.color
+      keyword: parsedResponse.keyword
     });
 
     return res.status(201).json(preferences[field]);
@@ -109,7 +100,10 @@ exports.saveDirectPreferences = async (req, res) => {
   let validResponse = false;
   let parsedResponse;
 
-  let generatedImageUrl;
+  const isValidKeyword = keyword => {
+    const invalidKeywords = new Set(['NaN', 'error', 'undefined', 'none', 'null', 'N/A', '없음']);
+    return !invalidKeywords.has(keyword);
+  }
 
   try {
     // GPT API를 최대 maxRetries 횟수까지 재시도
@@ -118,27 +112,19 @@ exports.saveDirectPreferences = async (req, res) => {
 
       try {
         // GPT API를 최대 maxRetries 횟수까지 재시도
-        // const prompt = createDirectPrompt(value, field);
         console.log(`GPT API 호출 시도 ${retryCount}/${maxRetries}...`);
         const gptResponse = await directKeyword(value, field);
 
         // GPT 응답을 바로 사용하여 JSON 파싱 (불필요한 문자열 변환 제거)
         parsedResponse = gptResponse;
 
-        if (parsedResponse.keyword && parsedResponse.keyword === '없음'){
-          console.error("올바른 단어를 찾지 못했습니다. 다시 실행해주세요.");
-        }
-
         // keyword가 'undefined'가 아닌지 확인
-        if (parsedResponse.keyword && parsedResponse.keyword !== 'NaN' && parsedResponse.keyword !== 'error' && parsedResponse.keyword !== 'undefined' && parsedResponse.keyword !== 'none' && parsedResponse.keyword !== 'null' && parsedResponse.keyword !== 'N/A') {
+        if (parsedResponse.keyword && isValidKeyword(parsedResponse.keyword)) {
           validResponse = true; // 유효한 응답을 받음
           console.log("유효한 GPT 응답을 받았습니다.");
 
-          // DALL·E API로 이미지 생성
-          generatedImageUrl = await generateImage(parsedResponse);
-
         } else {
-          console.warn(`'undefined' 키워드를 받았습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
+          console.warn(`올바른 단어를 찾지 못했습니다. 다시 시도합니다. (${retryCount}/${maxRetries})`);
         }
 
       } catch (apiError) {
@@ -162,7 +148,6 @@ exports.saveDirectPreferences = async (req, res) => {
       keyword: parsedResponse.keyword,
       color: parsedResponse.color,
       image_description: parsedResponse.image_description,
-      image_url: generatedImageUrl
     };
 
     await preferences.save();
@@ -171,8 +156,7 @@ exports.saveDirectPreferences = async (req, res) => {
     console.log(`'${field}' 필드의 선호 데이터로 '${parsedResponse.keyword}'가 저장되었습니다.`);
     await saveLog(userId, `'${field}' 선호 데이터가 저장되었습니다.`, {
       field,
-      keyword: parsedResponse.keyword,
-      image_description: parsedResponse.image_description
+      keyword: parsedResponse.keyword
     });
 
     return res.status(201).json(preferences[field]);
@@ -180,42 +164,6 @@ exports.saveDirectPreferences = async (req, res) => {
   } catch (error) {
     console.error('사용자 선호 데이터를 저장하는 중 오류 발생:', error);
     res.status(500).json({ message: '사용자 선호 데이터를 저장하는 중 오류가 발생했습니다.', error });
-  }
-};
-
-const generateImage = async (parsedResponse) => {
-  const { keyword, color, image_description } = parsedResponse;
-
-  const prompt = `
-  ${keyword}의 생동감 있는 일러스트레이션을 만들어.
-  이미지 묘사("${image_description}.")에 맞게 만들어.
-  전체적으로 ${color} 색상을 사용하면 돼.
-  ${keyword}가 아무리 이상하더라도 일러스트레이션은 어린이에게 적합해야 해.
-  `;
-
-  try {
-    const response = await fetch('https://api.aimlapi.com/images/generations', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381'
-      },
-      body: JSON.stringify({
-        "prompt": prompt.trim(),  // 프롬프트 문자열을 보내기
-        "model": "dall-e-3"
-      }),
-    });
-
-    const data = await response.json();
-
-    // console.log("DALL·E API Response Data:", data);
-    
-    // 응답에서 이미지 URL을 추출
-    return data.data[0].url 
-
-  } catch (error) {
-    console.error('Error generating image:', error.message);
-    throw error;
   }
 };
 

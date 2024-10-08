@@ -40,8 +40,8 @@ exports.generateLyric = async (req, res) => {
         }
 
 
-        console.log("title : " + title);
-        console.log("lyric : " + lyric);
+        // console.log("title : " + title);
+        // console.log("lyric : " + lyric);
 
         // 사용자의 SongBase 문서 찾기 또는 새로 생성
         let songBase = await SongBase.findOne({ userId });
