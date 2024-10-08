@@ -3,7 +3,6 @@ import { Text, View, TouchableOpacity, Image, StyleSheet, BackHandler } from 're
 import BaseStyles from '../styles/BaseStyles';
 import Header from '../components/TabBarButtons';
 import SoundPlayer from 'react-native-sound-player';
-import Slider from '@react-native-community/slider';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const LyricMakeScreen = ({ route, navigation }) => {
@@ -17,6 +16,7 @@ const LyricMakeScreen = ({ route, navigation }) => {
     songId: '2',
     title: '임시 제목입니다.',
     userId: '1',
+    image_url: 'https://cdn.example.com/dummy-image.png' // 임시 이미지 URL
   };
 
   const { userId, requestData, type } = route.params || {};
@@ -25,83 +25,62 @@ const LyricMakeScreen = ({ route, navigation }) => {
   const [title, setTitle] = useState(requestData ? requestData.title : exSongData.title);
   const [lyric, setLyric] = useState(requestData ? requestData.lyric : exSongData.lyric);
 
+  //////////////
+  const [imageUrl, setImageUrl] = useState(requestData ? requestData.image_url : exSongData.image_url); // 이미지 URL 추가
+
   const maintitleText = '동요 재생';
 
   const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
+
+  /////////////
+  const [isLyricVisible, setIsLyricVisible] = useState(true); // 가사/이미지 토글 상태 추가
 
   useEffect(() => {
-    if (requestData) {
       if (type === 'Gen') {
-        setAudioUrl(`https://cdn.aimlapi.com/suno/audio/?item_id=${requestData.id}`);
+        setMusic(`https://cdn.aimlapi.com/suno/audio/?item_id=${requestData.id}`);
       } else if (type === 'Play') {
-        setAudioUrl(`https://cdn1.suno.ai/${requestData.id}.mp3`);
+        setMusic(`https://cdn1.suno.ai/${requestData.id}.mp3`);
       }
       setTitle(requestData.title);
       setLyric(requestData.lyric);
-    } else {
-      setAudioUrl(`https://cdn.aimlapi.com/suno/audio/?item_id=${exSongData.id}`);
-      setTitle(exSongData.title);
-      setLyric(exSongData.lyric);
-    }
-  }, [requestData]);
+      ////////////////
+      setImageUrl(requestData.image_url); // 이미지 URL 설정
+    }, [requestData]);
 
-  useEffect(() => {
-    if (audioUrl) {
-      SoundPlayer.loadUrl(audioUrl);
-    }
-  }, [audioUrl]);
+    const setMusic = (url) => {
+      setAudioUrl(url);
+      SoundPlayer.loadUrl(url);
+    };
 
   useEffect(() => {
     const backAction = () => {
       SoundPlayer.stop();
       return false;
-    };
-
+  };
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
 
     return () => backHandler.remove();
   }, []);
 
-  const getAudioInfo = async () => {
-    try {
-      const info = await SoundPlayer.getInfo();
-      setDuration(info.duration);
-    } catch (e) {
-      console.log('No song playing', e);
-    }
-  };
 
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (!isSeeking && isPlaying) {
-        try {
-          const info = await SoundPlayer.getInfo();
-          setCurrentTime(info.currentTime);
-          setProgress(info.currentTime / info.duration);
-        } catch (e) {
-          clearInterval(interval);
-        }
+  const playPause = () => {
+    if (isPlaying) {
+      SoundPlayer.pause();
+      setIsPlaying(false);
+    } else {
+      try {
+        SoundPlayer.play();  // URL을 사용하여 음악 재생
+        setIsPlaying(true);
+      } catch (e) {
+        console.log('Error playing the sound file', e);
       }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isPlaying, isSeeking]);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
-
-  const handlerhome = () => {
-    if (navigation.canGoBack()) {
-      SoundPlayer.stop();
-      navigation.popToTop();
     }
+  };
+  
+  //////////////////
+  // 가사/이미지 토글 함수
+  const toggleLyricImage = () => {
+    setIsLyricVisible((prev) => !prev);
   };
 
   return (
@@ -115,49 +94,32 @@ const LyricMakeScreen = ({ route, navigation }) => {
           <View style={[styles.frameTitle, { marginBottom: 20 }]}>
             <Text style={[BaseStyles.text, { color: '#000', fontSize: 25 }]}>{title}</Text>
           </View>
-          <View style={[styles.frameLyric]}>
-            <ScrollView style={[styles.scrollView]}>
-              <Text style={[BaseStyles.text, { color: '#000', fontSize: 25 }]}>{lyric}</Text>
-            </ScrollView>
-          </View>
+
+          {/* 가사/이미지 토글 버튼 */}
+          <TouchableOpacity style={[styles.frameLyric]} onPress={toggleLyricImage}>
+            {/* 가사 표시 */}
+            {isLyricVisible ? (
+              <ScrollView style={[styles.scrollView]}>
+                <Text style={[BaseStyles.text, { color: '#000', fontSize: 25 }]}>{lyric}</Text>
+              </ScrollView>
+            ) : (
+              // 이미지 표시
+              <Image source={{ uri: imageUrl }} style={styles.songImage} resizeMode="contain" />
+            )}
+          </TouchableOpacity>
+
         </View>
+
         <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
           {/* Back Button */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
           </TouchableOpacity>
           {/* Play Button */}
-            <TouchableOpacity style={styles.playButton} onPress={() => setIsPlaying(!isPlaying)}>
+            <TouchableOpacity style={styles.playButton} onPress={playPause}>
             <Image source={isPlaying ? require('../assets/imgs/playing.png') : require('../assets/imgs/play.png')} style={styles.playButtonImage}/>
         </TouchableOpacity>
         </View>
-        {type === 'Play' && (
-          <>
-            <View style={styles.timeContainer}>
-              <Text>{formatTime(currentTime)}</Text>
-              <Text>{formatTime(duration)}</Text>
-            </View>
-            <Slider
-              style={styles.slider}
-              value={progress}
-              minimumValue={0}
-              maximumValue={1}
-              onSlidingStart={() => setIsSeeking(true)}
-              onSlidingComplete={(value) => {
-                setIsSeeking(false);
-                const newTime = value * duration;
-                SoundPlayer.seek(newTime);
-                setCurrentTime(newTime);
-              }}
-              onValueChange={(value) => setProgress(value)}
-            />
-          </>
-        )}
-        {type === 'Gen' && (
-          <TouchableOpacity style={[BaseStyles.button]} onPress={handlerhome}>
-            <Text style={[BaseStyles.text, { color: '#000', fontSize: 20 }]}> 홈으로 </Text>
-          </TouchableOpacity>
-        )}
       </View>
     </View>
   );
@@ -237,6 +199,18 @@ const styles = StyleSheet.create({
   playButtonImage: {
     width: 90,
     height: 90,
+  },
+
+  songImage: {
+    width: 300,     // 이미지의 가로 크기
+    height: 300,    // 이미지의 세로 크기
+    borderRadius: 10,  // 이미지의 테두리 둥글게 만들기
+    backgroundColor: '#f7f7f7', // 배경 색상 (이미지 로드 전 배경)
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5, // Android의 그림자 효과
   },
 });
 

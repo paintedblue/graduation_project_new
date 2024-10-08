@@ -4,18 +4,18 @@ import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
 import VoiceUtil from '../utils/VoiceUtil';
 import { SelectedCategoriesContext } from "../contexts/SelectedCategoriesContext";
+import { BallIndicator } from 'react-native-indicators';
 
 const LyricQuestionScreen = ({ route, navigation }) => {
     const { selectedCategories, updateCategory } = useContext(SelectedCategoriesContext);
     const { userId, category} = route.params;
-    const [isRecording, setIsRecording] = useState(true);
-    const [isDoneRecording, setIsDoneRecording] = useState(true);
-    const [onRecording, setOnRecording] = useState(false);
+    const [isRecording, setIsRecording] = useState(true); // 녹음 하는 페이지인가~
+    const [isDoneRecording, setIsDoneRecording] = useState(true); // 녹음 이 끝나서 서버에 보낼것인가~
+    const [onRecording, setOnRecording] = useState(false); // 녹음 중인가~
     const [answer, setAnswer] = useState('');
-    const [imageUrl, setImageUrl] = useState('https://picsum.photos/400/400');
     const [popup, setpopup] = useState(false); 
+    const [imageUrl, setImageUrl] = useState('https://picsum.photos/400/400');
     const [newAnswer, setNewAnswer] = useState('');
-    const [isOk, setIsOk] = useState(true); 
 
     const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n" + getCategoryText(category) + "을 말해보세요."];
     const commonSpeechEx = ["'내가 좋아하는 건 치킨!'\n'나는 치킨이 좋아'"];
@@ -28,6 +28,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
 
         VoiceUtil.setErrorCallback((error) => {
             Alert.alert("인식하지 못했습니다. 다시 입력해주세요.");
+            
             setOnRecording(false);
         });
 
@@ -46,6 +47,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
 
     const sendPreferenceToServer = async () => {
         console.log("Sending request to server...");
+        handlerOpenPopUP();
         try {
             const response = await fetch('http://15.165.249.244:3000/api/preferences', {
                 method: 'POST',
@@ -68,8 +70,8 @@ const LyricQuestionScreen = ({ route, navigation }) => {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
         } finally {
-            setIsDoneRecording(true);
             setOnRecording(false);
+            handlerClosePopUP();
         }
     };
 
@@ -83,19 +85,17 @@ const LyricQuestionScreen = ({ route, navigation }) => {
         }
     };
 
-    const reRecording = () => {
-        setIsRecording(true);
-    };
-
     const handlerNext = () => {
         updateCategory(category);
         // Navigate to the next screen with updated categories
         navigation.navigate('LyricSelectScreen', { userId });
     };
 
+    const reRecording = () => {
+        setIsRecording(true);
+    };
     
     const handlerOpenPopUP = () => {
-        setNewAnswer(answer);
         setpopup(true);
     };
 
@@ -105,7 +105,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
 
     const handlerInputSubmit = async() => {
         console.log("Sending request to server...");
-        setIsOk(false);
+        handlerOpenPopUP();
         try {
             const response = await fetch('http://15.165.249.244:3000/api/preferences/direct', {
                 method: 'POST',
@@ -123,13 +123,14 @@ const LyricQuestionScreen = ({ route, navigation }) => {
             console.log("Response data:", data);
             setAnswer(data.keyword);
             setImageUrl(data.image_url);
-            handlerClosePopUP();
+            setIsRecording(false);
         } catch (error) {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
         } 
         finally{
-            setIsOk(true);
+            setNewAnswer("");
+            handlerClosePopUP();
         }
       };
 
@@ -138,7 +139,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
             <Header />
 
             <View style={[BaseStyles.contentContainer]}>
-                <View style={[BaseStyles.topContainer, { justifyContent: 'center' }]}>
+                <View style={[BaseStyles.topContainer, { justifyContent: 'center'}]}>
                     <View style={[BaseStyles.row]}>
                         <Frame categoryText={getCategoryLabel(category)} />
 
@@ -152,95 +153,75 @@ const LyricQuestionScreen = ({ route, navigation }) => {
                 </View>
                 <View style={[BaseStyles.middleContainer]}>
                     {isRecording ? (
-                        <View style={styles.imageContainer}>
+                        <View style={[styles.imageContainer]}>
                             {/* Recording Image */}
                             {onRecording ? (
+                                <TouchableOpacity onPress={startSpeech}>
                                 <Image source={require('../assets/imgs/recording.png')} style={styles.recordImage} />
+                                </TouchableOpacity>
                             ) : (
                                 <TouchableOpacity onPress={startSpeech}>
                                     <Image source={require('../assets/imgs/record.png')} style={styles.recordImage} />
                                 </TouchableOpacity>
                             )}
+                            
                             {/* Common Speech Text below the recording image */}
                             <Text style={[BaseStyles.mainText, { fontSize: 22, lineHeight: 40 }]}>{commonSpeechText}</Text>
                             <Text style={[BaseStyles.text, { color: '#777', fontSize: 18, lineHeight: 35 }]}>{commonSpeechEx}</Text>
+
+
+                            <TextInput
+                                style={[styles.categoryText, styles.inputField ,{marginTop:20, fontSize:24}]}
+                                placeholder="직접 입력하기"
+                                placeholderTextColor="#999"
+                                value={newAnswer}
+                                autoFocus={false}
+                                onChangeText={setNewAnswer}
+                                keyboardType="default"
+                                returnKeyType="done"
+                            />
                         </View>
                     ) : (
-                        <View style={styles.imageContainer}>
+                        <View style={[styles.imageContainer,{justifyContent:"flex-start"}]}>
                             <View style={styles.AnswerBox}>
+                                <Text style={[styles.categoryText,{ marginVertical: 20}]}>{`AI가 만들어준 사진이에요.`}</Text>
+                                <Image source={{ uri: imageUrl }} style={[{width:240, height:240}]}/>
 
-                                <Image source={{ uri: imageUrl }} style={[{width:200, height:200}]}/>
 
-                                {/* <TextInput
-                                style={[styles.categoryText, {}]}
-                                placeholder=""
-                                placeholderTextColor="#999"
-                                value={answer}
-                                autoFocus={false}
-                                onChangeText={setAnswer}
-                                onSubmitEditing={handlerInputSubmit}
-                                /> */}
-
-                                <TouchableOpacity onPress={handlerOpenPopUP}>
-                                    <Text style={[styles.categoryText, { marginVertical: 8 }]}>{`'${answer}'`}</Text>
-                                </TouchableOpacity>
+                                <Text style={[styles.categoryText,{ marginVertical: 20}]}>{`'${answer}'`}</Text>
                                 
-                                <Text style={[BaseStyles.text, { fontSize:20, color:'#89888C', marginVertical: 7 }]}>{`텍스트를 누르면 수정할 수 있어요`}</Text>
                             </View>
 
-                            <TouchableOpacity style={BaseStyles.row} onPress={reRecording}>
-                                <Image source={require('../assets/imgs/ReRecord.png')} style={styles.reRecordingImage} />
-                                <Text style={styles.reRecordingText}>다시 말할래요</Text>
-                            </TouchableOpacity>
                         </View>
                     )}
                 </View>
                 <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
 
                     {/* Back Button on the bottom left */}
-                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                    <TouchableOpacity style={styles.backButton} onPress={isRecording? () => navigation.goBack():reRecording}>
                         <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
                     </TouchableOpacity>
 
-                    {/* Next Button on the bottom right */}
-                    {isRecording ? (
-                        <></>
-                    ) : (
-                        <TouchableOpacity style={[BaseStyles.button]} onPress={handlerNext}>
+                    <TouchableOpacity style={[BaseStyles.button]} onPress={isRecording? handlerInputSubmit: handlerNext}>
                             <Image source={require('../assets/imgs/right_arrow.png')} style={[styles.nextButton]} />
                         </TouchableOpacity>
-                    )}
+                    {/* Next Button on the bottom right */}
+                    
                 </View>
             </View>
-
             {popup && (
-                <View style={[styles.popupBg]}>
-                    <View style={[styles.popupWin]}>
-                        <Text style={[BaseStyles.text, { fontSize: 25 }]}>직접 입력</Text>
-                        <TextInput
-                            style={styles.inputField}
-                            placeholder="습관을 입력하세요"
-                            placeholderTextColor="#999"
-                            value={newAnswer}
-                            onChangeText={setNewAnswer}
-                            autoFocus={true}
-                            keyboardType="default"
-                            returnKeyType="done"
-                        />
-                        {isOk?
-                        <TouchableOpacity style={styles.completeButton} onPress={handlerInputSubmit}>
-                            <Text style={[BaseStyles.text, { color: '#000' }]}>전송</Text>
-                        </TouchableOpacity>
-                        :
-                        <View style={styles.completeButton}>
-                            <Text style={[BaseStyles.text, { color: '#000' }]}>전송 중...</Text>
-                        </View>
-                        }
-                        <TouchableOpacity style={styles.closeButton} onPress={handlerClosePopUP}>
-                            <Text style={[BaseStyles.text, { fontSize: 30 }]}>x</Text>
-                        </TouchableOpacity>
-                    </View>
+                <View style={[styles.popupBg, { backgroundColor: '#A5BEDF', flex: 1 }]}>
+                <Header />
+                <View style={[BaseStyles.topContainer,{height:'10%'}]}>
+                  <Text style={[BaseStyles.mainText, styles.title]}>{"사진 생성 중"}</Text>
                 </View>
+                <View style={[BaseStyles.contentContainer, styles.centerContainer]}>
+                  <View style={styles.indicatorContainer}>
+                    <BallIndicator style={styles.ballIndicator} size={40} color="#FFFFFF" />
+                    <Text style={[BaseStyles.mainText, styles.centerMessage]}>{"단어의 이미지가 만들어지고있어요~\n로오오오오딩"}</Text>
+                  </View>
+                </View>
+              </View>
             )}
         </View>
     );
@@ -256,6 +237,7 @@ const styles = StyleSheet.create({
         lineHeight: 40,
     },
     bottomContainer: {
+        height: "15%",
         justifyContent: 'space-between',
         alignItems: 'center',
         flexDirection: 'row',
@@ -305,28 +287,21 @@ const styles = StyleSheet.create({
     AnswerBox: {
         backgroundColor: '#F5F5DC',
         borderRadius: 20,
-        height: 300,
-        width: 300,
+        height: 400,
+        width: 350,
         margin: 10,
         alignItems: 'center',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
     },
     imageContainer: {
         justifyContent: 'center',
         alignItems: 'center',
+        height:'100%',
+        width:'100%',
     },
     recordImage: {
         width: 150,
         height: 150,
-    },
-    reRecordingImage: {
-        width: 50,
-        height: 50,
-        marginRight: 20,
-    },
-    reRecordingText: {
-        fontSize: 22,
-        fontFamily: 'Jua-Regular',
     },
     popupBg: {
         position: 'absolute',
@@ -345,25 +320,33 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     inputField: {
-        flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(255,255,255,0.6)',
-        borderRadius: 5,
-        width: '80%',
-        marginVertical: 20,
-    },
-    completeButton: {
+        borderRadius: 35,
+        width: 250,
+        height: 70,
         backgroundColor: '#FFF',
-        paddingHorizontal: 20,
-        paddingVertical: 10,
-        borderRadius: 5,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+    },centerContainer: {
+        flex: 1,
+        justifyContent: 'center', // Centers content vertically
         alignItems: 'center',
-    },
-    closeButton: {
-        position: 'absolute',
-        right: 20,
-        top: 15,
-    },
+      },
+      indicatorContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      ballIndicator: {
+        position:'absolute',
+        top : -80,
+      },
+      centerMessage: {
+        fontSize: 24,
+      },
 });
 
 const Frame = ({ categoryText }) => {
