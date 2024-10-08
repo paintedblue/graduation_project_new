@@ -4,9 +4,26 @@ import { useNavigation } from '@react-navigation/native';
 
 const Header: React.FC = () => {
   const navigation = useNavigation(); // navigation 객체 사용
+  const userId = 2; // userId 선언
 
   const goToHome = () => {
-    navigation.navigate('HomeScreen'); // 홈 화면으로 이동
+    navigation.navigate('HomeScreen'); // 홈 화면으로 이동, 기본 title 설정
+  };
+
+  const goToHabit = () => {
+    navigation.navigate('HabitScreen', { userId }); // 습관 화면으로 이동
+  };
+
+  const goToLyricMake = () => {
+    navigation.navigate('LyricSelectScreen', { userId }); // 가사 생성 화면으로 이동
+  };
+
+  const goToMelody = () => {
+    navigation.navigate('MelodyScreen', { userId }); // 멜로디 화면으로 이동
+  };
+
+  const goToPlay = () => {
+    navigation.navigate('PlayScreen', { userId }); // 동요 완성 화면으로 이동
   };
 
   return (
@@ -30,22 +47,22 @@ const Header: React.FC = () => {
 
       {/* 탭바 버튼들 */}
       <View style={styles.tabBarButtons}>
-        <View style={styles.tab}>
+        <TouchableOpacity onPress={goToHabit} style={styles.tab}>
           <Text style={styles.symbol}>⏰</Text>
           <Text style={styles.label}>습관</Text>
-        </View>
-        <View style={styles.tab}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={goToLyricMake} style={styles.tab}>
           <Text style={styles.symbol}>📃</Text>
           <Text style={styles.label}>가사</Text>
-        </View>
-        <View style={styles.tab}>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={goToMelody} style={styles.tab}>
           <Text style={styles.symbol}>🎶</Text>
-          <Text style={styles.label2}>멜로디</Text>
-        </View>
-        <View style={styles.tab}>
+          <Text style={styles.label}>악기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={goToPlay} style={styles.tab}>
           <Text style={styles.symbol}>✅</Text>
-          <Text style={styles.label3}>동요 완성!</Text>
-        </View>
+          <Text style={styles.label}>동요 완성!</Text>
+        </TouchableOpacity>
       </View>
 
       {/* 탭바 하단 구분선 */}
@@ -56,17 +73,17 @@ const Header: React.FC = () => {
 
 const styles = StyleSheet.create({
   headerContainer: {
-    flexDirection: 'row', // 아이콘과 타이틀을 한 줄에 배치
+    flexDirection: 'row', 
     alignItems: 'center',
-    justifyContent: 'center', // 타이틀을 중앙에 배치
+    justifyContent: 'center', 
     width: '100%',
     height: 50,
     backgroundColor: '#A5BEDF', // 배경색 설정 (필요 시 수정)
   },
   homeIconContainer: {
-    position: 'absolute', // 홈 아이콘을 좌측 상단에 고정
+    position: 'absolute', 
     left: 35, 
-    top: 18, // 홈 버튼을 아래로 이동 (10으로 조정 가능)
+    top: 18, 
   },
   homeIcon: {
     width: 30,
@@ -79,20 +96,20 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0, 0, 0, 0.5)",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 3,
-    textAlign: 'center', // 텍스트를 중앙에 맞춤
+    textAlign: 'center', 
   },
   rightSpace: {
-    position: 'absolute', // 우측에 빈 공간을 두어 타이틀이 중앙에 오도록 함
+    position: 'absolute',
     right: 10,
   },
   tabBarButtons: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // 탭바 아이콘을 균등하게 배치
+    justifyContent: 'space-between', 
     paddingHorizontal: 10,
     paddingVertical: 3,
-    backgroundColor: '#A5BEDF', // 배경색 설정 (필요 시 수정)
+    backgroundColor: '#A5BEDF',
   },
   tab: {
     flex: 1,
@@ -103,18 +120,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontFamily: 'Jua-Regular',
-    textAlign: 'center',
-    marginTop: 5,
-  },
-  label2: {
-    fontSize: 14,
-    fontFamily: 'Jua-Regular',
-    textAlign: 'center',
-    marginTop: 5,
-  },
-  label3: {
-    fontSize: 13,
     fontFamily: 'Jua-Regular',
     textAlign: 'center',
     marginTop: 5,

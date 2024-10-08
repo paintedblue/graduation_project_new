@@ -10,7 +10,7 @@ const HomeScreen = ({navigation}) => {
         "lyric" : "예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다.\n예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다."
     }
     //끝
-    const userId = 1;
+    const userId = 2;
 
     const [showInitImage, setShowInitImage] = useState(true);
 
