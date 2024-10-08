@@ -107,7 +107,9 @@ const LyricMakeScreen = ({ route, navigation }) => {
               <Image source={{ uri: imageUrl }} style={styles.songImage} resizeMode="contain" />
             )}
           </TouchableOpacity>
-
+          <TouchableOpacity style={styles.playButton} onPress={playPause}>
+            <Image source={isPlaying ? require('../assets/imgs/playing.png') : require('../assets/imgs/play.png')} style={styles.playButtonImage}/>
+        </TouchableOpacity>
         </View>
 
         <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
@@ -116,9 +118,6 @@ const LyricMakeScreen = ({ route, navigation }) => {
             <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
           </TouchableOpacity>
           {/* Play Button */}
-            <TouchableOpacity style={styles.playButton} onPress={playPause}>
-            <Image source={isPlaying ? require('../assets/imgs/playing.png') : require('../assets/imgs/play.png')} style={styles.playButtonImage}/>
-        </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -154,7 +153,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     borderRadius: 10,
     backgroundColor: '#f7f7f7',
-    flex: 1,
+    height:"70%",
     paddingVertical: 40,
     overflow: 'hidden',
     justifyContent: 'center',
@@ -178,6 +177,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   bottomContainer: {
+    height:'15%',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
   },
   playButton: {
     alignItems: 'center', // Center the play button
+    marginTop:20,
   },
   playButtonImage: {
     width: 90,
