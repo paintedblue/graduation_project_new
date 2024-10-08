@@ -17,7 +17,6 @@ const LyricQuestionScreen = ({ route, navigation }) => {
 
     const commonSpeechText = ["마이크 버튼을 누르고 내가 좋아하는\n" + getCategoryText(category) + "을 말해보세요."];
     const commonSpeechEx = ["'내가 좋아하는 건 치킨!'\n'나는 치킨이 좋아'"];
-
     useEffect(() => {
         VoiceUtil.setSpeechResultCallback((results) => {
             setAnswer(results[0]);
