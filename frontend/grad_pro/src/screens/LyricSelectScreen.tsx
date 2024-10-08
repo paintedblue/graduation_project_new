@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
 import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
+import { useFocusEffect } from '@react-navigation/native'; // 포커스 효과를 주기 위한 훅
+import { SelectedCategoriesContext } from "../contexts/SelectedCategoriesContext"; // 컨텍스트 임포트
 
 const LyricSelectScreen = ({ route, navigation }) => {
-  const { userId, tempSelectedCategories = {} } = route.params || {}; // 기본값 설정
+  const { selectedCategories } = useContext(SelectedCategoriesContext);
+  const { userId, tempSelectedCategories = {} } = route.params || {};
   const type = "Lyric";
   const [complete, setComplete] = useState(false);
 
   const maintitleText = "가사 만들기";
   const subtitleText = "카테고리를 눌러 대답해보세요.";
 
-  const [selectedCategories, setSelectedCategories] = useState(tempSelectedCategories);
+  // 화면이 포커스될 때마다 selectedCategories 업데이트
+  useEffect(() => {
+    setComplete(Object.values(selectedCategories).every(value => value === true));
+}, [selectedCategories]);
 
-  useEffect(() => { // undefined일때는 false로 처리
-    setComplete(
-      Object.values(selectedCategories).length > 0 &&
-      Object.values(selectedCategories).every((value) => value === true)
-    );
-  }, [selectedCategories]);
+  
+  // 카테고리 버튼을 누를 때 선택 상태를 업데이트
   const handleCategoryPress = (category) => {
     navigation.navigate("LyricQuestionScreen", {
       userId,
@@ -47,7 +49,7 @@ const LyricSelectScreen = ({ route, navigation }) => {
             내가 좋아하는 음식🍗
           </Frame>
           <Frame
-            isChecked={selectedCategories.likeAnimal || selectedCategories.likeCharacter} 
+            isChecked={selectedCategories.likeAnimalOrCharacter} 
             onPress={() => handleCategoryPress("likeAnimalOrCharacter")}
           >
             내가 좋아하는 {'\n'} 캐릭터나 동물🐰🐳
@@ -149,8 +151,8 @@ const Frame = ({ children, isChecked, onPress, isLarge }) => {
       <Image
         source={
           isChecked
-            ? require("../assets/imgs/CheckMark_blue.png")
-            : require("../assets/imgs/CheckMark.png")
+            ? require("../assets/imgs/CheckMark_blue.png") // 체크가 되어있을 때 파란색 이미지 사용
+            : require("../assets/imgs/CheckMark.png") // 체크가 안 되어 있을 때 기본 이미지 사용
         }
         style={styles.checkMark}
       />

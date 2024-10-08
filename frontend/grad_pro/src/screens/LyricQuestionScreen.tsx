@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Text, View,TextInput, TouchableOpacity, Alert, Image, StyleSheet } from "react-native";
 import BaseStyles from "../styles/BaseStyles";
 import Header from "../components/TabBarButtons";
 import VoiceUtil from '../utils/VoiceUtil';
+import { SelectedCategoriesContext } from "../contexts/SelectedCategoriesContext";
 
 const LyricQuestionScreen = ({ route, navigation }) => {
-    const { userId, category, selectedCategories } = route.params;
+    const { selectedCategories, updateCategory } = useContext(SelectedCategoriesContext);
+    const { userId, category} = route.params;
     const [isRecording, setIsRecording] = useState(true);
     const [isDoneRecording, setIsDoneRecording] = useState(true);
     const [onRecording, setOnRecording] = useState(false);
@@ -86,9 +88,9 @@ const LyricQuestionScreen = ({ route, navigation }) => {
     };
 
     const handlerNext = () => {
-        const tempSelectedCategories = { ...selectedCategories, [category]: true };
+        updateCategory(category);
         // Navigate to the next screen with updated categories
-        navigation.navigate('LyricSelectScreen', { userId, tempSelectedCategories });
+        navigation.navigate('LyricSelectScreen', { userId });
     };
 
     
