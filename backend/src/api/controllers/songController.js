@@ -2,6 +2,7 @@ const SongBase = require('../../models/songBase');
 const Song = require('../../models/song');
 const { v4: uuidv4 } = require('uuid'); // UUID로 songId 생성
 const { saveLog } = require('./logSaver'); 
+require('dotenv').config({ path: '../../../.env' }); 
 
 
 // 동요 생성 (POST 요청)
@@ -49,18 +50,26 @@ exports.createSong = async (req, res) => {
                 },
                 body: JSON.stringify(songData)
             }),
-            fetch('https://api.aimlapi.com/images/generations', {
+            fetch('https://api.openai.com/v1/images/generations', {
                 method: 'POST',
                 headers: {
-                    "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381',
+                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // OpenAI API 키로 대체
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ prompt: imagePrompt.trim(), model: "dall-e-3" })
+                body: JSON.stringify({
+                    model: "dall-e-3",
+                    prompt: imagePrompt.trim(), // 이미지 프롬프트
+                    n: 1, // 생성할 이미지 수
+                    size: "1024x1024" // 이미지 사이즈 (예: 1024x1024)
+                })
             })
         ]);
 
         const songDataResponse = await songApiResponse.json();
         const imageDataResponse = await imageApiResponse.json();
+
+        // console.log("songDataResponse:", songDataResponse);
+        // console.log("imageDataResponse:", imageDataResponse);
 
         // 응답에서 첫 번째 동요와 이미지 URL 추출
         const firstSong = songDataResponse[0];
