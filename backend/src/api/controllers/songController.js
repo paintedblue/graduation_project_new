@@ -19,6 +19,7 @@ exports.createSong = async (req, res) => {
         if (!currentSongBase.lyric || !currentSongBase.instrument) {
             return res.status(400).json({ message: "가사 또는 악기가 설정되지 않았습니다." });
         }
+
         // nursery rhyme
         // 외부 API에 보낼 데이터 준비
         const songData = {
@@ -28,21 +29,46 @@ exports.createSong = async (req, res) => {
             make_instrumental: false,
             wait_audio: true
         };
-        
-        // 외부 API 호출 (예: Suno API)
-        const response = await fetch('https://api.aimlapi.com/generate/custom-mode', {
-            method: 'POST',
-            headers: {
-                "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381',
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(songData)
-        });
 
-        const data = await response.json(); 
-        console.log(data);
-        // 첫 번째 응답 객체만 사용
-        const firstSong = data[0];
+        // 이미지 생성을 위한 프롬프트 준비
+        const imagePrompt = `
+        너는 동요의 표지를 만드는 일러스트레이터야.
+        '${currentSongBase.title}'라는 제목의 동요에 맞는 이미지를 만들어.
+        가사 '${currentSongBase.lyric}'을 반영한 일러스트레이션이 필요해.
+        이미지에 글자는 넣지 말고 그림만 그려.
+        이미지는 어린이에게 적합하고, 즐겁고 친근감 있는 분위기를 가져야 해.
+        `;
+        
+        // 동요와 이미지 생성을 동시에 시작
+        const [songApiResponse, imageApiResponse] = await Promise.all([
+            fetch('https://api.aimlapi.com/generate/custom-mode', {
+                method: 'POST',
+                headers: {
+                    "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381',
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(songData)
+            }),
+            fetch('https://api.aimlapi.com/images/generations', {
+                method: 'POST',
+                headers: {
+                    "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381',
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ prompt: imagePrompt.trim(), model: "dall-e-3" })
+            })
+        ]);
+
+        const songDataResponse = await songApiResponse.json();
+        const imageDataResponse = await imageApiResponse.json();
+
+        // 응답에서 첫 번째 동요와 이미지 URL 추출
+        const firstSong = songDataResponse[0];
+        const imageUrl = imageDataResponse.data[0].url;
+        
+        // 콘솔에 API 응답 로깅
+        console.log("동요 생성 API 응답:", firstSong);
+        console.log("이미지 생성 API 응답:", imageUrl);
 
         // 새로운 Song 저장
         const newSong = new Song({
@@ -52,7 +78,8 @@ exports.createSong = async (req, res) => {
             id: firstSong.id, // 외부 API에서 반환된 ID
             lyric: currentSongBase.lyric, // 가사
             title: currentSongBase.title, // 제목
-            instrument: currentSongBase.instrument // 악기 정보
+            instrument: currentSongBase.instrument, // 악기 정보
+            image_url: imageUrl
         });
 
         // DB에 저장
@@ -70,6 +97,7 @@ exports.createSong = async (req, res) => {
 };
 
 
+
 // 동요 정보 조회 (GET 요청)
 exports.getSong = async (req, res) => {
     const { userId} = req.params;
@@ -79,7 +107,10 @@ exports.getSong = async (req, res) => {
         const songs = await Song.find({ userId });
 
         if (songs.length === 0) {
-            return res.status(404).json({ message: "해당 유저의 동요를 찾을 수 없습니다." });
+            return res.status(200).json({
+                message: "동요를 찾을 수 없습니다." ,
+                songs: []
+            });
         }
 
         // 동요 정보 리스트 반환
@@ -90,10 +121,11 @@ exports.getSong = async (req, res) => {
             id: song.id,
             lyric: song.lyric,
             title: song.title,
+            image_url: song.image_url
         }));
 
         res.status(200).json({
-            message: "유저의 동요를 찾았습니다.",
+            message: "동요를 찾았습니다.",
             songs: songList
         });
 

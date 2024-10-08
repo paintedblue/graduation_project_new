@@ -29,6 +29,10 @@ const songSchema = new mongoose.Schema({
     created_at : {
         type: Date,  // Suno API에서 받은 created_at 값
         required: true // Suno API로부터 항상 제공되므로 필수 필드로 설정
+    },
+    image_url : {
+        type: String, 
+        required:false
     }
 });
 
