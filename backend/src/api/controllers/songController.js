@@ -21,11 +21,17 @@ exports.createSong = async (req, res) => {
             return res.status(400).json({ message: "가사 또는 악기가 설정되지 않았습니다." });
         }
 
+        // currentSongBase.instrument가 'Recorder'일 때 'Ocarina'로 변경
+        let instrument = currentSongBase.instrument;
+        if (instrument === 'Recorder') {
+            instrument = 'Ocarina';  // 'Recorder'를 'Ocarina'로 변경
+        }
+
         // nursery rhyme
         // 외부 API에 보낼 데이터 준비
         const songData = {
             prompt: `[Verse] ${currentSongBase.lyric}`,
-            tags: `nursery rhyme, children song, ${currentSongBase.instrument} accompaniment, only the first verse, a short song`, // 예: 'children song, piano'
+            tags: `nursery rhyme, children song, ${instrument} accompaniment, easy to sing along, only the first verse, a short song`, // 예: 'children song, piano'
             title: currentSongBase.title,
             make_instrumental: false,
             wait_audio: true
