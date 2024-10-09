@@ -21,11 +21,17 @@ exports.createSong = async (req, res) => {
             return res.status(400).json({ message: "가사 또는 악기가 설정되지 않았습니다." });
         }
 
+        // currentSongBase.instrument가 'Recorder'일 때 'Ocarina'로 변경
+        let instrument = currentSongBase.instrument;
+        if (instrument === 'Recorder') {
+            instrument = 'Ocarina';  // 'Recorder'를 'Ocarina'로 변경
+        }
+
         // nursery rhyme
         // 외부 API에 보낼 데이터 준비
         const songData = {
             prompt: `[Verse] ${currentSongBase.lyric}`,
-            tags: `nursery rhyme, children song, ${currentSongBase.instrument} accompaniment, only the first verse, a short song`, // 예: 'children song, piano'
+            tags: `nursery rhyme, children song, ${instrument} accompaniment, easy to sing along, only the first verse, a short song`, // 예: 'children song, piano'
             title: currentSongBase.title,
             make_instrumental: false,
             wait_audio: true
@@ -50,26 +56,33 @@ exports.createSong = async (req, res) => {
                 },
                 body: JSON.stringify(songData)
             }),
-            fetch('https://api.openai.com/v1/images/generations', {
+            fetch('https://api.aimlapi.com/images/generations', {
                 method: 'POST',
                 headers: {
-                    "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`, // OpenAI API 키로 대체
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Authorization": 'Bearer 955d6b2cb9594b61a07ba1c31b132381'
                 },
                 body: JSON.stringify({
-                    model: "dall-e-3",
-                    prompt: imagePrompt.trim(), // 이미지 프롬프트
-                    n: 1, // 생성할 이미지 수
-                    size: "1024x1024" // 이미지 사이즈 (예: 1024x1024)
-                })
+                    "prompt": imagePrompt.trim(),  // 프롬프트 문자열을 보내기
+                    "model": "dall-e-3"
+                }),
             })
         ]);
+
+        // // 응답 상태 확인 및 JSON 파싱
+        // if (!songApiResponse.ok) {
+        //     console.error('동요 생성 API 오류:', songApiResponse.status, songApiResponse.statusText);
+        //     return res.status(500).json({ message: '동요 생성 API 호출에 실패했습니다.' });
+        // }
+
+        // if (!imageApiResponse.ok) {
+        //     console.error('이미지 생성 API 오류:', imageApiResponse.status, imageApiResponse.statusText);
+        //     return res.status(500).json({ message: '이미지 생성 API 호출에 실패했습니다.' });
+        // }
 
         const songDataResponse = await songApiResponse.json();
         const imageDataResponse = await imageApiResponse.json();
 
-        // console.log("songDataResponse:", songDataResponse);
-        // console.log("imageDataResponse:", imageDataResponse);
 
         // 응답에서 첫 번째 동요와 이미지 URL 추출
         const firstSong = songDataResponse[0];

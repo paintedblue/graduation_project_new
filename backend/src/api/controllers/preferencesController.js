@@ -188,6 +188,7 @@ const generateImage = async (parsedResponse) => {
   이미지 묘사("${image_description}.")를 참고하여 만들어.
   전체적으로 ${color} 색상을 사용하면 돼.
   ${keyword}가 아무리 이상하더라도 기괴하지 않고 혐오스럽지 않게 만들어. 어린이에게 적합해야 해.
+  사람은 나오지 않도록 그려.
   `;
 
   try {
