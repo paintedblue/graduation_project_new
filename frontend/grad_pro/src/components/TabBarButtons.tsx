@@ -46,7 +46,7 @@ const Header: React.FC = () => {
   };
 
   const goToPlay = () => {
-    navigation.navigate('PlayScreen', { userId }); // 동요 완성 화면으로 이동
+    //navigation.navigate('PlayScreen', { userId }); // 동요 완성 화면으로 이동
   };
 
   return (
