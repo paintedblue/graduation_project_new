@@ -15,6 +15,8 @@ export const SelectedCategoriesContext = createContext();
 export const SelectedCategoriesProvider = ({ children }) => {
   const [selectedCategories, setSelectedCategories] = useState(defaultCategories);
 
+  const userIdInit = "20241002"
+
   // 카테고리 상태 업데이트 함수
   const updateCategory = (category) => {
     setSelectedCategories(prevCategories => ({
@@ -23,11 +25,17 @@ export const SelectedCategoriesProvider = ({ children }) => {
     }));
   };
 
+  const clearCategory = () => {
+    setSelectedCategories(defaultCategories);
+  };
+
   return (
     <SelectedCategoriesContext.Provider
       value={{
         selectedCategories,
         updateCategory,
+        clearCategory,
+        userIdInit
       }}
     >
       {children}

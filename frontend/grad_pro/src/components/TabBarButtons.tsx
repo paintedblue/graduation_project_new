@@ -1,13 +1,36 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React,{useContext} from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet ,Alert} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { SelectedCategoriesContext } from "../contexts/SelectedCategoriesContext"; // 컨텍스트 임포트
 
 const Header: React.FC = () => {
+  const { selectedCategories, clearCategory, userIdInit } = useContext(SelectedCategoriesContext);
   const navigation = useNavigation(); // navigation 객체 사용
-  const userId = 2; // userId 선언
+  const userId = userIdInit; // userId 선언
 
-  const goToHome = () => {
+  const goToHome = async() => {
+    try {
+      const response = await fetch('http://15.165.249.244:3000/api/preferences/reset', {
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userId:userId.toString()})
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Network response was not ok: ${errorText}`);
+      }
+      
+      } catch (error) {
+      console.error("Error during fetch operation:", error.message);
+      Alert.alert("Error", error.message);
+      }
+
     navigation.navigate('HomeScreen'); // 홈 화면으로 이동, 기본 title 설정
+    clearCategory();
+
   };
 
   const goToHabit = () => {

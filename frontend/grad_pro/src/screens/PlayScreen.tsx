@@ -114,7 +114,7 @@ const LyricMakeScreen = ({ route, navigation }) => {
 
         <View style={[BaseStyles.bottomContainer, styles.bottomContainer]}>
           {/* Back Button */}
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backButton} onPress={() => {navigation.goBack();SoundPlayer.stop();}}>
             <Image source={require('../assets/imgs/backward.png')} style={styles.backButtonImage} />
           </TouchableOpacity>
           {/* Play Button */}

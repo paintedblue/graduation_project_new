@@ -110,9 +110,9 @@ const HabitScreen = ({route, navigation}) => {
         if(habits.every(habit => habit.selected === false)){
             Alert.alert("습관을 하나 이상 체크해야 합니다.");
         }else{
-
+            navigation.navigate('LyricSelectScreen',{userId});
         
-        try {
+        /*try {
             const response = await fetch('http://15.165.249.244:3000/api/preferences/reset', {
                 method: 'POST',
                 headers: {
@@ -135,7 +135,7 @@ const HabitScreen = ({route, navigation}) => {
             console.error("Error during fetch operation:", error.message);
             Alert.alert("Error", error.message);
             }
-        }
+        }*/}
     }
 
 

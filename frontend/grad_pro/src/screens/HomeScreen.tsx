@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useState,useContext} from "react";
 import {Text, View, TouchableOpacity, ImageBackground, Image, StyleSheet} from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import BaseStyles from "../styles/BaseStyles";
+import { SelectedCategoriesContext } from "../contexts/SelectedCategoriesContext"; // 컨텍스트 임포트
 
 const HomeScreen = ({navigation}) => {
     //개발용 더미 데이터!
@@ -9,8 +10,9 @@ const HomeScreen = ({navigation}) => {
         "title" :  "예시 제목입니다~~",
         "lyric" : "예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다.\n예시 가사 입니다\n가사가 좀 길수도 있어서\n 반복을 좀 하겠습니다."
     }
-    //끝
-    const userId = 20241002;
+    //
+    const {userIdInit } = useContext(SelectedCategoriesContext);
+    const userId = userIdInit;
 
     const [showInitImage, setShowInitImage] = useState(true);
 
