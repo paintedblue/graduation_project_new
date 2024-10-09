@@ -32,11 +32,11 @@ const LoadingScreen = ({ route, navigation }) => {
   useEffect(() => {
     if (type === "Lyric") {
       setMainText("가사 생성중");
-      setCenterMessage("조금만 기다리면 멋진 가사가\n짜잔~ 하고 나타날 거예요! 🚀");
+      setCenterMessage("조금만 기다리면 AI가 만들어준\n재밌는 가사가 짜잔~ 하고\n 나타날 거예요! 🚀");
       requestMakeLyric();
     } else if (type === "Music") {
       setMainText("동요 생성중");
-      setCenterMessage("조금만 기다리면 멋진 동요가\n짜잔~ 하고 나타날 거예요! 🚀");
+      setCenterMessage("조금만 기다리면 AI가 만들어준\n신나는 동요가 짜잔~ 하고\n 나타날 거예요! 🚀");
       requestMakeMusic();
     }
   }, []);

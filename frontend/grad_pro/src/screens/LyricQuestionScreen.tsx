@@ -218,7 +218,7 @@ const LyricQuestionScreen = ({ route, navigation }) => {
                 <View style={[BaseStyles.contentContainer, styles.centerContainer]}>
                   <View style={styles.indicatorContainer}>
                     <BallIndicator style={styles.ballIndicator} size={40} color="#FFFFFF" />
-                    <Text style={[BaseStyles.mainText, styles.centerMessage]}>{"단어의 이미지가 만들어지고있어요~\n로오오오오딩"}</Text>
+                    <Text style={[BaseStyles.mainText, styles.centerMessage]}>{"조금만 기다리면 AI가 만들어준\n멋진 사진이 짜잔~하고\n나타날거에요! 🚀"}</Text>
                   </View>
                 </View>
               </View>
