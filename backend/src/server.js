@@ -17,8 +17,6 @@ const app = express();
 const PORT = 3000;
 
 mongoose.connect('mongodb://jiyun:jiyun123@15.165.249.244:27017/grad_pro', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
   authSource: "admin"  // 인증을 사용하는 데이터베이스 이름
 }).then(() => {
   console.log('MongoDB connected');
